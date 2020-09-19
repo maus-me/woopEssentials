@@ -37,7 +37,7 @@ Task("Clean")
 Task("Build")
     .Does(() =>
 {
-    DotNetCoreBuild("CBSEssentials.csproj", new DotNetCoreBuildSettings
+    DotNetCoreBuild($"{name}.csproj", new DotNetCoreBuildSettings
     {
         Configuration = configuration
     });
