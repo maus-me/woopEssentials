@@ -1,0 +1,121 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build (Debug)",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile",
+      "type": "shell",
+      "command": "dotnet",
+      "linux": {
+        "options": {
+          "env": {
+            "FrameworkPathOverride": "/lib/mono/4.8-api/"
+          }
+        }
+      },
+      "args": ["cake"]
+    },
+    {
+      "label": "build (Release)",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile",
+      "type": "shell",
+      "command": "dotnet",
+      "linux": {
+        "options": {
+          "env": {
+            "FrameworkPathOverride": "/lib/mono/4.8-api/"
+          }
+        }
+      },
+      "args": ["cake", "--configuration=Release"]
+    },
+    {
+      "label": "clean",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["cake", "--target=Clean"],
+      "linux": {
+        "options": {
+          "env": {
+            "FrameworkPathOverride": "/lib/mono/4.8-api/"
+          }
+        }
+      }
+    },
+    {
+      "label": "clean (Package)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["cake", "--target=CleanPackage"],
+      "linux": {
+        "options": {
+          "env": {
+            "FrameworkPathOverride": "/lib/mono/4.8-api/"
+          }
+        }
+      }
+    },
+    {
+      "label": "package (Debug)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["cake", "--target=Package"],
+      "linux": {
+        "options": {
+          "env": {
+            "FrameworkPathOverride": "/lib/mono/4.8-api/"
+          }
+        }
+      }
+    },
+    {
+      "label": "package (Release)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["cake", "--target=Package", "--configuration=Release"],
+      "linux": {
+        "options": {
+          "env": {
+            "FrameworkPathOverride": "/lib/mono/4.8-api/"
+          }
+        }
+      }
+    },
+    {
+      "label": "deploy (Debug)",
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "command": "dotnet",
+      "args": ["cake", "--target=Deploy"],
+      "linux": {
+        "options": {
+          "env": {
+            "FrameworkPathOverride": "/lib/mono/4.8-api/"
+          }
+        }
+      }
+    },
+    {
+      "label": "deploy (Release)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["cake", "--target=Deploy", "--configuration=Release"],
+      "linux": {
+        "options": {
+          "env": {
+            "FrameworkPathOverride": "/lib/mono/4.8-api/"
+          }
+        }
+      }
+    }
+  ]
+}

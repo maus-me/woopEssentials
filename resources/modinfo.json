@@ -1,0 +1,14 @@
+{
+    "type": "code",
+    "modid": "CBSEssentials",
+    "name": "CBSEssentials",
+    "authors": [
+        "Th3Dilli"
+    ],
+    "description": "Chill build survival essentials mod",
+    "version": "0.1.0",
+    "side": "Server",
+    "dependency": {
+        "game": "1.13.4"
+    }
+}
