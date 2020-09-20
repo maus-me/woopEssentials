@@ -34,7 +34,7 @@ namespace CBSEssentials.Starterkit
                     tryGiveItemStack(api, player);
                 }, Privilege.chat);
 
-            api.RegisterCommand("resetstarterkit", "reset starterkit config", string.Empty,
+            api.RegisterCommand("resetstarterkit", "reset starterkit config to default", string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
                 if (player.Role.PrivilegeLevel >= 99999)
@@ -44,7 +44,7 @@ namespace CBSEssentials.Starterkit
                 }
             }, Privilege.chat);
 
-            api.RegisterCommand("setstarterkit", "setzt die Starterkit items", string.Empty,
+            api.RegisterCommand("setstarterkit", "set starterkit to items on your hotbar", string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
                 if (player.Role.PrivilegeLevel >= config.modifyPrivilegeLevel)
@@ -70,7 +70,7 @@ namespace CBSEssentials.Starterkit
         {
             if (config.hasPlayerRecived(player.PlayerUID))
             {
-                player.SendMessage(GlobalConstants.GeneralChatGroup, "Du hast bereits ein starterkit bekommen.", EnumChatType.Notification);
+                player.SendMessage(GlobalConstants.GeneralChatGroup, "Du hast bereits ein Starterkit bekommen.", EnumChatType.Notification);
             }
             else
             {
@@ -105,6 +105,7 @@ namespace CBSEssentials.Starterkit
                             }
                             if (!recived)
                             {
+                                player.SendMessage(GlobalConstants.GeneralChatGroup, "Irgendetwas lief schief mit dem Starterkit, bitte informieren einen Mod/Admin", EnumChatType.Notification);
                                 throw new Exception($"Could not give item/block: {starterkitItem}");
                             }
                         }
