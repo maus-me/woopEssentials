@@ -58,8 +58,6 @@ namespace CBSEssentials.Starterkit
                             EnumItemClass enumItemClass = inventory[i].Itemstack.Class;
                             int stackSize = inventory[i].Itemstack.StackSize;
                             AssetLocation code = inventory[i].Itemstack.Collectible.Code;
-                            api.Server.LogVerboseDebug($"item: {enumItemClass} : {code} : {stackSize}");
-                            api.Server.LogVerboseDebug($"item: {config.items.Count}");
                             config.items.Add(new StarterkitItem(enumItemClass, code, stackSize));
                         }
                     }
@@ -91,7 +89,6 @@ namespace CBSEssentials.Starterkit
                                         Item item = api.World.GetItem(asset);
                                         if (item != null)
                                         {
-                                            api.Server.LogVerboseDebug($"Starterkitsystem GetItem: {asset} : {item.Code.Path}");
                                             recived = player.Entity.TryGiveItemStack(new ItemStack(item, starterkitItem.stacksize));
                                         }
                                         break;
@@ -101,7 +98,6 @@ namespace CBSEssentials.Starterkit
                                         Block block = api.World.GetBlock(asset);
                                         if (block != null)
                                         {
-                                            api.Server.LogVerboseDebug($"Starterkitsystem GetBlock: {asset} : {block.Code.Path}");
                                             recived = player.Entity.TryGiveItemStack(new ItemStack(block, starterkitItem.stacksize));
                                         }
                                         break;
