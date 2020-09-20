@@ -1,5 +1,6 @@
 ﻿using CBSEssentials.Commands;
 using CBSEssentials.Homepoints;
+using CBSEssentials.Starterkit;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 
@@ -16,6 +17,7 @@ namespace CBSEssentials
             base.StartServerSide(api);
             CommandsLoader.init(api);
             new Homesystem().init(api);
+            new Starterkitsystem().init(api);
         }
     }
 }

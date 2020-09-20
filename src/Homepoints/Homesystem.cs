@@ -30,7 +30,7 @@ namespace CBSEssentials.Homepoints
                 _api.Server.LogWarning("Homesystem config file at " + Path.Combine(GamePaths.ModConfig, configFile));
             }
 
-            registerCommands(api);
+            registerCommands();
         }
 
         private void GameWorldSave()
@@ -38,30 +38,30 @@ namespace CBSEssentials.Homepoints
             _api.StoreModConfig(homes, configFile);
         }
 
-        private void registerCommands(ICoreServerAPI api)
+        private void registerCommands()
         {
-            api.RegisterCommand("sethome", "setzt einen Homepoint auf deine aktuelle Position", "[Name]",
+            _api.RegisterCommand("sethome", "setzt einen Homepoint auf deine aktuelle Position", "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread adder = new Thread(() => AddHome(player, args.PopAll()));
                     adder.Start();
                 }, Privilege.chat);
 
-            api.RegisterCommand("home", "teleportiert dich zu deinem Homepoint, für Übersicht /home ohne Name verwenden.", "[Name]",
+            _api.RegisterCommand("home", "teleportiert dich zu deinem Homepoint, für Übersicht /home ohne Name verwenden.", "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread searcher = new Thread(() => FindHome(player, args.PopAll()));
                     searcher.Start();
                 }, Privilege.chat);
 
-            api.RegisterCommand("delhome", "löscht einen Homepoint", "[Name]",
+            _api.RegisterCommand("delhome", "löscht einen Homepoint", "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread deleter = new Thread(() => DelHome(player, args.PopAll()));
                     deleter.Start();
                 }, Privilege.chat);
 
-            api.RegisterCommand("spawn", "teleportiert dich zum Spawnpunkt", "",
+            _api.RegisterCommand("spawn", "teleportiert dich zum Spawnpunkt", "",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread toSpawner = new Thread(() => ToSpawn(player));
