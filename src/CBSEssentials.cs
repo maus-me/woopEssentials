@@ -1,4 +1,5 @@
-﻿using CBSEssentials.Commands;
+﻿using CBSEssentials.Announcements;
+using CBSEssentials.Commands;
 using CBSEssentials.Homepoints;
 using CBSEssentials.Starterkit;
 using Vintagestory.API.Common;
@@ -18,6 +19,7 @@ namespace CBSEssentials
             CommandsLoader.init(api);
             new Homesystem().init(api);
             new Starterkitsystem().init(api);
+            new Announcementsystem().init(api);
         }
     }
 }
