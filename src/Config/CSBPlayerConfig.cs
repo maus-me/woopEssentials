@@ -7,6 +7,11 @@ namespace CBSEssentials.Config
     {
         public List<CBSPlayerData> players;
 
+        public CBSPlayerConfig()
+        {
+            players = new List<CBSPlayerData>();
+        }
+
         public CBSPlayerData getPlayerDataByUID(string playerUID)
         {
             for (int i = 0; i < players.Count; i++)

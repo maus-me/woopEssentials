@@ -18,6 +18,7 @@ namespace CBSEssentials
     public class CBSEssentials : ModSystem
     {
         private const string configFile = "CBSConfig.json";
+        private const string playerconfigFile = "CBSPlayerConfig.json";
         internal static CBSConfig config { get; private set; }
         internal static CBSPlayerConfig playerConfig { get; private set; }
         private ICoreServerAPI api;
@@ -35,8 +36,18 @@ namespace CBSEssentials
                 config = new CBSConfig();
                 config.init();
                 api.StoreModConfig(config, configFile);
-                api.Server.LogWarning("CBSEssentials initialized with default config!!!");
+                api.Server.LogWarning("CBSEssentials config initialized with default config!!!");
                 api.Server.LogWarning("CBSEssentials config file at " + Path.Combine(GamePaths.ModConfig, configFile));
+            }
+
+            playerConfig = api.LoadModConfig<CBSPlayerConfig>(playerconfigFile);
+
+            if (playerConfig == null)
+            {
+                playerConfig = new CBSPlayerConfig();
+                api.StoreModConfig(playerConfig, playerconfigFile);
+                api.Server.LogWarning("CBSEssentials playerconfig initialized with default config!!!");
+                api.Server.LogWarning("CBSEssentials playerconfig file at " + Path.Combine(GamePaths.ModConfig, playerconfigFile));
             }
 
             CommandsLoader.init(api);

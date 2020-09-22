@@ -13,8 +13,6 @@ namespace CBSEssentials.Starterkit
         public CBSConfig config;
         public CBSPlayerConfig playerConfig;
 
-        private const string configFile = "starterkitsystem.json";
-
         internal void init(ICoreServerAPI api)
         {
             this.config = CBSEssentials.config;
@@ -53,7 +51,7 @@ namespace CBSEssentials.Starterkit
                     }
                 }
 
-                api.StoreModConfig(config, configFile);
+                // TODO save config here now
             }, Privilege.controlserver);
         }
 
@@ -128,7 +126,7 @@ namespace CBSEssentials.Starterkit
                         playerData.homeLastuseage = DateTime.Now;
                         playerConfig.players.Add(playerData);
                     }
-                    api.StoreModConfig(config, configFile);
+                    // TODO save config here now
                 }
                 catch (Exception e)
                 {
