@@ -17,8 +17,6 @@ namespace CBSEssentials.Commands
                                   player.SendMessage(GlobalConstants.GeneralChatGroup, "/players | Zeigt dir alle Spieler an, die online sind", EnumChatType.Notification);
                                   player.SendMessage(GlobalConstants.GeneralChatGroup, "/spawn | Teleportiert dich zu deinem aktuellen Spawn. Um den Spawn zu setzen verwende ein temporal Gear", EnumChatType.Notification);
                                   player.SendMessage(GlobalConstants.GeneralChatGroup, "/sethome | Setzt einen Punkt zu dem du mit /home teleportieren kannst.", EnumChatType.Notification);
-                                  player.SendMessage(GlobalConstants.GeneralChatGroup, "/msg [Spielername] [Nachricht] | Sendet einem Spieler eine private Nachricht", EnumChatType.Notification);
-                                  player.SendMessage(GlobalConstants.GeneralChatGroup, "/support [Nachricht] | Sendet dem Admin eine Nachricht. Der Inhalt können z.B.: Beschwerden, Vorschläge und Kritik sein", EnumChatType.Notification);
                                   player.SendMessage(GlobalConstants.GeneralChatGroup, "--------------------", EnumChatType.Notification);
 
                               }, Privilege.chat);

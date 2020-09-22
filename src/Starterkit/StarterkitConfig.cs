@@ -6,8 +6,6 @@ namespace CBSEssentials.Starterkit
 {
     public class StarterkitConfig
     {
-
-        public int modifyPrivilegeLevel;
         public List<StarterkitItem> items;
 
         public List<StarterkitPlayer> playersRecived;
@@ -16,14 +14,13 @@ namespace CBSEssentials.Starterkit
         {
             playersRecived = new List<StarterkitPlayer>();
             items = new List<StarterkitItem>();
-            modifyPrivilegeLevel = 99999;
         }
 
         public bool hasPlayerRecived(string playerUID)
         {
-            foreach (StarterkitPlayer starterkitplayer in playersRecived)
+            for (int i = 0; i < playersRecived.Count; i++)
             {
-                if (starterkitplayer.playerUID == playerUID)
+                if (playersRecived[i].playerUID == playerUID)
                 {
                     return true;
                 }
