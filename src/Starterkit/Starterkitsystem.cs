@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using CBSEssentials.Config;
+using CBSEssentials.PlayerData;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
@@ -8,21 +10,15 @@ namespace CBSEssentials.Starterkit
 {
     internal class Starterkitsystem
     {
-        private StarterkitConfig config;
+        public CBSConfig config;
+        public CBSPlayerConfig playerConfig;
 
         private const string configFile = "starterkitsystem.json";
 
         internal void init(ICoreServerAPI api)
         {
-            config = api.LoadModConfig<StarterkitConfig>(configFile);
-
-            if (config == null)
-            {
-                config = new StarterkitConfig();
-                api.StoreModConfig(config, configFile);
-                api.Server.LogWarning("Starterkitsystem initialized with default config!!!");
-                api.Server.LogWarning("Starterkitsystem config file at " + Path.Combine(GamePaths.ModConfig, configFile));
-            }
+            this.config = CBSEssentials.config;
+            this.playerConfig = CBSEssentials.playerConfig;
             registerCommands(api);
         }
 
@@ -37,8 +33,8 @@ namespace CBSEssentials.Starterkit
             api.RegisterCommand("resetstarterkit", "reset starterkit config to default", string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
-                config = new StarterkitConfig();
-                api.StoreModConfig(config, configFile);
+                // TODO check if this is really needed => reload config
+                // config.items.Clear();
             }, Privilege.controlserver);
 
             api.RegisterCommand("setstarterkit", "set starterkit to items on your hotbar", string.Empty,
@@ -63,7 +59,7 @@ namespace CBSEssentials.Starterkit
 
         private void tryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
         {
-            if (config.hasPlayerRecived(player.PlayerUID))
+            if (playerConfig.recivedStarterkitByUID(player.PlayerUID))
             {
                 player.SendMessage(GlobalConstants.GeneralChatGroup, "Du hast bereits ein Starterkit bekommen.", EnumChatType.Notification);
             }
@@ -121,7 +117,17 @@ namespace CBSEssentials.Starterkit
                         }
                     }
                     player.SendMessage(GlobalConstants.GeneralChatGroup, "Hier dein Starterkit :)", EnumChatType.Notification);
-                    config.playersRecived.Add(new StarterkitPlayer(player.PlayerUID, player.PlayerName));
+                    CBSPlayerData playerData = playerConfig.getPlayerDataByUID(player.PlayerUID);
+                    if (playerData != null)
+                    {
+                        playerData.homeLastuseage = DateTime.Now;
+                    }
+                    else
+                    {
+                        playerData = new CBSPlayerData(player.PlayerUID);
+                        playerData.homeLastuseage = DateTime.Now;
+                        playerConfig.players.Add(playerData);
+                    }
                     api.StoreModConfig(config, configFile);
                 }
                 catch (Exception e)
