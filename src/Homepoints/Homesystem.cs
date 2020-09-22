@@ -71,7 +71,7 @@ namespace CBSEssentials.Homepoints
 
         public void ToSpawn(IServerPlayer player)
         {
-            PlayerHomes playerhome = homes.findPlayerhomeByUID(player.PlayerUID);
+            PlayerHome playerhome = homes.findPlayerhomeByUID(player.PlayerUID);
             if (playerhome != null)
             {
                 if (canTravel(playerhome.lastUse))
@@ -90,7 +90,7 @@ namespace CBSEssentials.Homepoints
 
         public void FindHome(IServerPlayer player, string name) //home Befehl
         {
-            PlayerHomes playerhome = homes.findPlayerhomeByUID(player.PlayerUID);
+            PlayerHome playerhome = homes.findPlayerhomeByUID(player.PlayerUID);
             if (playerhome != null)
             {
                 if (name == null || name == "")
@@ -133,7 +133,7 @@ namespace CBSEssentials.Homepoints
 
         public void DelHome(IServerPlayer player, string name) //delhome Befehl
         {
-            PlayerHomes playerhome = homes.findPlayerhomeByUID(player.PlayerUID);
+            PlayerHome playerhome = homes.findPlayerhomeByUID(player.PlayerUID);
             if (playerhome != null)
             {
                 Point point = playerhome.findPointByName(name);
@@ -155,7 +155,7 @@ namespace CBSEssentials.Homepoints
                 return;
             }
 
-            PlayerHomes playerhome = homes.findPlayerhomeByUID(player.PlayerUID);
+            PlayerHome playerhome = homes.findPlayerhomeByUID(player.PlayerUID);
             if (playerhome != null)
             {
                 if (playerhome.hasMaxHomes(homes.maxhomes))
@@ -176,13 +176,13 @@ namespace CBSEssentials.Homepoints
             }
             else
             {
-                playerhome = new PlayerHomes(player.PlayerUID, player.PlayerName);
+                playerhome = new PlayerHome(player.PlayerUID, player.PlayerName);
                 homes.playerhomes.Add(playerhome);
                 addNewHomepoint(player, name, playerhome);
             }
         }
 
-        private static void addNewHomepoint(IServerPlayer player, string name, PlayerHomes playerhome)
+        private static void addNewHomepoint(IServerPlayer player, string name, PlayerHome playerhome)
         {
             Point newPoint = new Point(name, player.Entity.Pos.XYZ);
             playerhome.points.Add(newPoint);
