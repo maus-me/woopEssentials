@@ -11,9 +11,13 @@ namespace CBSEssentials.Announcements
         public AnnouncementsConfig()
         {
             messages = new List<string>();
+            interval = 10;
+        }
+
+        public void init()
+        {
             messages.Add("Welcome to Vintage Story");
             messages.Add("This server is running CBSEssentials");
-            interval = 10;
         }
 
         internal double getInterval()

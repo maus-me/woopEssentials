@@ -27,6 +27,7 @@ namespace CBSEssentials.Announcements
             if (config == null)
             {
                 config = new AnnouncementsConfig();
+                config.init();
                 _api.StoreModConfig(config, configFile);
                 _api.Server.LogWarning("Announcementsystem initialized with default config!!!");
                 _api.Server.LogWarning("Announcementsystem config file at " + Path.Combine(GamePaths.ModConfig, configFile));
