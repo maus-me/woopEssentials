@@ -21,11 +21,11 @@ namespace CBSEssentials.Homepoints
 
         public PlayerHomes findPlayerhomeByUID(string playerUID)
         {
-            foreach (PlayerHomes playerhome in playerhomes)
+            for (int i = 0; i < playerhomes.Count; i++)
             {
-                if (playerhome.playerUID == playerUID)
+                if (playerhomes[i].playerUID == playerUID)
                 {
-                    return playerhome;
+                    return playerhomes[i];
                 }
             }
             return null;
@@ -52,12 +52,13 @@ namespace CBSEssentials.Homepoints
 
         public Point findPointByName(string name)
         {
-            foreach (Point point in points)
+            for (int i = 0; i < points.Count; i++)
             {
-                if (point.name == name)
+                if (points[i].name == name)
                 {
-                    return point;
+                    return points[i];
                 }
+
             }
             return null;
         }

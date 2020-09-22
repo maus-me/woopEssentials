@@ -37,33 +37,28 @@ namespace CBSEssentials.Starterkit
             api.RegisterCommand("resetstarterkit", "reset starterkit config to default", string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
-                if (player.Role.PrivilegeLevel >= 99999)
-                {
-                    config = new StarterkitConfig();
-                    api.StoreModConfig(config, configFile);
-                }
-            }, Privilege.chat);
+                config = new StarterkitConfig();
+                api.StoreModConfig(config, configFile);
+            }, Privilege.controlserver);
 
             api.RegisterCommand("setstarterkit", "set starterkit to items on your hotbar", string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
-                if (player.Role.PrivilegeLevel >= config.modifyPrivilegeLevel)
+                config.items.Clear();
+                IInventory inventory = player.InventoryManager.GetHotbarInventory();
+                for (int i = 0; i < inventory.Count; i++)
                 {
-                    config.items.Clear();
-                    IInventory inventory = player.InventoryManager.GetHotbarInventory();
-                    for (int i = 0; i < inventory.Count; i++)
+                    if (inventory[i].Itemstack != null)
                     {
-                        if (inventory[i].Itemstack != null)
-                        {
-                            EnumItemClass enumItemClass = inventory[i].Itemstack.Class;
-                            int stackSize = inventory[i].Itemstack.StackSize;
-                            AssetLocation code = inventory[i].Itemstack.Collectible.Code;
-                            config.items.Add(new StarterkitItem(enumItemClass, code, stackSize));
-                        }
+                        EnumItemClass enumItemClass = inventory[i].Itemstack.Class;
+                        int stackSize = inventory[i].Itemstack.StackSize;
+                        AssetLocation code = inventory[i].Itemstack.Collectible.Code;
+                        config.items.Add(new StarterkitItem(enumItemClass, code, stackSize));
                     }
                 }
+
                 api.StoreModConfig(config, configFile);
-            }, Privilege.chat);
+            }, Privilege.controlserver);
         }
 
         private void tryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
@@ -76,20 +71,20 @@ namespace CBSEssentials.Starterkit
             {
                 try
                 {
-                    foreach (StarterkitItem starterkitItem in config.items)
+                    for (int i = 0; i < config.items.Count; i++)
                     {
-                        AssetLocation asset = new AssetLocation(starterkitItem.code.Path);
+                        AssetLocation asset = new AssetLocation(config.items[i].code.Path);
                         if (asset != null)
                         {
                             bool recived = false;
-                            switch (starterkitItem.itemclass)
+                            switch (config.items[i].itemclass)
                             {
                                 case EnumItemClass.Item:
                                     {
                                         Item item = api.World.GetItem(asset);
                                         if (item != null)
                                         {
-                                            recived = player.Entity.TryGiveItemStack(new ItemStack(item, starterkitItem.stacksize));
+                                            recived = player.Entity.TryGiveItemStack(new ItemStack(item, config.items[i].stacksize));
                                         }
                                         break;
                                     }
@@ -98,7 +93,7 @@ namespace CBSEssentials.Starterkit
                                         Block block = api.World.GetBlock(asset);
                                         if (block != null)
                                         {
-                                            recived = player.Entity.TryGiveItemStack(new ItemStack(block, starterkitItem.stacksize));
+                                            recived = player.Entity.TryGiveItemStack(new ItemStack(block, config.items[i].stacksize));
                                         }
                                         break;
                                     }
@@ -106,7 +101,7 @@ namespace CBSEssentials.Starterkit
                             if (!recived)
                             {
                                 player.SendMessage(GlobalConstants.GeneralChatGroup, "Irgendetwas lief schief mit dem Starterkit, bitte informieren einen Mod/Admin", EnumChatType.Notification);
-                                throw new Exception($"Could not give item/block: {starterkitItem}");
+                                throw new Exception($"Could not give item/block: {config.items[i]}");
                             }
                         }
                     }

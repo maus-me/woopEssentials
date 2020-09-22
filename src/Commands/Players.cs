@@ -16,9 +16,9 @@ namespace CBSEssentials.Commands
 
                       IPlayer[] players = api.World.AllOnlinePlayers;
 
-                      foreach (IPlayer onlinePlayer in players)
+                      for (int i = 0; i < players.Length; i++)
                       {
-                          player.SendMessage(GlobalConstants.GeneralChatGroup, $"<strong>{onlinePlayer.PlayerName}</strong>", EnumChatType.Notification);
+                          player.SendMessage(GlobalConstants.GeneralChatGroup, $"<strong>{players[i].PlayerName}</strong>", EnumChatType.Notification);
                       }
 
                       player.SendMessage(GlobalConstants.GeneralChatGroup, "--------------------", EnumChatType.Notification);

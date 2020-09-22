@@ -96,9 +96,10 @@ namespace CBSEssentials.Homepoints
                 if (name == null || name == "")
                 {
                     player.SendMessage(GlobalConstants.GeneralChatGroup, "Deine Homepoints: ", EnumChatType.Notification);
-                    foreach (Point point in playerhome.points)
+                    for (int i = 0; i < playerhome.points.Count; i++)
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, point.name, EnumChatType.Notification);
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, playerhome.points[i].name, EnumChatType.Notification);
+
                     }
                 }
                 else
