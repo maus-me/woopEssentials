@@ -121,8 +121,8 @@ namespace CBSEssentials.Starterkit
                         }
                     }
                     player.SendMessage(GlobalConstants.GeneralChatGroup, "Hier dein Starterkit :)", EnumChatType.Notification);
-                    // config.playersRecived.Add(new StarterkitPlayer(player.PlayerUID, player.PlayerName));
-                    // api.StoreModConfig(config, configFile);
+                    config.playersRecived.Add(new StarterkitPlayer(player.PlayerUID, player.PlayerName));
+                    api.StoreModConfig(config, configFile);
                 }
                 catch (Exception e)
                 {
