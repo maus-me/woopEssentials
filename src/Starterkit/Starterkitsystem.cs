@@ -48,7 +48,7 @@ namespace CBSEssentials.Starterkit
                 IInventory inventory = player.InventoryManager.GetHotbarInventory();
                 for (int i = 0; i < inventory.Count; i++)
                 {
-                    if (inventory[i].Itemstack != null)
+                    if (inventory[i].GetType() == typeof(ItemSlotSurvival) && inventory[i].Itemstack != null)
                     {
                         EnumItemClass enumItemClass = inventory[i].Itemstack.Class;
                         int stackSize = inventory[i].Itemstack.StackSize;
@@ -71,6 +71,21 @@ namespace CBSEssentials.Starterkit
             {
                 try
                 {
+                    int emptySlots = 0;
+                    IInventory inventory = player.InventoryManager.GetHotbarInventory();
+                    for (int i = 0; i < inventory.Count; i++)
+                    {
+                        if (inventory[i].GetType() == typeof(ItemSlotSurvival) && inventory[i].Empty)
+                        {
+                            emptySlots++;
+                        }
+                    }
+                    if (emptySlots < config.items.Count)
+                    {
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, "Du hast nicht genügend Platz im Inventar.", EnumChatType.Notification);
+                        api.Server.LogVerboseDebug($"Starterkit player has not enough empty slots: {config.items.Count} Slots needed but has {emptySlots}");
+                        return;
+                    }
                     for (int i = 0; i < config.items.Count; i++)
                     {
                         AssetLocation asset = new AssetLocation(config.items[i].code.Path);
@@ -106,8 +121,8 @@ namespace CBSEssentials.Starterkit
                         }
                     }
                     player.SendMessage(GlobalConstants.GeneralChatGroup, "Hier dein Starterkit :)", EnumChatType.Notification);
-                    config.playersRecived.Add(new StarterkitPlayer(player.PlayerUID, player.PlayerName));
-                    api.StoreModConfig(config, configFile);
+                    // config.playersRecived.Add(new StarterkitPlayer(player.PlayerUID, player.PlayerName));
+                    // api.StoreModConfig(config, configFile);
                 }
                 catch (Exception e)
                 {
