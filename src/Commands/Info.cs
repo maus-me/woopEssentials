@@ -6,14 +6,14 @@ namespace CBSEssentials.Commands
 {
     internal class Info : Command
     {
-        internal override void init(ICoreServerAPI api)
+        internal override void Init(ICoreServerAPI api)
         {
             api.RegisterCommand("info", Lang.Get("cbsessentials:cd-info"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
-                    for (int i = 0; i < CBSEssentials.config.infoMessages.Count; i++)
+                    for (int i = 0; i < CBSEssentials.Config.infoMessages.Count; i++)
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, CBSEssentials.config.infoMessages[i], EnumChatType.Notification);
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, CBSEssentials.Config.infoMessages[i], EnumChatType.Notification);
                     }
                 }, Privilege.chat);
         }

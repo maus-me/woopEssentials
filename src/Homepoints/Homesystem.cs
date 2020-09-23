@@ -11,43 +11,43 @@ namespace CBSEssentials.Homepoints
     internal class Homesystem
     {
         public CBSConfig config;
+
         public CBSPlayerConfig playerConfig;
 
-        public ICoreServerAPI _api;
+        public ICoreServerAPI api;
 
-        internal void init(ICoreServerAPI api)
+        internal void Init(ICoreServerAPI api)
         {
-            _api = api;
-            this.config = CBSEssentials.config;
-            this.playerConfig = CBSEssentials.playerConfig;
-
-            registerCommands();
+            this.api = api;
+            config = CBSEssentials.Config;
+            playerConfig = CBSEssentials.PlayerConfig;
+            RegisterCommands();
         }
 
-        private void registerCommands()
+        private void RegisterCommands()
         {
-            _api.RegisterCommand("sethome", Lang.Get("cbsessentials:cd-sethome"), "[Name]",
+            api.RegisterCommand("sethome", Lang.Get("cbsessentials:cd-sethome"), "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread adder = new Thread(() => AddHome(player, args.PopAll()));
                     adder.Start();
                 }, Privilege.chat);
 
-            _api.RegisterCommand("home", Lang.Get("cbsessentials:cd-home"), "[Name]",
+            api.RegisterCommand("home", Lang.Get("cbsessentials:cd-home"), "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread searcher = new Thread(() => FindHome(player, args.PopAll()));
                     searcher.Start();
                 }, Privilege.chat);
 
-            _api.RegisterCommand("delhome", Lang.Get("cbsessentials:cd-delhome"), "[Name]",
+            api.RegisterCommand("delhome", Lang.Get("cbsessentials:cd-delhome"), "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread deleter = new Thread(() => DelHome(player, args.PopAll()));
                     deleter.Start();
                 }, Privilege.chat);
 
-            _api.RegisterCommand("spawn", Lang.Get("cbsessentials:cd-spawn"), string.Empty,
+            api.RegisterCommand("spawn", Lang.Get("cbsessentials:cd-spawn"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread toSpawner = new Thread(() => ToSpawn(player));
@@ -57,12 +57,12 @@ namespace CBSEssentials.Homepoints
 
         public void ToSpawn(IServerPlayer player)
         {
-            CBSPlayerData playerData = playerConfig.getPlayerDataByUID(player.PlayerUID);
+            CBSPlayerData playerData = playerConfig.GetPlayerDataByUID(player.PlayerUID);
             if (playerData != null)
             {
-                if (canTravel(playerData))
+                if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
                 {
-                    player.Entity.TeleportTo(_api.World.DefaultSpawnPosition);
+                    player.Entity.TeleportTo(api.World.DefaultSpawnPosition);
                     playerData.homeLastuseage = DateTime.Now;
                     player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-tp-spawn"), EnumChatType.Notification);
                 }
@@ -76,7 +76,7 @@ namespace CBSEssentials.Homepoints
 
         public void FindHome(IServerPlayer player, string name) //home Befehl
         {
-            CBSPlayerData playerData = playerConfig.getPlayerDataByUID(player.PlayerUID);
+            CBSPlayerData playerData = playerConfig.GetPlayerDataByUID(player.PlayerUID);
             if (playerData != null)
             {
                 if (name == null || name == string.Empty)
@@ -90,10 +90,10 @@ namespace CBSEssentials.Homepoints
                 }
                 else
                 {
-                    HomePoint point = playerData.findPointByName(name);
+                    HomePoint point = playerData.FindPointByName(name);
                     if (point != null)
                     {
-                        if (canTravel(playerData))
+                        if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
                         {
                             player.Entity.TeleportTo(point.position);
                             playerData.homeLastuseage = DateTime.Now;
@@ -119,10 +119,10 @@ namespace CBSEssentials.Homepoints
 
         public void DelHome(IServerPlayer player, string name) //delhome Befehl
         {
-            CBSPlayerData playerData = playerConfig.getPlayerDataByUID(player.PlayerUID);
+            CBSPlayerData playerData = playerConfig.GetPlayerDataByUID(player.PlayerUID);
             if (playerData != null)
             {
-                HomePoint point = playerData.findPointByName(name);
+                HomePoint point = playerData.FindPointByName(name);
                 if (point != null)
                 {
                     playerData.homePoints.Remove(point);
@@ -141,18 +141,18 @@ namespace CBSEssentials.Homepoints
                 return;
             }
 
-            CBSPlayerData playerData = playerConfig.getPlayerDataByUID(player.PlayerUID);
+            CBSPlayerData playerData = playerConfig.GetPlayerDataByUID(player.PlayerUID);
             if (playerData != null)
             {
-                if (playerData.hasMaxHomes())
+                if (playerData.HasMaxHomes())
                 {
                     player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-max"), EnumChatType.Notification);
                 }
                 else
                 {
-                    if (playerData.findPointByName(name) == null)
+                    if (playerData.FindPointByName(name) == null)
                     {
-                        addNewHomepoint(player, name, playerData);
+                        AddNewHomepoint(player, name, playerData);
                     }
                     else
                     {
@@ -164,18 +164,18 @@ namespace CBSEssentials.Homepoints
             {
                 playerData = new CBSPlayerData(player.PlayerUID);
                 playerConfig.players.Add(playerData);
-                addNewHomepoint(player, name, playerData);
+                AddNewHomepoint(player, name, playerData);
             }
         }
 
-        private static void addNewHomepoint(IServerPlayer player, string name, CBSPlayerData playerData)
+        private static void AddNewHomepoint(IServerPlayer player, string name, CBSPlayerData playerData)
         {
             HomePoint newPoint = new HomePoint(name, player.Entity.Pos.XYZ.AsBlockPos);
             playerData.homePoints.Add(newPoint);
             player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-created", name), EnumChatType.Notification);
         }
 
-        public bool canTravel(CBSPlayerData playerData)
+        public bool CanTravel(CBSPlayerData playerData)
         {
             DateTime canTravel = playerData.homeLastuseage.AddMinutes(playerData.homeCooldown);
             return canTravel <= DateTime.Now;

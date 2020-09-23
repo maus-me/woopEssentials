@@ -21,9 +21,9 @@ namespace CBSEssentials.PlayerData
         public CBSPlayerData()
         {
             starterkitRecived = DateTime.MinValue;
-            this.homeLimit = 6;
-            this.homeCooldown = 5;
-            this.homePoints = new List<HomePoint>();
+            homeLimit = 6;
+            homeCooldown = 5;
+            homePoints = new List<HomePoint>();
         }
 
         public CBSPlayerData(string playerUID) : this()
@@ -31,12 +31,12 @@ namespace CBSEssentials.PlayerData
             this.playerUID = playerUID;
         }
 
-        public bool hasMaxHomes()
+        public bool HasMaxHomes()
         {
             return homePoints.Count >= homeLimit;
         }
 
-        public HomePoint findPointByName(string name)
+        public HomePoint FindPointByName(string name)
         {
             for (int i = 0; i < homePoints.Count; i++)
             {
@@ -48,7 +48,7 @@ namespace CBSEssentials.PlayerData
             return null;
         }
 
-        public bool gotStarterkit()
+        public bool GotStarterkit()
         {
             return !DateTime.MinValue.Equals(starterkitRecived);
         }

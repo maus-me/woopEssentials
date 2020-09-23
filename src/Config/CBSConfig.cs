@@ -21,7 +21,7 @@ namespace CBSEssentials.Config
             items = new List<StarterkitItem>();
         }
 
-        public void init()
+        public void Init()
         {
             announcementMessages.Add("Welcome to Vintage Story :)");
             announcementMessages.Add("This server is running CBSEssentials.");
@@ -36,7 +36,7 @@ namespace CBSEssentials.Config
             infoMessages.Add("--------------------");
         }
 
-        internal double getAnnouncementInterval()
+        internal double GetAnnouncementInterval()
         {
             return 1000 * 60 * announcementInterval;
         }

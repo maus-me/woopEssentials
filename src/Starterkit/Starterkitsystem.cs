@@ -10,21 +10,22 @@ namespace CBSEssentials.Starterkit
     internal class Starterkitsystem
     {
         public CBSConfig config;
+        
         public CBSPlayerConfig playerConfig;
 
-        internal void init(ICoreServerAPI api)
+        internal void Init(ICoreServerAPI api)
         {
-            this.config = CBSEssentials.config;
-            this.playerConfig = CBSEssentials.playerConfig;
-            registerCommands(api);
+            config = CBSEssentials.Config;
+            playerConfig = CBSEssentials.PlayerConfig;
+            RegisterCommands(api);
         }
 
-        private void registerCommands(ICoreServerAPI api)
+        private void RegisterCommands(ICoreServerAPI api)
         {
             api.RegisterCommand("starterkit", Lang.Get("cbsessentials:cd-starterkit"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
-                    tryGiveItemStack(api, player);
+                    TryGiveItemStack(api, player);
                 }, Privilege.chat);
 
             api.RegisterCommand("setstarterkit", Lang.Get("cbsessentials:cd-setstarterkit"), string.Empty,
@@ -45,10 +46,10 @@ namespace CBSEssentials.Starterkit
             }, Privilege.controlserver);
         }
 
-        private void tryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
+        private void TryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
         {
-            CBSPlayerData playerData = playerConfig.getPlayerDataByUID(player.PlayerUID);
-            if (playerData != null && playerData.gotStarterkit())
+            CBSPlayerData playerData = playerConfig.GetPlayerDataByUID(player.PlayerUID);
+            if (playerData != null && playerData.GotStarterkit())
             {
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-hasalready"), EnumChatType.Notification);
             }
@@ -117,8 +118,10 @@ namespace CBSEssentials.Starterkit
                     }
                     else
                     {
-                        playerData = new CBSPlayerData(player.PlayerUID);
-                        playerData.homeLastuseage = DateTime.Now;
+                        playerData = new CBSPlayerData(player.PlayerUID)
+                        {
+                            homeLastuseage = DateTime.Now
+                        };
                         playerConfig.players.Add(playerData);
                     }
                 }

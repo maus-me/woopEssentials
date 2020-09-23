@@ -12,7 +12,7 @@ namespace CBSEssentials.Config
             players = new List<CBSPlayerData>();
         }
 
-        public CBSPlayerData getPlayerDataByUID(string playerUID)
+        public CBSPlayerData GetPlayerDataByUID(string playerUID)
         {
             for (int i = 0; i < players.Count; i++)
             {

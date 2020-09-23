@@ -6,7 +6,7 @@ namespace CBSEssentials.Commands
 {
     internal class Players : Command
     {
-        internal override void init(ICoreServerAPI api)
+        internal override void Init(ICoreServerAPI api)
         {
             api.RegisterCommand("players", Lang.Get("cbsessentials:cd-players"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>

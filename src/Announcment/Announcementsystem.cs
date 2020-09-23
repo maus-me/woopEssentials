@@ -18,21 +18,21 @@ namespace CBSEssentials.Announcements
             currentMsg = 0;
         }
 
-        public void init(ICoreServerAPI api)
+        public void Init(ICoreServerAPI api)
         {
             this.api = api;
-            this.config = CBSEssentials.config;
+            config = CBSEssentials.Config;
 
             if (config.announcementMessages.Count != 0)
             {
-                Timer announcer = new Timer(config.getAnnouncementInterval());
-                announcer.Elapsed += announceMsg;
+                Timer announcer = new Timer(config.GetAnnouncementInterval());
+                announcer.Elapsed += AnnounceMsg;
                 announcer.AutoReset = true;
                 announcer.Enabled = true;
             }
         }
 
-        private void announceMsg(object source, ElapsedEventArgs args)
+        private void AnnounceMsg(object source, ElapsedEventArgs args)
         {
             if (currentMsg >= config.announcementMessages.Count)
             {

@@ -4,6 +4,6 @@ namespace CBSEssentials.Commands
 {
     internal abstract class Command
     {
-        internal abstract void init(ICoreServerAPI api);
+        internal abstract void Init(ICoreServerAPI api);
     }
 }
