@@ -6,8 +6,11 @@ namespace CBSEssentials.Config
     public class CBSConfig
     {
         public List<string> infoMessages;
+
         public List<string> announcementMessages;
+
         public int announcementInterval;
+
         public List<StarterkitItem> items;
 
         public CBSConfig()

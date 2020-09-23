@@ -4,9 +4,9 @@ namespace CBSEssentials.Homepoints
 {
     public class HomePoint
     {
-        public string name { get; set; }
+        public string name;
 
-        public BlockPos position { get; set; }
+        public BlockPos position;
 
         public HomePoint(string name, BlockPos position)
         {

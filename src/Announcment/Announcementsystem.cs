@@ -7,8 +7,10 @@ namespace CBSEssentials.Announcements
 {
     class Announcementsystem : ModSystem
     {
-        private ICoreServerAPI _api;
+        private ICoreServerAPI api;
+
         private CBSConfig config;
+
         private int currentMsg;
 
         public Announcementsystem()
@@ -16,11 +18,9 @@ namespace CBSEssentials.Announcements
             currentMsg = 0;
         }
 
-        private const string configFile = "announcements.json";
-
         public void init(ICoreServerAPI api)
         {
-            _api = api;
+            this.api = api;
             this.config = CBSEssentials.config;
 
             if (config.announcementMessages.Count != 0)
@@ -32,13 +32,13 @@ namespace CBSEssentials.Announcements
             }
         }
 
-        private void announceMsg(object source, ElapsedEventArgs args) //here is where the magic happens
+        private void announceMsg(object source, ElapsedEventArgs args)
         {
             if (currentMsg >= config.announcementMessages.Count)
             {
                 currentMsg = 0;
             }
-            _api.BroadcastMessageToAllGroups($"<strong>[Info]</strong> {config.announcementMessages[currentMsg]}", EnumChatType.Notification);
+            api.BroadcastMessageToAllGroups($"<strong>[Info]</strong> {config.announcementMessages[currentMsg]}", EnumChatType.Notification);
             currentMsg++;
         }
     }

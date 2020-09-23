@@ -7,10 +7,15 @@ namespace CBSEssentials.PlayerData
     public class CBSPlayerData
     {
         public string playerUID;
+
         public int homeLimit;
+
         public int homeCooldown;
+
         public DateTime homeLastuseage;
+
         public DateTime starterkitRecived;
+
         public List<HomePoint> homePoints;
 
         public CBSPlayerData()

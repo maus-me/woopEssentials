@@ -12,17 +12,22 @@ using Vintagestory.API.Server;
 
 [assembly: ModInfo("CBSEssentials",
     Description = "Chill build survival essentials mod",
-    Website = "https://github.com/Th3Dilli/",
+    Website = "https://gitlab.com/Th3Dilli/",
     Authors = new[] { "Th3Dilli" })]
 namespace CBSEssentials
 {
     public class CBSEssentials : ModSystem
     {
         private const string configFile = "CBSConfig.json";
+
         private const string playerconfigFile = "CBSPlayerConfig.json";
+
         internal static CBSConfig config { get; private set; }
+
         internal static CBSPlayerConfig playerConfig { get; private set; }
+
         private ICoreServerAPI api;
+
         public override void StartServerSide(ICoreServerAPI api)
         {
             base.StartServerSide(api);
@@ -31,6 +36,7 @@ namespace CBSEssentials
             api.Event.GameWorldSave += GameWorldSave;
 
             config = api.LoadModConfig<CBSConfig>(configFile);
+
             if (config == null)
             {
                 config = new CBSConfig();
@@ -47,7 +53,7 @@ namespace CBSEssentials
                 playerConfig = new CBSPlayerConfig();
                 api.StoreModConfig(playerConfig, playerconfigFile);
                 api.Server.LogWarning(Lang.Get("cbsessentials:playerconfig-init"));
-                api.Server.LogWarning(Lang.Get("cbsessentials:playerconfig-file-info", Path.Combine(GamePaths.ModConfig, playerconfigFile).ToString()));
+                api.Server.LogWarning(Lang.Get("cbsessentials:playerconfig-file-info", Path.Combine(GamePaths.ModConfig, playerconfigFile)));
             }
 
             api.Server.LogVerboseDebug($"DateTime: {DateTime.MinValue.Equals(new DateTime())}");
@@ -58,10 +64,10 @@ namespace CBSEssentials
             new Announcementsystem().init(api);
 
             api.RegisterCommand("reloadonfig", Lang.Get("cbsessentials:cd-reloadConfig"), string.Empty,
-                  (IServerPlayer player, int groupId, CmdArgs args) =>
-                  {
-                      reloadConfig();
-                  }, Privilege.controlserver);
+                (IServerPlayer player, int groupId, CmdArgs args) =>
+                {
+                    reloadConfig();
+                }, Privilege.controlserver);
         }
 
         private void GameWorldSave()
@@ -88,6 +94,7 @@ namespace CBSEssentials
         {
             api.StoreModConfig(config, configFile);
         }
+
         [MethodImpl(MethodImplOptions.Synchronized)]
         internal static void savePlayerConfig(ICoreServerAPI api)
         {
