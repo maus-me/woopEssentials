@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CBSEssentials.PlayerData;
 
@@ -22,11 +23,6 @@ namespace CBSEssentials.Config
                 }
             }
             return null;
-        }
-
-        public bool recivedStarterkitByUID(string playerUID)
-        {
-            return getPlayerDataByUID(playerUID)?.starterkitRecived != null;
         }
     }
 }

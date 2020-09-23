@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using CBSEssentials.Config;
 using CBSEssentials.PlayerData;
 using Vintagestory.API.Common;
@@ -22,20 +21,13 @@ namespace CBSEssentials.Starterkit
 
         private void registerCommands(ICoreServerAPI api)
         {
-            api.RegisterCommand("starterkit", "Gibt dir ein einmaliges Starterkit", string.Empty,
+            api.RegisterCommand("starterkit", Lang.Get("cbsessentials:cd-starterkit"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     tryGiveItemStack(api, player);
                 }, Privilege.chat);
 
-            api.RegisterCommand("resetstarterkit", "reset starterkit config to default", string.Empty,
-            (IServerPlayer player, int groupId, CmdArgs args) =>
-            {
-                // TODO check if this is really needed => reload config
-                // config.items.Clear();
-            }, Privilege.controlserver);
-
-            api.RegisterCommand("setstarterkit", "set starterkit to items on your hotbar", string.Empty,
+            api.RegisterCommand("setstarterkit", Lang.Get("cbsessentials:cd-setstarterkit"), string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
                 config.items.Clear();
@@ -50,19 +42,23 @@ namespace CBSEssentials.Starterkit
                         config.items.Add(new StarterkitItem(enumItemClass, code, stackSize));
                     }
                 }
-
-                // TODO save config here now
             }, Privilege.controlserver);
         }
 
         private void tryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
         {
-            if (playerConfig.recivedStarterkitByUID(player.PlayerUID))
+            CBSPlayerData playerData = playerConfig.getPlayerDataByUID(player.PlayerUID);
+            if (playerData != null && playerData.gotStarterkit())
             {
-                player.SendMessage(GlobalConstants.GeneralChatGroup, "Du hast bereits ein Starterkit bekommen.", EnumChatType.Notification);
+                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-hasalready"), EnumChatType.Notification);
             }
             else
             {
+                if (config.items.Count == 0)
+                {
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-notsetup"), EnumChatType.Notification);
+                    return;
+                }
                 try
                 {
                     int emptySlots = 0;
@@ -76,8 +72,7 @@ namespace CBSEssentials.Starterkit
                     }
                     if (emptySlots < config.items.Count)
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, "Du hast nicht genügend Platz im Inventar.", EnumChatType.Notification);
-                        api.Server.LogVerboseDebug($"Starterkit player has not enough empty slots: {config.items.Count} Slots needed but has {emptySlots}");
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-needspace", config.items.Count), EnumChatType.Notification);
                         return;
                     }
                     for (int i = 0; i < config.items.Count; i++)
@@ -109,13 +104,13 @@ namespace CBSEssentials.Starterkit
                             }
                             if (!recived)
                             {
-                                player.SendMessage(GlobalConstants.GeneralChatGroup, "Irgendetwas lief schief mit dem Starterkit, bitte informieren einen Mod/Admin", EnumChatType.Notification);
+                                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-wrong"), EnumChatType.Notification);
                                 throw new Exception($"Could not give item/block: {config.items[i]}");
                             }
                         }
                     }
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, "Hier dein Starterkit :)", EnumChatType.Notification);
-                    CBSPlayerData playerData = playerConfig.getPlayerDataByUID(player.PlayerUID);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-recived"), EnumChatType.Notification);
+
                     if (playerData != null)
                     {
                         playerData.homeLastuseage = DateTime.Now;
@@ -126,7 +121,6 @@ namespace CBSEssentials.Starterkit
                         playerData.homeLastuseage = DateTime.Now;
                         playerConfig.players.Add(playerData);
                     }
-                    // TODO save config here now
                 }
                 catch (Exception e)
                 {

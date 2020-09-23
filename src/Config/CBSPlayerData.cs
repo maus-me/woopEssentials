@@ -15,6 +15,7 @@ namespace CBSEssentials.PlayerData
 
         public CBSPlayerData()
         {
+            starterkitRecived = DateTime.MinValue;
             this.homeLimit = 6;
             this.homeCooldown = 5;
             this.homePoints = new List<HomePoint>();
@@ -38,9 +39,13 @@ namespace CBSEssentials.PlayerData
                 {
                     return homePoints[i];
                 }
-
             }
             return null;
+        }
+
+        public bool gotStarterkit()
+        {
+            return !DateTime.MinValue.Equals(starterkitRecived);
         }
     }
 }

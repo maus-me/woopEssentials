@@ -6,9 +6,9 @@ namespace CBSEssentials.Homepoints
     {
         public string name { get; set; }
 
-        public Vec3d position { get; set; }
+        public BlockPos position { get; set; }
 
-        public HomePoint(string name, Vec3d position)
+        public HomePoint(string name, BlockPos position)
         {
             this.name = name;
             this.position = position;

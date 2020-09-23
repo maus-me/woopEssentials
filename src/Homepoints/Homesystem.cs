@@ -26,28 +26,28 @@ namespace CBSEssentials.Homepoints
 
         private void registerCommands()
         {
-            _api.RegisterCommand("sethome", "setzt einen Homepoint auf deine aktuelle Position", "[Name]",
+            _api.RegisterCommand("sethome", Lang.Get("cbsessentials:cd-sethome"), "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread adder = new Thread(() => AddHome(player, args.PopAll()));
                     adder.Start();
                 }, Privilege.chat);
 
-            _api.RegisterCommand("home", "teleportiert dich zu deinem Homepoint, für Übersicht /home ohne Name verwenden.", "[Name]",
+            _api.RegisterCommand("home", Lang.Get("cbsessentials:cd-home"), "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread searcher = new Thread(() => FindHome(player, args.PopAll()));
                     searcher.Start();
                 }, Privilege.chat);
 
-            _api.RegisterCommand("delhome", "löscht einen Homepoint", "[Name]",
+            _api.RegisterCommand("delhome", Lang.Get("cbsessentials:cd-delhome"), "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread deleter = new Thread(() => DelHome(player, args.PopAll()));
                     deleter.Start();
                 }, Privilege.chat);
 
-            _api.RegisterCommand("spawn", "teleportiert dich zum Spawnpunkt", "",
+            _api.RegisterCommand("spawn", Lang.Get("cbsessentials:cd-spawn"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     Thread toSpawner = new Thread(() => ToSpawn(player));
@@ -64,12 +64,12 @@ namespace CBSEssentials.Homepoints
                 {
                     player.Entity.TeleportTo(_api.World.DefaultSpawnPosition);
                     playerData.homeLastuseage = DateTime.Now;
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, "Teleportiert zum Spawn", EnumChatType.Notification);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-tp-spawn"), EnumChatType.Notification);
                 }
                 else
                 {
                     TimeSpan diff = playerData.homeLastuseage.AddMinutes(playerData.homeCooldown) - DateTime.Now;
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, $"Du musst noch {diff.Minutes} min {diff.Seconds} sec warten", EnumChatType.Notification);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-wait", diff.Minutes, diff.Seconds), EnumChatType.Notification);
                 }
             }
         }
@@ -79,9 +79,9 @@ namespace CBSEssentials.Homepoints
             CBSPlayerData playerData = playerConfig.getPlayerDataByUID(player.PlayerUID);
             if (playerData != null)
             {
-                if (name == null || name == "")
+                if (name == null || name == string.Empty)
                 {
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, "Deine Homepoints: ", EnumChatType.Notification);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-list"), EnumChatType.Notification);
                     for (int i = 0; i < playerData.homePoints.Count; i++)
                     {
                         player.SendMessage(GlobalConstants.GeneralChatGroup, playerData.homePoints[i].name, EnumChatType.Notification);
@@ -97,23 +97,23 @@ namespace CBSEssentials.Homepoints
                         {
                             player.Entity.TeleportTo(point.position);
                             playerData.homeLastuseage = DateTime.Now;
-                            player.SendMessage(GlobalConstants.GeneralChatGroup, "Teleportiert zu " + name, EnumChatType.Notification);
+                            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-tp-point", name), EnumChatType.Notification);
                         }
                         else
                         {
                             TimeSpan diff = playerData.homeLastuseage.AddMinutes(playerData.homeCooldown) - DateTime.Now;
-                            player.SendMessage(GlobalConstants.GeneralChatGroup, $"Du musst noch {diff.Minutes} min {diff.Seconds} sec warten", EnumChatType.Notification);
+                            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-wait", diff.Minutes, diff.Seconds), EnumChatType.Notification);
                         }
                     }
                     else
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, "Homepoint nicht gefunden. Erstelle einen mit /sethome [Name]", EnumChatType.Notification);
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-404"), EnumChatType.Notification);
                     }
                 }
             }
             else
             {
-                player.SendMessage(GlobalConstants.GeneralChatGroup, "Du hast noch keine Homepoints. Erstelle einen mit /sethome [Name]", EnumChatType.Notification);
+                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-none"), EnumChatType.Notification);
             }
         }
 
@@ -126,18 +126,18 @@ namespace CBSEssentials.Homepoints
                 if (point != null)
                 {
                     playerData.homePoints.Remove(point);
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, name + " gelöscht.", EnumChatType.Notification);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-delete", name), EnumChatType.Notification);
                     return;
                 }
             }
-            player.SendMessage(GlobalConstants.GeneralChatGroup, "Homepoint nicht gefunden.", EnumChatType.Notification);
+            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-404"), EnumChatType.Notification);
         }
 
         public void AddHome(IServerPlayer player, string name) //sethome Befehl
         {
-            if (name == "" || name == " " || name == null)
+            if (name == string.Empty || name == " " || name == null)
             {
-                player.SendMessage(GlobalConstants.GeneralChatGroup, "Name darf nicht leer sein.", EnumChatType.Notification);
+                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-empty"), EnumChatType.Notification);
                 return;
             }
 
@@ -146,7 +146,7 @@ namespace CBSEssentials.Homepoints
             {
                 if (playerData.hasMaxHomes())
                 {
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, "Maximale Anzahl an Homepoints erreicht.", EnumChatType.Notification);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-max"), EnumChatType.Notification);
                 }
                 else
                 {
@@ -156,7 +156,7 @@ namespace CBSEssentials.Homepoints
                     }
                     else
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, "Homepoint mit diesem Namen existiert bereits.", EnumChatType.Notification);
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-exists"), EnumChatType.Notification);
                     }
                 }
             }
@@ -170,9 +170,9 @@ namespace CBSEssentials.Homepoints
 
         private static void addNewHomepoint(IServerPlayer player, string name, CBSPlayerData playerData)
         {
-            HomePoint newPoint = new HomePoint(name, player.Entity.Pos.XYZ);
+            HomePoint newPoint = new HomePoint(name, player.Entity.Pos.XYZ.AsBlockPos);
             playerData.homePoints.Add(newPoint);
-            player.SendMessage(GlobalConstants.GeneralChatGroup, "Homepoint mit dem Namen " + name + " wurde erstellt.", EnumChatType.Notification);
+            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-created", name), EnumChatType.Notification);
         }
 
         public bool canTravel(CBSPlayerData playerData)

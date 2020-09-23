@@ -1,4 +1,3 @@
-using CBSEssentials.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
@@ -9,7 +8,7 @@ namespace CBSEssentials.Commands
     {
         internal override void init(ICoreServerAPI api)
         {
-            api.RegisterCommand("players", "shows a list of all online players", "",
+            api.RegisterCommand("players", Lang.Get("cbsessentials:cd-players"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     player.SendMessage(GlobalConstants.GeneralChatGroup, "--------------------", EnumChatType.Notification);

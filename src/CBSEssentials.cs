@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using CBSEssentials.Announcements;
 using CBSEssentials.Commands;
 using CBSEssentials.Config;
@@ -30,14 +31,13 @@ namespace CBSEssentials
             api.Event.GameWorldSave += GameWorldSave;
 
             config = api.LoadModConfig<CBSConfig>(configFile);
-
             if (config == null)
             {
                 config = new CBSConfig();
                 config.init();
                 api.StoreModConfig(config, configFile);
-                api.Server.LogWarning("CBSEssentials config initialized with default config!!!");
-                api.Server.LogWarning("CBSEssentials config file at " + Path.Combine(GamePaths.ModConfig, configFile));
+                api.Server.LogWarning(Lang.Get("cbsessentials:config-init"));
+                api.Server.LogWarning(Lang.Get("cbsessentials:config-file-info", Path.Combine(GamePaths.ModConfig, configFile)));
             }
 
             playerConfig = api.LoadModConfig<CBSPlayerConfig>(playerconfigFile);
@@ -46,16 +46,18 @@ namespace CBSEssentials
             {
                 playerConfig = new CBSPlayerConfig();
                 api.StoreModConfig(playerConfig, playerconfigFile);
-                api.Server.LogWarning("CBSEssentials playerconfig initialized with default config!!!");
-                api.Server.LogWarning("CBSEssentials playerconfig file at " + Path.Combine(GamePaths.ModConfig, playerconfigFile));
+                api.Server.LogWarning(Lang.Get("cbsessentials:playerconfig-init"));
+                api.Server.LogWarning(Lang.Get("cbsessentials:playerconfig-file-info", Path.Combine(GamePaths.ModConfig, playerconfigFile).ToString()));
             }
+
+            api.Server.LogVerboseDebug($"DateTime: {DateTime.MinValue.Equals(new DateTime())}");
 
             CommandsLoader.init(api);
             new Homesystem().init(api);
             new Starterkitsystem().init(api);
             new Announcementsystem().init(api);
 
-            api.RegisterCommand("reloadConfig", "realoads CBSConfig", "",
+            api.RegisterCommand("reloadonfig", Lang.Get("cbsessentials:cd-reloadConfig"), string.Empty,
                   (IServerPlayer player, int groupId, CmdArgs args) =>
                   {
                       reloadConfig();
@@ -64,10 +66,12 @@ namespace CBSEssentials
 
         private void GameWorldSave()
         {
-            api.StoreModConfig(config, configFile);
+            saveConfig(api);
+            savePlayerConfig(api);
         }
 
-        public void reloadConfig()
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal void reloadConfig()
         {
             CBSConfig configTemp = api.LoadModConfig<CBSConfig>(configFile);
             config.announcementInterval = configTemp.announcementInterval;
@@ -77,6 +81,17 @@ namespace CBSEssentials
             config.infoMessages.AddRange(configTemp.infoMessages);
             config.items.Clear();
             config.items.AddRange(configTemp.items);
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal static void saveConfig(ICoreServerAPI api)
+        {
+            api.StoreModConfig(config, configFile);
+        }
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal static void savePlayerConfig(ICoreServerAPI api)
+        {
+            api.StoreModConfig(playerConfig, playerconfigFile);
         }
     }
 }

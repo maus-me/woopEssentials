@@ -28,7 +28,8 @@ namespace CBSEssentials.Config
             infoMessages.Add("<strong>Wichtige Commands:</strong>");
             infoMessages.Add("/players | Zeigt dir alle Spieler an, die online sind");
             infoMessages.Add("/spawn | Teleportiert dich zu deinem aktuellen Spawn. Um den Spawn zu setzen verwende ein temporal Gear");
-            infoMessages.Add("/sethome | Setzt einen Punkt zu dem du mit /home teleportieren kannst.");
+            infoMessages.Add("/sethome [name] | Setzt einen Homepunkt.");
+            infoMessages.Add("/home [name] | Teleportiert dich zu einem Homepunkt.");
             infoMessages.Add("--------------------");
         }
 
