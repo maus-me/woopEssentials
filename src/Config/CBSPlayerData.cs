@@ -14,13 +14,13 @@ namespace CBSEssentials.PlayerData
 
         public DateTime homeLastuseage;
 
-        public DateTime starterkitRecived;
+        public bool starterkitRecived;
 
         public List<HomePoint> homePoints;
 
         public CBSPlayerData()
         {
-            starterkitRecived = DateTime.MinValue;
+            starterkitRecived = false;
             homeLimit = 6;
             homeCooldown = 5;
             homePoints = new List<HomePoint>();
@@ -46,11 +46,6 @@ namespace CBSEssentials.PlayerData
                 }
             }
             return null;
-        }
-
-        public bool GotStarterkit()
-        {
-            return !DateTime.MinValue.Equals(starterkitRecived);
         }
     }
 }

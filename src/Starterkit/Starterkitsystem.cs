@@ -10,7 +10,7 @@ namespace CBSEssentials.Starterkit
     internal class Starterkitsystem
     {
         public CBSConfig config;
-        
+
         public CBSPlayerConfig playerConfig;
 
         internal void Init(ICoreServerAPI api)
@@ -49,7 +49,7 @@ namespace CBSEssentials.Starterkit
         private void TryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
         {
             CBSPlayerData playerData = playerConfig.GetPlayerDataByUID(player.PlayerUID);
-            if (playerData != null && playerData.GotStarterkit())
+            if (playerData != null && playerData.starterkitRecived)
             {
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-hasalready"), EnumChatType.Notification);
             }
@@ -114,13 +114,13 @@ namespace CBSEssentials.Starterkit
 
                     if (playerData != null)
                     {
-                        playerData.starterkitRecived = DateTime.Now;
+                        playerData.starterkitRecived = true;
                     }
                     else
                     {
                         playerData = new CBSPlayerData(player.PlayerUID)
                         {
-                            starterkitRecived = DateTime.Now
+                            starterkitRecived = true
                         };
                         playerConfig.players.Add(playerData);
                     }
