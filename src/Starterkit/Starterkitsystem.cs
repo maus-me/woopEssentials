@@ -114,13 +114,13 @@ namespace CBSEssentials.Starterkit
 
                     if (playerData != null)
                     {
-                        playerData.homeLastuseage = DateTime.Now;
+                        playerData.starterkitRecived = DateTime.Now;
                     }
                     else
                     {
                         playerData = new CBSPlayerData(player.PlayerUID)
                         {
-                            homeLastuseage = DateTime.Now
+                            starterkitRecived = DateTime.Now
                         };
                         playerConfig.players.Add(playerData);
                     }

@@ -4,6 +4,7 @@
     "playerconfig-init": "CBSEssentials playerconfig initialized with default config!!!",
     "playerconfig-file-info": "CBSEssentials playerconfig file at {0}",
     "cd-reloadConfig": "reloads CBSConfig and CBSPlayerConfig",
+    "cd-reloadconfig-msg": "config wurde neugeladen",
     "cd-sethome": "setzt einen Homepoint auf deine aktuelle Position",
     "cd-home": "teleportiert dich zu deinem Homepoint, für Übersicht /home ohne Name verwenden.",
     "cd-delhome": "löscht einen Homepoint",

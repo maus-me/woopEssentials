@@ -63,10 +63,11 @@ namespace CBSEssentials
             new Starterkitsystem().Init(api);
             new Announcementsystem().Init(api);
 
-            api.RegisterCommand("reloadonfig", Lang.Get("cbsessentials:cd-reloadConfig"), string.Empty,
+            api.RegisterCommand("reloadconfig", Lang.Get("cbsessentials:cd-reloadConfig"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     ReloadConfig();
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:cd-reloadconfig-msg"), EnumChatType.Notification);
                 }, Privilege.controlserver);
         }
 
@@ -87,6 +88,9 @@ namespace CBSEssentials
             Config.infoMessages.AddRange(configTemp.infoMessages);
             Config.items.Clear();
             Config.items.AddRange(configTemp.items);
+            CBSPlayerConfig playerconfigTemp = api.LoadModConfig<CBSPlayerConfig>(playerconfigFile);
+            PlayerConfig.players.Clear();
+            PlayerConfig.players.AddRange(playerconfigTemp.players);
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]

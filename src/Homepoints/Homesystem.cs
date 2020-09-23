@@ -81,11 +81,19 @@ namespace CBSEssentials.Homepoints
             {
                 if (name == null || name == string.Empty)
                 {
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-list"), EnumChatType.Notification);
-                    for (int i = 0; i < playerData.homePoints.Count; i++)
+                    if (playerData.homePoints.Count == 0)
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, playerData.homePoints[i].name, EnumChatType.Notification);
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-none"), EnumChatType.Notification);
+                        return;
+                    }
+                    else
+                    {
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:hs-list"), EnumChatType.Notification);
+                        for (int i = 0; i < playerData.homePoints.Count; i++)
+                        {
+                            player.SendMessage(GlobalConstants.GeneralChatGroup, playerData.homePoints[i].name, EnumChatType.Notification);
 
+                        }
                     }
                 }
                 else
