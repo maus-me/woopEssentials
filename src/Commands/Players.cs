@@ -6,24 +6,22 @@ namespace CBSEssentials.Commands
 {
     internal class Players : Command
     {
-        internal override void init(ICoreServerAPI api)
+        internal override void Init(ICoreServerAPI api)
         {
-            api.RegisterCommand("players", "shows a list of all online players", "",
-                  (IServerPlayer player, int groupId, CmdArgs args) =>
-                  {
-                      player.SendMessage(GlobalConstants.GeneralChatGroup, "--------------------", EnumChatType.Notification);
-                      player.SendMessage(GlobalConstants.GeneralChatGroup, "Online: ", EnumChatType.Notification);
+            api.RegisterCommand("players", Lang.Get("cbsessentials:cd-players"), string.Empty,
+                (IServerPlayer player, int groupId, CmdArgs args) =>
+                {
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, "--------------------", EnumChatType.Notification);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, "Online: ", EnumChatType.Notification);
 
-                      IPlayer[] players = api.World.AllOnlinePlayers;
+                    IPlayer[] players = api.World.AllOnlinePlayers;
 
-                      for (int i = 0; i < players.Length; i++)
-                      {
-                          player.SendMessage(GlobalConstants.GeneralChatGroup, $"<strong>{players[i].PlayerName}</strong>", EnumChatType.Notification);
-                      }
-
-                      player.SendMessage(GlobalConstants.GeneralChatGroup, "--------------------", EnumChatType.Notification);
-
-                  }, Privilege.chat);
+                    for (int i = 0; i < players.Length; i++)
+                    {
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, $"<strong>{players[i].PlayerName}</strong>", EnumChatType.Notification);
+                    }
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, "--------------------", EnumChatType.Notification);
+                }, Privilege.chat);
         }
 
     }

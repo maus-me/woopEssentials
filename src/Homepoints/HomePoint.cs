@@ -2,13 +2,13 @@ using Vintagestory.API.MathTools;
 
 namespace CBSEssentials.Homepoints
 {
-    public class Point
+    public class HomePoint
     {
-        public string name { get; set; }
+        public string name;
 
-        public Vec3d position { get; set; }
+        public BlockPos position;
 
-        public Point(string name, Vec3d position)
+        public HomePoint(string name, BlockPos position)
         {
             this.name = name;
             this.position = position;

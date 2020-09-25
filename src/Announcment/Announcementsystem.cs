@@ -1,15 +1,16 @@
 using Vintagestory.API.Server;
 using Vintagestory.API.Common;
 using System.Timers;
-using System.IO;
-using Vintagestory.API.Config;
+using CBSEssentials.Config;
 
 namespace CBSEssentials.Announcements
 {
     class Announcementsystem : ModSystem
     {
-        private ICoreServerAPI _api;
-        private AnnouncementsConfig config;
+        private ICoreServerAPI api;
+
+        private CBSConfig config;
+
         private int currentMsg;
 
         public Announcementsystem()
@@ -17,39 +18,27 @@ namespace CBSEssentials.Announcements
             currentMsg = 0;
         }
 
-        private const string configFile = "announcements.json";
-
-        public void init(ICoreServerAPI api)
+        public void Init(ICoreServerAPI api)
         {
-            _api = api;
-            config = _api.LoadModConfig<AnnouncementsConfig>(configFile);
+            this.api = api;
+            config = CBSEssentials.Config;
 
-            if (config == null)
+            if (config.announcementMessages.Count != 0)
             {
-                config = new AnnouncementsConfig();
-                config.init();
-                _api.StoreModConfig(config, configFile);
-                _api.Server.LogWarning("Announcementsystem initialized with default config!!!");
-                _api.Server.LogWarning("Announcementsystem config file at " + Path.Combine(GamePaths.ModConfig, configFile));
-            }
-
-            if (config.messages.Count != 0)
-            {
-                Timer announcer = new Timer(config.getInterval());
-                announcer.Elapsed += announceMsg;
+                Timer announcer = new Timer(config.GetAnnouncementInterval());
+                announcer.Elapsed += AnnounceMsg;
                 announcer.AutoReset = true;
                 announcer.Enabled = true;
             }
         }
 
-        private void announceMsg(object source, ElapsedEventArgs args) //here is where the magic happens
+        private void AnnounceMsg(object source, ElapsedEventArgs args)
         {
-            if (currentMsg >= config.messages.Count)
+            if (currentMsg >= config.announcementMessages.Count)
             {
                 currentMsg = 0;
             }
-
-            _api.BroadcastMessageToAllGroups($"<strong>[Info]</strong> {config.messages[currentMsg]}", EnumChatType.Notification);
+            api.BroadcastMessageToAllGroups($"<strong>[Info]</strong> {config.announcementMessages[currentMsg]}", EnumChatType.Notification);
             currentMsg++;
         }
     }

@@ -1,5 +1,6 @@
 using System;
-using System.IO;
+using CBSEssentials.Config;
+using CBSEssentials.PlayerData;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
@@ -8,40 +9,26 @@ namespace CBSEssentials.Starterkit
 {
     internal class Starterkitsystem
     {
-        private StarterkitConfig config;
+        public CBSConfig config;
 
-        private const string configFile = "starterkitsystem.json";
+        public CBSPlayerConfig playerConfig;
 
-        internal void init(ICoreServerAPI api)
+        internal void Init(ICoreServerAPI api)
         {
-            config = api.LoadModConfig<StarterkitConfig>(configFile);
-
-            if (config == null)
-            {
-                config = new StarterkitConfig();
-                api.StoreModConfig(config, configFile);
-                api.Server.LogWarning("Starterkitsystem initialized with default config!!!");
-                api.Server.LogWarning("Starterkitsystem config file at " + Path.Combine(GamePaths.ModConfig, configFile));
-            }
-            registerCommands(api);
+            config = CBSEssentials.Config;
+            playerConfig = CBSEssentials.PlayerConfig;
+            RegisterCommands(api);
         }
 
-        private void registerCommands(ICoreServerAPI api)
+        private void RegisterCommands(ICoreServerAPI api)
         {
-            api.RegisterCommand("starterkit", "Gibt dir ein einmaliges Starterkit", string.Empty,
+            api.RegisterCommand("starterkit", Lang.Get("cbsessentials:cd-starterkit"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
-                    tryGiveItemStack(api, player);
+                    TryGiveItemStack(api, player);
                 }, Privilege.chat);
 
-            api.RegisterCommand("resetstarterkit", "reset starterkit config to default", string.Empty,
-            (IServerPlayer player, int groupId, CmdArgs args) =>
-            {
-                config = new StarterkitConfig();
-                api.StoreModConfig(config, configFile);
-            }, Privilege.controlserver);
-
-            api.RegisterCommand("setstarterkit", "set starterkit to items on your hotbar", string.Empty,
+            api.RegisterCommand("setstarterkit", Lang.Get("cbsessentials:cd-setstarterkit"), string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
                 config.items.Clear();
@@ -56,19 +43,23 @@ namespace CBSEssentials.Starterkit
                         config.items.Add(new StarterkitItem(enumItemClass, code, stackSize));
                     }
                 }
-
-                api.StoreModConfig(config, configFile);
             }, Privilege.controlserver);
         }
 
-        private void tryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
+        private void TryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
         {
-            if (config.hasPlayerRecived(player.PlayerUID))
+            CBSPlayerData playerData = playerConfig.GetPlayerDataByUID(player.PlayerUID);
+            if (playerData != null && playerData.starterkitRecived)
             {
-                player.SendMessage(GlobalConstants.GeneralChatGroup, "Du hast bereits ein Starterkit bekommen.", EnumChatType.Notification);
+                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-hasalready"), EnumChatType.Notification);
             }
             else
             {
+                if (config.items.Count == 0)
+                {
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-notsetup"), EnumChatType.Notification);
+                    return;
+                }
                 try
                 {
                     int emptySlots = 0;
@@ -82,8 +73,7 @@ namespace CBSEssentials.Starterkit
                     }
                     if (emptySlots < config.items.Count)
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, "Du hast nicht genügend Platz im Inventar.", EnumChatType.Notification);
-                        api.Server.LogVerboseDebug($"Starterkit player has not enough empty slots: {config.items.Count} Slots needed but has {emptySlots}");
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-needspace", config.items.Count), EnumChatType.Notification);
                         return;
                     }
                     for (int i = 0; i < config.items.Count; i++)
@@ -115,14 +105,25 @@ namespace CBSEssentials.Starterkit
                             }
                             if (!recived)
                             {
-                                player.SendMessage(GlobalConstants.GeneralChatGroup, "Irgendetwas lief schief mit dem Starterkit, bitte informieren einen Mod/Admin", EnumChatType.Notification);
+                                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-wrong"), EnumChatType.Notification);
                                 throw new Exception($"Could not give item/block: {config.items[i]}");
                             }
                         }
                     }
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, "Hier dein Starterkit :)", EnumChatType.Notification);
-                    config.playersRecived.Add(new StarterkitPlayer(player.PlayerUID, player.PlayerName));
-                    api.StoreModConfig(config, configFile);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-recived"), EnumChatType.Notification);
+
+                    if (playerData != null)
+                    {
+                        playerData.starterkitRecived = true;
+                    }
+                    else
+                    {
+                        playerData = new CBSPlayerData(player.PlayerUID)
+                        {
+                            starterkitRecived = true
+                        };
+                        playerConfig.players.Add(playerData);
+                    }
                 }
                 catch (Exception e)
                 {

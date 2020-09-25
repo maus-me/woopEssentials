@@ -4,10 +4,10 @@ namespace CBSEssentials.Commands
 {
     public class CommandsLoader
     {
-        internal static void init(ICoreServerAPI api)
+        internal static void Init(ICoreServerAPI api)
         {
-            new Players().init(api);
-            new Info().init(api);
+            new Players().Init(api);
+            new Info().Init(api);
         }
     }
 }
