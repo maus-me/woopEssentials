@@ -6,7 +6,6 @@ namespace CBSEssentials.Commands
     {
         internal static void Init(ICoreServerAPI api)
         {
-            new Players().Init(api);
             new Info().Init(api);
         }
     }
