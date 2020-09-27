@@ -35,6 +35,7 @@ Task("Clean")
 });
 
 Task("Build")
+    .IsDependentOn("Clean")
     .Does(() =>
 {
     DotNetCoreBuild($"{name}.csproj", new DotNetCoreBuildSettings
