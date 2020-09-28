@@ -1,11 +1,10 @@
 #addin nuget:?package=Cake.Json&version=5.2.0
 
-
 string target = Argument("target", "Build");
 string configuration = Argument("configuration", "Debug");
 var json = ParseJsonFromFile("resources/modinfo.json");
 string version = (string)json["version"];
-string name = (string)json["name"];
+string name = (string)json["modid"];
 string packages = "bin/packages";
 string packageFolder = $"{packages}/{name}";
 string packageFolderOut = $"{packages}/mods";
