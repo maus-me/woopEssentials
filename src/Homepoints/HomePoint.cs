@@ -1,6 +1,6 @@
 using Vintagestory.API.MathTools;
 
-namespace CBSEssentials.Homepoints
+namespace Th3Essentials.Homepoints
 {
     public class HomePoint
     {

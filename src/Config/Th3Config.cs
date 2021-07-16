@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using CBSEssentials.Starterkit;
+using Th3Essentials.Starterkit;
 
-namespace CBSEssentials.Config
+namespace Th3Essentials.Config
 {
-    public class CBSConfig
+    public class Th3Config
     {
         public List<string> infoMessages;
 
@@ -13,7 +13,7 @@ namespace CBSEssentials.Config
 
         public List<StarterkitItem> items;
 
-        public CBSConfig()
+        public Th3Config()
         {
             announcementInterval = 10;
             announcementMessages = new List<string>();
@@ -24,7 +24,7 @@ namespace CBSEssentials.Config
         public void Init()
         {
             announcementMessages.Add("Welcome to Vintage Story :)");
-            announcementMessages.Add("This server is running CBSEssentials.");
+            announcementMessages.Add("This server is running Th3Essentials.");
 
             infoMessages.Add("--------------------");
             infoMessages.Add("Dieser Server legt den Fokus auf survival.");

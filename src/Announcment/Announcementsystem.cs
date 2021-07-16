@@ -1,15 +1,15 @@
 using Vintagestory.API.Server;
 using Vintagestory.API.Common;
 using System.Timers;
-using CBSEssentials.Config;
+using Th3Essentials.Config;
 
-namespace CBSEssentials.Announcements
+namespace Th3Essentials.Announcements
 {
     class Announcementsystem : ModSystem
     {
         private ICoreServerAPI api;
 
-        private CBSConfig config;
+        private Th3Config config;
 
         private int currentMsg;
 
@@ -21,7 +21,7 @@ namespace CBSEssentials.Announcements
         public void Init(ICoreServerAPI api)
         {
             this.api = api;
-            config = CBSEssentials.Config;
+            config = Th3Essentials.Config;
 
             if (config.announcementMessages.Count != 0)
             {

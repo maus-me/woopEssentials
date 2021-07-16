@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
-using CBSEssentials.Homepoints;
+using Th3Essentials.Homepoints;
 
-namespace CBSEssentials.PlayerData
+namespace Th3Essentials.PlayerData
 {
-    public class CBSPlayerData
+    public class Th3PlayerData
     {
+        public static int defaultHomeLimit = 6;
+
+        public static int defaultHomeCooldown = 5;
+
         public string playerUID;
 
         public int homeLimit;
@@ -18,15 +22,15 @@ namespace CBSEssentials.PlayerData
 
         public List<HomePoint> homePoints;
 
-        public CBSPlayerData()
+        public Th3PlayerData()
         {
             starterkitRecived = false;
-            homeLimit = 6;
-            homeCooldown = 5;
+            homeLimit = defaultHomeLimit;
+            homeCooldown = defaultHomeCooldown;
             homePoints = new List<HomePoint>();
         }
 
-        public CBSPlayerData(string playerUID) : this()
+        public Th3PlayerData(string playerUID) : this()
         {
             this.playerUID = playerUID;
         }
@@ -38,14 +42,7 @@ namespace CBSEssentials.PlayerData
 
         public HomePoint FindPointByName(string name)
         {
-            for (int i = 0; i < homePoints.Count; i++)
-            {
-                if (homePoints[i].name == name)
-                {
-                    return homePoints[i];
-                }
-            }
-            return null;
+            return homePoints.Find(point => point.name == name);
         }
     }
 }

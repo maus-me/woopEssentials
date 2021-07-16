@@ -1,6 +1,6 @@
 using Vintagestory.API.Server;
 
-namespace CBSEssentials.Commands
+namespace Th3Essentials.Commands
 {
     public class CommandsLoader
     {

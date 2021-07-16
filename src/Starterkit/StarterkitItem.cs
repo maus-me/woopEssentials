@@ -1,6 +1,6 @@
 using Vintagestory.API.Common;
 
-namespace CBSEssentials.Starterkit
+namespace Th3Essentials.Starterkit
 {
     public class StarterkitItem
     {

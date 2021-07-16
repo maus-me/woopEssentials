@@ -1,34 +1,34 @@
 using System;
-using CBSEssentials.Config;
-using CBSEssentials.PlayerData;
+using Th3Essentials.Config;
+using Th3Essentials.PlayerData;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 
-namespace CBSEssentials.Starterkit
+namespace Th3Essentials.Starterkit
 {
     internal class Starterkitsystem
     {
-        public CBSConfig config;
+        public Th3Config config;
 
-        public CBSPlayerConfig playerConfig;
+        public Th3PlayerConfig playerConfig;
 
         internal void Init(ICoreServerAPI api)
         {
-            config = CBSEssentials.Config;
-            playerConfig = CBSEssentials.PlayerConfig;
+            config = Th3Essentials.Config;
+            playerConfig = Th3Essentials.PlayerConfig;
             RegisterCommands(api);
         }
 
         private void RegisterCommands(ICoreServerAPI api)
         {
-            api.RegisterCommand("starterkit", Lang.Get("cbsessentials:cd-starterkit"), string.Empty,
+            api.RegisterCommand("starterkit", Lang.Get("th3essentials:cd-starterkit"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     TryGiveItemStack(api, player);
                 }, Privilege.chat);
 
-            api.RegisterCommand("setstarterkit", Lang.Get("cbsessentials:cd-setstarterkit"), string.Empty,
+            api.RegisterCommand("setstarterkit", Lang.Get("th3essentials:cd-setstarterkit"), string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
                 config.items.Clear();
@@ -48,16 +48,16 @@ namespace CBSEssentials.Starterkit
 
         private void TryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
         {
-            CBSPlayerData playerData = playerConfig.GetPlayerDataByUID(player.PlayerUID);
+            Th3PlayerData playerData = playerConfig.GetPlayerDataByUID(player.PlayerUID);
             if (playerData != null && playerData.starterkitRecived)
             {
-                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-hasalready"), EnumChatType.Notification);
+                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-hasalready"), EnumChatType.Notification);
             }
             else
             {
                 if (config.items.Count == 0)
                 {
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-notsetup"), EnumChatType.Notification);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-notsetup"), EnumChatType.Notification);
                     return;
                 }
                 try
@@ -73,7 +73,7 @@ namespace CBSEssentials.Starterkit
                     }
                     if (emptySlots < config.items.Count)
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-needspace", config.items.Count), EnumChatType.Notification);
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-needspace", config.items.Count), EnumChatType.Notification);
                         return;
                     }
                     for (int i = 0; i < config.items.Count; i++)
@@ -105,12 +105,12 @@ namespace CBSEssentials.Starterkit
                             }
                             if (!recived)
                             {
-                                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-wrong"), EnumChatType.Notification);
+                                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-wrong"), EnumChatType.Notification);
                                 throw new Exception($"Could not give item/block: {config.items[i]}");
                             }
                         }
                     }
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("cbsessentials:st-recived"), EnumChatType.Notification);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-recived"), EnumChatType.Notification);
 
                     if (playerData != null)
                     {
@@ -118,7 +118,7 @@ namespace CBSEssentials.Starterkit
                     }
                     else
                     {
-                        playerData = new CBSPlayerData(player.PlayerUID)
+                        playerData = new Th3PlayerData(player.PlayerUID)
                         {
                             starterkitRecived = true
                         };
