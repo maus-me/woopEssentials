@@ -6,9 +6,9 @@ namespace Th3Essentials.PlayerData
 {
     public class Th3PlayerData
     {
-        public static int defaultHomeLimit = 6;
+        public static int defaultHomeLimit;
 
-        public static int defaultHomeCooldown = 5;
+        public static int defaultHomeCooldown;
 
         public string playerUID;
 

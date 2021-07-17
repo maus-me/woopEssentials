@@ -12,7 +12,7 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 
 [assembly: ModInfo("Th3Essentials",
-    Description = "Chill build survival essentials mod",
+    Description = "Th3Dilli essentials server mod",
     Website = "https://gitlab.com/Th3Dilli/",
     Authors = new[] { "Th3Dilli" })]
 namespace Th3Essentials
@@ -23,9 +23,9 @@ namespace Th3Essentials
 
         private const string playerconfigFile = "Th3PlayerConfig.json";
 
-        internal static Th3Config Config { get; private set; }
+        internal static Th3Config config { get; private set; }
 
-        internal static Th3PlayerConfig PlayerConfig { get; private set; }
+        internal static Th3PlayerConfig playerConfig { get; private set; }
 
         private ICoreServerAPI api;
 
@@ -37,25 +37,26 @@ namespace Th3Essentials
             api.Event.GameWorldSave += GameWorldSave;
             api.Event.PlayerNowPlaying += PlayerNowPlaying;
 
-            Config = api.LoadModConfig<Th3Config>(configFile);
+            config = api.LoadModConfig<Th3Config>(configFile);
 
-            if (Config == null)
+            if (config == null)
             {
-                Config = new Th3Config();
-                Config.Init();
-                api.StoreModConfig(Config, configFile);
+                config = new Th3Config();
+                config.Init();
+                api.StoreModConfig(config, configFile);
                 api.Server.LogWarning(Lang.Get("th3essentials:config-init"));
                 api.Server.LogWarning(Lang.Get("th3essentials:config-file-info", Path.Combine(GamePaths.ModConfig, configFile)));
             }
 
-            PlayerConfig = api.LoadModConfig<Th3PlayerConfig>(playerconfigFile);
-            Th3PlayerData.defaultHomeLimit = 10;
-            Th3PlayerData.defaultHomeCooldown = 1;
+            Th3PlayerData.defaultHomeLimit = config.homeLimit;
+            Th3PlayerData.defaultHomeCooldown = config.homeCooldown;
 
-            if (PlayerConfig == null)
+            playerConfig = api.LoadModConfig<Th3PlayerConfig>(playerconfigFile);
+
+            if (playerConfig == null)
             {
-                PlayerConfig = new Th3PlayerConfig();
-                api.StoreModConfig(PlayerConfig, playerconfigFile);
+                playerConfig = new Th3PlayerConfig();
+                api.StoreModConfig(playerConfig, playerconfigFile);
                 api.Server.LogWarning(Lang.Get("th3essentials:playerconfig-init"));
                 api.Server.LogWarning(Lang.Get("th3essentials:playerconfig-file-info", Path.Combine(GamePaths.ModConfig, playerconfigFile)));
             }
@@ -77,10 +78,10 @@ namespace Th3Essentials
 
         private void PlayerNowPlaying(IServerPlayer byPlayer)
         {
-            if (PlayerConfig.GetPlayerDataByUID(byPlayer.PlayerUID) == null)
+            if (playerConfig.GetPlayerDataByUID(byPlayer.PlayerUID) == null)
             {
                 Th3PlayerData playerData = new Th3PlayerData(byPlayer.PlayerUID);
-                PlayerConfig.players.Add(playerData);
+                playerConfig.players.Add(playerData);
             }
         }
 
@@ -91,31 +92,29 @@ namespace Th3Essentials
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal void ReloadConfig()
+        private void ReloadConfig()
         {
             Th3Config configTemp = api.LoadModConfig<Th3Config>(configFile);
-            Config.announcementInterval = configTemp.announcementInterval;
-            Config.announcementMessages.Clear();
-            Config.announcementMessages.AddRange(configTemp.announcementMessages);
-            Config.infoMessages.Clear();
-            Config.infoMessages.AddRange(configTemp.infoMessages);
-            Config.items.Clear();
-            Config.items.AddRange(configTemp.items);
+            config.announcementInterval = configTemp.announcementInterval;
+            config.announcementMessages.Clear();
+            config.announcementMessages.AddRange(configTemp.announcementMessages);
+            config.infoMessages.Clear();
+            config.infoMessages.AddRange(configTemp.infoMessages);
+            config.items.Clear();
+            config.items.AddRange(configTemp.items);
             Th3PlayerConfig playerconfigTemp = api.LoadModConfig<Th3PlayerConfig>(playerconfigFile);
-            PlayerConfig.players.Clear();
-            PlayerConfig.players.AddRange(playerconfigTemp.players);
+            playerConfig.players.Clear();
+            playerConfig.players.AddRange(playerconfigTemp.players);
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal static void SaveConfig(ICoreServerAPI api)
+        private void SaveConfig(ICoreServerAPI api)
         {
-            api.StoreModConfig(Config, configFile);
+            api.StoreModConfig(config, configFile);
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal static void SavePlayerConfig(ICoreServerAPI api)
+        private void SavePlayerConfig(ICoreServerAPI api)
         {
-            api.StoreModConfig(PlayerConfig, playerconfigFile);
+            api.StoreModConfig(playerConfig, playerconfigFile);
         }
     }
 }

@@ -11,10 +11,16 @@ namespace Th3Essentials.Config
 
         public int announcementInterval;
 
+        public int homeLimit;
+
+        public int homeCooldown;
+
         public List<StarterkitItem> items;
 
         public Th3Config()
         {
+            homeLimit = 6;
+            homeCooldown = 5;
             announcementInterval = 10;
             announcementMessages = new List<string>();
             infoMessages = new List<string>();

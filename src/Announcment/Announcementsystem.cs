@@ -21,7 +21,7 @@ namespace Th3Essentials.Announcements
         public void Init(ICoreServerAPI api)
         {
             this.api = api;
-            config = Th3Essentials.Config;
+            config = Th3Essentials.config;
 
             if (config.announcementMessages.Count != 0)
             {

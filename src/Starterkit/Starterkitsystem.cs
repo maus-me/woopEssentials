@@ -15,8 +15,8 @@ namespace Th3Essentials.Starterkit
 
         internal void Init(ICoreServerAPI api)
         {
-            config = Th3Essentials.Config;
-            playerConfig = Th3Essentials.PlayerConfig;
+            config = Th3Essentials.config;
+            playerConfig = Th3Essentials.playerConfig;
             RegisterCommands(api);
         }
 

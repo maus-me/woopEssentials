@@ -18,8 +18,8 @@ namespace Th3Essentials.Homepoints
         internal void Init(ICoreServerAPI api)
         {
             this.api = api;
-            config = Th3Essentials.Config;
-            playerConfig = Th3Essentials.PlayerConfig;
+            config = Th3Essentials.config;
+            playerConfig = Th3Essentials.playerConfig;
             RegisterCommands();
         }
 
