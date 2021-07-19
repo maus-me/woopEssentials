@@ -9,14 +9,14 @@ namespace Th3Essentials.Starterkit
 {
     internal class Starterkitsystem
     {
-        public Th3Config config;
+        private Th3Config _config;
 
-        public Th3PlayerConfig playerConfig;
+        private Th3PlayerConfig _playerConfig;
 
         internal void Init(ICoreServerAPI api)
         {
-            config = Th3Essentials.config;
-            playerConfig = Th3Essentials.playerConfig;
+            _config = Th3Essentials.Config;
+            _playerConfig = Th3Essentials.PlayerConfig;
             RegisterCommands(api);
         }
 
@@ -31,7 +31,7 @@ namespace Th3Essentials.Starterkit
             api.RegisterCommand("setstarterkit", Lang.Get("th3essentials:cd-setstarterkit"), string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
-                config.items.Clear();
+                _config.Items.Clear();
                 IInventory inventory = player.InventoryManager.GetHotbarInventory();
                 for (int i = 0; i < inventory.Count; i++)
                 {
@@ -40,22 +40,23 @@ namespace Th3Essentials.Starterkit
                         EnumItemClass enumItemClass = inventory[i].Itemstack.Class;
                         int stackSize = inventory[i].Itemstack.StackSize;
                         AssetLocation code = inventory[i].Itemstack.Collectible.Code;
-                        config.items.Add(new StarterkitItem(enumItemClass, code, stackSize));
+                        _config.Items.Add(new StarterkitItem(enumItemClass, code, stackSize));
                     }
                 }
+                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-setup"), EnumChatType.Notification);
             }, Privilege.controlserver);
         }
 
         private void TryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
         {
-            Th3PlayerData playerData = playerConfig.GetPlayerDataByUID(player.PlayerUID);
-            if (playerData != null && playerData.starterkitRecived)
+            Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
+            if (playerData != null && playerData.StarterkitRecived)
             {
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-hasalready"), EnumChatType.Notification);
             }
             else
             {
-                if (config.items.Count == 0)
+                if (_config.Items.Count == 0)
                 {
                     player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-notsetup"), EnumChatType.Notification);
                     return;
@@ -71,25 +72,25 @@ namespace Th3Essentials.Starterkit
                             emptySlots++;
                         }
                     }
-                    if (emptySlots < config.items.Count)
+                    if (emptySlots < _config.Items.Count)
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-needspace", config.items.Count), EnumChatType.Notification);
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-needspace", _config.Items.Count), EnumChatType.Notification);
                         return;
                     }
-                    for (int i = 0; i < config.items.Count; i++)
+                    for (int i = 0; i < _config.Items.Count; i++)
                     {
-                        AssetLocation asset = new AssetLocation(config.items[i].code.Path);
+                        AssetLocation asset = new AssetLocation(_config.Items[i].Code.Path);
                         if (asset != null)
                         {
                             bool recived = false;
-                            switch (config.items[i].itemclass)
+                            switch (_config.Items[i].Itemclass)
                             {
                                 case EnumItemClass.Item:
                                     {
                                         Item item = api.World.GetItem(asset);
                                         if (item != null)
                                         {
-                                            recived = player.Entity.TryGiveItemStack(new ItemStack(item, config.items[i].stacksize));
+                                            recived = player.Entity.TryGiveItemStack(new ItemStack(item, _config.Items[i].Stacksize));
                                         }
                                         break;
                                     }
@@ -98,7 +99,7 @@ namespace Th3Essentials.Starterkit
                                         Block block = api.World.GetBlock(asset);
                                         if (block != null)
                                         {
-                                            recived = player.Entity.TryGiveItemStack(new ItemStack(block, config.items[i].stacksize));
+                                            recived = player.Entity.TryGiveItemStack(new ItemStack(block, _config.Items[i].Stacksize));
                                         }
                                         break;
                                     }
@@ -106,7 +107,7 @@ namespace Th3Essentials.Starterkit
                             if (!recived)
                             {
                                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-wrong"), EnumChatType.Notification);
-                                throw new Exception($"Could not give item/block: {config.items[i]}");
+                                throw new Exception($"Could not give item/block: {_config.Items[i]}");
                             }
                         }
                     }
@@ -114,15 +115,15 @@ namespace Th3Essentials.Starterkit
 
                     if (playerData != null)
                     {
-                        playerData.starterkitRecived = true;
+                        playerData.StarterkitRecived = true;
                     }
                     else
                     {
                         playerData = new Th3PlayerData(player.PlayerUID)
                         {
-                            starterkitRecived = true
+                            StarterkitRecived = true
                         };
-                        playerConfig.players.Add(playerData);
+                        _playerConfig.Players.Add(playerData);
                     }
                 }
                 catch (Exception e)

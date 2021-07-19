@@ -28,5 +28,6 @@
     "st-needspace": "you need {0} free slots in your hotbar",
     "st-wrong": "something went wrong, please conntact a Mod/Admin",
     "st-recived": "here is your starterkit :)",
-    "st-notsetup": "starterkit has not been configured yet"
+    "st-notsetup": "starterkit has not been configured yet",
+    "st-setup": "Starterkit was set"
 }
