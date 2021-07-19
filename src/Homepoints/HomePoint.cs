@@ -4,14 +4,14 @@ namespace Th3Essentials.Homepoints
 {
     public class HomePoint
     {
-        public string name;
+        public string Name;
 
-        public BlockPos position;
+        public BlockPos Position;
 
         public HomePoint(string name, BlockPos position)
         {
-            this.name = name;
-            this.position = position;
+            Name = name;
+            Position = position;
         }
     }
 }

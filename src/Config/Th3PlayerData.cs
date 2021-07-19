@@ -6,43 +6,43 @@ namespace Th3Essentials.PlayerData
 {
     public class Th3PlayerData
     {
-        public static int defaultHomeLimit;
+        public static int DefaultHomeLimit;
 
-        public static int defaultHomeCooldown;
+        public static int DefaultHomeCooldown;
 
-        public string playerUID;
+        public string PlayerUID;
 
-        public int homeLimit;
+        public int HomeLimit;
 
-        public int homeCooldown;
+        public int HomeCooldown;
 
-        public DateTime homeLastuseage;
+        public DateTime HomeLastuseage;
 
-        public bool starterkitRecived;
+        public bool StarterkitRecived;
 
-        public List<HomePoint> homePoints;
+        public List<HomePoint> HomePoints;
 
         public Th3PlayerData()
         {
-            starterkitRecived = false;
-            homeLimit = defaultHomeLimit;
-            homeCooldown = defaultHomeCooldown;
-            homePoints = new List<HomePoint>();
+            StarterkitRecived = false;
+            HomeLimit = DefaultHomeLimit;
+            HomeCooldown = DefaultHomeCooldown;
+            HomePoints = new List<HomePoint>();
         }
 
         public Th3PlayerData(string playerUID) : this()
         {
-            this.playerUID = playerUID;
+            this.PlayerUID = playerUID;
         }
 
         public bool HasMaxHomes()
         {
-            return homePoints.Count >= homeLimit;
+            return HomePoints.Count >= HomeLimit;
         }
 
         public HomePoint FindPointByName(string name)
         {
-            return homePoints.Find(point => point.name == name);
+            return HomePoints.Find(point => point.Name == name);
         }
     }
 }

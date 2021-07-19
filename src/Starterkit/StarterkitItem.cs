@@ -4,22 +4,22 @@ namespace Th3Essentials.Starterkit
 {
     public class StarterkitItem
     {
-        public EnumItemClass itemclass;
+        public EnumItemClass Itemclass;
 
-        public AssetLocation code;
+        public AssetLocation Code;
 
-        public int stacksize;
+        public int Stacksize;
 
         public StarterkitItem(EnumItemClass itemclass, AssetLocation code, int stacksize)
         {
-            this.itemclass = itemclass;
-            this.code = code;
-            this.stacksize = stacksize;
+            Itemclass = itemclass;
+            Code = code;
+            Stacksize = stacksize;
         }
 
         public override string ToString()
         {
-            return $"EnumItemClass: {itemclass}, AssetLocation: {code}, stacksize: {stacksize}";
+            return $"EnumItemClass: {Itemclass}, AssetLocation: {Code}, stacksize: {Stacksize}";
         }
     }
 }

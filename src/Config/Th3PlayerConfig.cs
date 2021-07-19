@@ -5,16 +5,16 @@ namespace Th3Essentials.Config
 {
     public class Th3PlayerConfig
     {
-        public List<Th3PlayerData> players;
+        public List<Th3PlayerData> Players;
 
         public Th3PlayerConfig()
         {
-            players = new List<Th3PlayerData>();
+            Players = new List<Th3PlayerData>();
         }
 
         public Th3PlayerData GetPlayerDataByUID(string playerUID)
         {
-            return players.Find(player => player.playerUID == playerUID);
+            return Players.Find(player => player.PlayerUID == playerUID);
         }
     }
 }

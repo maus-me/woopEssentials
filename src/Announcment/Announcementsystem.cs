@@ -1,31 +1,31 @@
-using Vintagestory.API.Server;
-using Vintagestory.API.Common;
 using System.Timers;
 using Th3Essentials.Config;
+using Vintagestory.API.Common;
+using Vintagestory.API.Server;
 
 namespace Th3Essentials.Announcements
 {
     class Announcementsystem : ModSystem
     {
-        private ICoreServerAPI api;
+        private ICoreServerAPI _api;
 
-        private Th3Config config;
+        private Th3Config _config;
 
-        private int currentMsg;
+        private int _currentMsg;
 
         public Announcementsystem()
         {
-            currentMsg = 0;
+            _currentMsg = 0;
         }
 
         public void Init(ICoreServerAPI api)
         {
-            this.api = api;
-            config = Th3Essentials.config;
+            _api = api;
+            _config = Th3Essentials.Config;
 
-            if (config.announcementMessages.Count != 0)
+            if (_config.AnnouncementMessages.Count != 0)
             {
-                Timer announcer = new Timer(config.GetAnnouncementInterval());
+                Timer announcer = new Timer(_config.GetAnnouncementInterval());
                 announcer.Elapsed += AnnounceMsg;
                 announcer.AutoReset = true;
                 announcer.Enabled = true;
@@ -34,12 +34,12 @@ namespace Th3Essentials.Announcements
 
         private void AnnounceMsg(object source, ElapsedEventArgs args)
         {
-            if (currentMsg >= config.announcementMessages.Count)
+            if (_currentMsg >= _config.AnnouncementMessages.Count)
             {
-                currentMsg = 0;
+                _currentMsg = 0;
             }
-            api.BroadcastMessageToAllGroups($"<strong>[Info]</strong> {config.announcementMessages[currentMsg]}", EnumChatType.Notification);
-            currentMsg++;
+            _api.BroadcastMessageToAllGroups($"<strong>[Info]</strong> {_config.AnnouncementMessages[_currentMsg]}", EnumChatType.Notification);
+            _currentMsg++;
         }
     }
 }
