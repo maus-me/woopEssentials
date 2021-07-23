@@ -3,6 +3,7 @@ using Th3Essentials.Config;
 using Th3Essentials.PlayerData;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 
 namespace Th3Essentials.Homepoints
@@ -18,6 +19,7 @@ namespace Th3Essentials.Homepoints
             _api = api;
             _playerConfig = Th3Essentials.PlayerConfig;
             RegisterCommands();
+            _api.Event.PlayerDeath += PlayerDied;
         }
 
         private void RegisterCommands()
@@ -45,6 +47,53 @@ namespace Th3Essentials.Homepoints
                 {
                     ToSpawn(player);
                 }, Privilege.chat);
+            _api.RegisterCommand("back", Lang.Get("th3essentials:cd-back"), string.Empty,
+            (IServerPlayer player, int groupId, CmdArgs args) =>
+            {
+                TeleportBack(player);
+            }, Privilege.chat);
+        }
+
+        private void PlayerDied(IServerPlayer byPlayer, DamageSource damageSource)
+        {
+            Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(byPlayer.PlayerUID);
+            if (playerData != null)
+            {
+                playerData.LastPosition = byPlayer.Entity.Pos.AsBlockPos;
+            }
+        }
+
+
+        private void TeleportBack(IServerPlayer player)
+        {
+            Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
+            if (playerData != null)
+            {
+                if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
+                {
+                    if (playerData.LastPosition == null)
+                    {
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-noBack"), EnumChatType.Notification);
+                    }
+                    else
+                    {
+                        BlockPos teleportTo = playerData.LastPosition;
+                        playerData.LastPosition = player.Entity.Pos.AsBlockPos;
+                        player.Entity.TeleportTo(teleportTo);
+                        playerData.HomeLastuseage = DateTime.Now;
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-back"), EnumChatType.Notification);
+                    }
+                }
+                else
+                {
+                    TimeSpan diff = playerData.HomeLastuseage.AddMinutes(playerData.HomeCooldown) - DateTime.Now;
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds), EnumChatType.Notification);
+                }
+            }
+            else
+            {
+                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-wrong"), EnumChatType.Notification);
+            }
         }
 
         public void ToSpawn(IServerPlayer player)
@@ -54,6 +103,7 @@ namespace Th3Essentials.Homepoints
             {
                 if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
                 {
+                    playerData.LastPosition = player.Entity.Pos.AsBlockPos;
                     player.Entity.TeleportTo(_api.World.DefaultSpawnPosition);
                     playerData.HomeLastuseage = DateTime.Now;
                     player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-tp-spawn"), EnumChatType.Notification);
@@ -95,6 +145,7 @@ namespace Th3Essentials.Homepoints
                     {
                         if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
                         {
+                            playerData.LastPosition = player.Entity.Pos.AsBlockPos;
                             player.Entity.TeleportTo(point.Position);
                             playerData.HomeLastuseage = DateTime.Now;
                             player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-tp-point", name), EnumChatType.Notification);

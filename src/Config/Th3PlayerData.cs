@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Th3Essentials.Homepoints;
+using Vintagestory.API.MathTools;
 
 namespace Th3Essentials.PlayerData
 {
@@ -20,6 +21,8 @@ namespace Th3Essentials.PlayerData
 
         public bool StarterkitRecived;
 
+        public BlockPos LastPosition;
+
         public List<HomePoint> HomePoints;
 
         public Th3PlayerData()
@@ -32,7 +35,7 @@ namespace Th3Essentials.PlayerData
 
         public Th3PlayerData(string playerUID) : this()
         {
-            this.PlayerUID = playerUID;
+            PlayerUID = playerUID;
         }
 
         public bool HasMaxHomes()

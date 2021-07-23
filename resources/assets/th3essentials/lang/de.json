@@ -29,5 +29,7 @@
     "st-wrong": "Irgendetwas lief schief mit dem Starterkit, bitte informieren einen Mod/Admin",
     "st-recived": "Hier dein Starterkit :)",
     "st-notsetup": "Starterkit wurde noch nicht configuriert",
-    "st-setup": "Starterkit wurde gesetzt"
+    "st-setup": "Starterkit wurde gesetzt",
+    "hs-noBack": "Es wurde noch keine zurück Position gespeichert",
+    "hs-back": "Teleportiert zur letzten Position"
 }

@@ -9,6 +9,7 @@
     "cd-home": "teleport you to the specified homepoint or without name displays list of homepoints",
     "cd-delhome": "delete homepoint",
     "cd-spawn": "teleport to spawn",
+    "cd-back": "teleport to last position (teleport/death)",
     "cd-info": "show server info and a list of commands",
     "cd-players": "shows a list of all online players",
     "cd-starterkit": "get a onetime starterkit",
@@ -29,5 +30,7 @@
     "st-wrong": "something went wrong, please conntact a Mod/Admin",
     "st-recived": "here is your starterkit :)",
     "st-notsetup": "starterkit has not been configured yet",
-    "st-setup": "Starterkit was set"
+    "st-setup": "Starterkit was set",
+    "hs-noBack": "no back location yet set",
+    "hs-back": "teleportet to last position"
 }
