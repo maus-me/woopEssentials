@@ -5,7 +5,7 @@ using Vintagestory.API.Server;
 
 namespace Th3Essentials.Announcements
 {
-    class Announcementsystem : ModSystem
+    class Announcementsystem
     {
         private ICoreServerAPI _api;
 

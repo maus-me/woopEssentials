@@ -27,19 +27,19 @@ namespace Th3Essentials.Homepoints
             _api.RegisterCommand("sethome", Lang.Get("th3essentials:cd-sethome"), "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
-                    AddHome(player, args.PopAll());
+                    SetHome(player, args.PopAll());
                 }, Privilege.chat);
 
             _api.RegisterCommand("home", Lang.Get("th3essentials:cd-home"), "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
-                    FindHome(player, args.PopAll());
+                    Home(player, args.PopAll());
                 }, Privilege.chat);
 
             _api.RegisterCommand("delhome", Lang.Get("th3essentials:cd-delhome"), "[Name]",
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
-                    DelHome(player, args.PopAll());
+                    DeleteHome(player, args.PopAll());
                 }, Privilege.chat);
 
             _api.RegisterCommand("spawn", Lang.Get("th3essentials:cd-spawn"), string.Empty,
@@ -116,7 +116,7 @@ namespace Th3Essentials.Homepoints
             }
         }
 
-        public void FindHome(IServerPlayer player, string name) //home Befehl
+        public void Home(IServerPlayer player, string name)
         {
             Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
             if (playerData != null)
@@ -168,7 +168,7 @@ namespace Th3Essentials.Homepoints
             }
         }
 
-        public void DelHome(IServerPlayer player, string name) //delhome Befehl
+        public void DeleteHome(IServerPlayer player, string name) //delhome Befehl
         {
             Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
             if (playerData != null)
@@ -184,7 +184,7 @@ namespace Th3Essentials.Homepoints
             player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-404"), EnumChatType.Notification);
         }
 
-        public void AddHome(IServerPlayer player, string name) //sethome Befehl
+        public void SetHome(IServerPlayer player, string name) //sethome Befehl
         {
             if (name == string.Empty || name == " " || name == null)
             {
@@ -203,7 +203,7 @@ namespace Th3Essentials.Homepoints
                 {
                     if (playerData.FindPointByName(name) == null)
                     {
-                        AddNewHomepoint(player, name, playerData);
+                        AddHomepoint(player, name, playerData);
                     }
                     else
                     {
@@ -215,11 +215,11 @@ namespace Th3Essentials.Homepoints
             {
                 playerData = new Th3PlayerData(player.PlayerUID);
                 _playerConfig.Players.Add(playerData);
-                AddNewHomepoint(player, name, playerData);
+                AddHomepoint(player, name, playerData);
             }
         }
 
-        private static void AddNewHomepoint(IServerPlayer player, string name, Th3PlayerData playerData)
+        private static void AddHomepoint(IServerPlayer player, string name, Th3PlayerData playerData)
         {
             HomePoint newPoint = new HomePoint(name, player.Entity.Pos.XYZ.AsBlockPos);
             playerData.HomePoints.Add(newPoint);
