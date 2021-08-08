@@ -5,6 +5,11 @@ namespace Th3Essentials.Config
 {
     public class Th3Config
     {
+
+        public string Token { get; set; }
+
+        public ulong ChannelId { get; set; }
+
         public List<string> InfoMessages;
 
         public List<string> AnnouncementMessages;
@@ -19,6 +24,8 @@ namespace Th3Essentials.Config
 
         public Th3Config()
         {
+            Token = "";
+            ChannelId = 0;
             HomeLimit = 6;
             HomeCooldown = 5;
             AnnouncementInterval = 10;
@@ -45,6 +52,11 @@ namespace Th3Essentials.Config
         internal double GetAnnouncementInterval()
         {
             return 1000 * 60 * AnnouncementInterval;
+        }
+
+        internal bool IsDiscordConfigured()
+        {
+            return Token != "" && ChannelId != 0;
         }
     }
 }

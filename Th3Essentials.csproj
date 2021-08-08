@@ -2,10 +2,15 @@
 
 	<PropertyGroup>
 		<TargetFramework>net48</TargetFramework>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="VintagestoryAPI">
 			<HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
 		</Reference>
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="DSharpPlus" Version="4.1.0" />
+	  <PackageReference Include="DSharpPlus.Interactivity" Version="4.1.0" />
 	</ItemGroup>
 </Project>

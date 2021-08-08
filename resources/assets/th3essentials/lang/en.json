@@ -32,5 +32,10 @@
     "st-notsetup": "starterkit has not been configured yet",
     "st-setup": "Starterkit was set",
     "hs-noBack": "no back location yet set",
-    "hs-back": "teleportet to last position"
+    "hs-back": "teleportet to last position",
+    "shutdown": ":no_entry: _Server shutdown_",
+    "start": ":white_check_mark: _Server started_",
+    "connected": ":inbox_tray: _Player {0} connected_",
+    "disconnected": ":outbox_tray: _Player {0} disconnected_",
+    "playerdeath": "_Player {0} died from {1}_"
 }

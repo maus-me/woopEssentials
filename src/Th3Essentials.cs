@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using Th3Essentials.Announcements;
 using Th3Essentials.Commands;
 using Th3Essentials.Config;
+using Th3Essentials.Discord;
 using Th3Essentials.Homepoints;
 using Th3Essentials.PlayerData;
 using Th3Essentials.Starterkit;
@@ -28,6 +29,13 @@ namespace Th3Essentials
         internal static Th3PlayerConfig PlayerConfig { get; private set; }
 
         private ICoreServerAPI _api;
+
+        private Th3Discord _th3Discord;
+
+        public override bool ShouldLoad(EnumAppSide forSide)
+        {
+            return forSide == EnumAppSide.Server;
+        }
 
         public override void StartServerSide(ICoreServerAPI api)
         {
@@ -67,6 +75,16 @@ namespace Th3Essentials
             new Homesystem().Init(_api);
             new Starterkitsystem().Init(_api);
             new Announcementsystem().Init(_api);
+            _th3Discord = new Th3Discord();
+
+            if (Config.IsDiscordConfigured())
+            {
+                _th3Discord.Init(api);
+            }
+            else
+            {
+                _api.Server.LogWarning("Th3Essentials Discord needs to be configured first!!!");
+            }
 
             _api.RegisterCommand("reloadconfig", Lang.Get("th3essentials:cd-reloadConfig"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
@@ -115,6 +133,12 @@ namespace Th3Essentials
         private void SavePlayerConfig()
         {
             _api.StoreModConfig(PlayerConfig, _playerConfigFile);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _th3Discord.Dispose();
         }
     }
 }
