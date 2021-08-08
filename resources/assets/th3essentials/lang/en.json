@@ -37,5 +37,6 @@
     "start": ":white_check_mark: _Server started_",
     "connected": ":inbox_tray: _Player {0} connected_",
     "disconnected": ":outbox_tray: _Player {0} disconnected_",
-    "playerdeath": "_Player {0} died from {1}_"
+    "playerdeath": "Player {0} died",
+    "playerdeathby": "Player {0} got killed by {1}"
 }

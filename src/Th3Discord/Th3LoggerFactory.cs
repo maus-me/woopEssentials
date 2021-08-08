@@ -30,8 +30,6 @@ namespace Th3Essentials.Discord
             {
                 throw new InvalidOperationException("This logger factory has been disposed.");
             }
-
-            Console.WriteLine("CreateLogger: " + categoryName);
             return new Th3Logger(_api, _logLevel);
         }
 
