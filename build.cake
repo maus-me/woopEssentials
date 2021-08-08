@@ -1,4 +1,4 @@
-#addin nuget:?package=Cake.Json&version=5.2.0
+#addin nuget:?package=Cake.Json&version=6.0.1
 
 string target = Argument("target", "Build");
 string configuration = Argument("configuration", "Debug");
@@ -61,7 +61,7 @@ Task("Package")
             DeleteFile($"{packageFolder}/{name}.pdb");
         }
     }
-    CopyFile($"bin/{configuration}/net48/{name}.dll", $"{packageFolder}/{name}.dll");
+    CopyFiles($"bin/{configuration}/net48/*.dll", $"{packageFolder}/");
     CopyDirectory("resources/", packageFolder);
     Zip(packageFolder, zipfile);
 });
