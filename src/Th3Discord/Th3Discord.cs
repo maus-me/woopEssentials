@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -217,14 +214,9 @@ namespace Th3Essentials.Discord
                     string msg;
                     // use blue font ingame for discord messages
                     const string format = "<font color=\"#7289DA\"><strong>{0}:</strong></font> {1}";
-                    if (e.Message.Attachments.Count > 0)
-                    {
-                        msg = string.Format(format, e.Author.Username, $" [Attachments] {msgRaw}");
-                    }
-                    else
-                    {
-                        msg = string.Format(format, e.Author.Username, msgRaw);
-                    }
+                    msg = e.Message.Attachments.Count > 0
+                        ? string.Format(format, e.Author.Username, $" [Attachments] {msgRaw}")
+                        : string.Format(format, e.Author.Username, msgRaw);
                     _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
                 }
             }

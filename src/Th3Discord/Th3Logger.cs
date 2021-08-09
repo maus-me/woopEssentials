@@ -1,15 +1,14 @@
 using System;
 using Microsoft.Extensions.Logging;
-using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 
 namespace Th3Essentials.Discord
 {
-    class Th3Logger : ILogger<Th3Essentials>
+    internal class Th3Logger : ILogger<Th3Essentials>
     {
         private static readonly object _lock = new object();
 
-        private ICoreServerAPI _api;
+        private readonly ICoreServerAPI _api;
 
         private LogLevel MinimumLevel { get; }
 
