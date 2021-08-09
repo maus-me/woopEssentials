@@ -33,10 +33,10 @@
     "st-setup": "Starterkit was set",
     "hs-noBack": "no back location yet set",
     "hs-back": "teleportet to last position",
-    "shutdown": ":no_entry: _Server shutdown_",
-    "start": ":white_check_mark: _Server started_",
-    "connected": ":inbox_tray: _Player {0} connected_",
-    "disconnected": ":outbox_tray: _Player {0} disconnected_",
+    "shutdown": ":no_entry: *Server shutdown*",
+    "start": ":white_check_mark: *Server started*",
+    "connected": ":inbox_tray: *Player {0} connected*",
+    "disconnected": ":outbox_tray: *Player {0} disconnected*",
     "playerdeath": "Player {0} died",
     "playerdeathby": "Player {0} got killed by {1}"
 }
