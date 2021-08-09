@@ -83,6 +83,8 @@ namespace Th3Essentials.Discord
                 _api.Event.GameWorldSave += WorldSaveCreated;
                 _api.Event.PlayerDeath += PlayerDeathAsync;
                 _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
+                _client.CreateGuildApplicationCommandAsync(319938033140891649, new DiscordApplicationCommand("players", "Get a list of Players"));
+                _client.InteractionCreated += InteractionCreated;
 
                 initialized = true;
             }
@@ -99,6 +101,25 @@ namespace Th3Essentials.Discord
                 }
             });
             UpdatePlayers();
+            return Task.CompletedTask;
+        }
+
+        private Task InteractionCreated(DiscordClient sender, InteractionCreateEventArgs e)
+        {
+            if (e.Interaction.Data.Name == "players")
+            {
+                string response = "";
+                foreach (IServerPlayer player in _api.Server.Players)
+                {
+                    response += player.PlayerName + " ";
+                }
+                DiscordInteractionResponseBuilder resp = new DiscordInteractionResponseBuilder
+                {
+                    Content = response
+                };
+                e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, resp);
+                e.Handled = true;
+            }
             return Task.CompletedTask;
         }
 
@@ -183,18 +204,9 @@ namespace Th3Essentials.Discord
                 {
                     msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
                 }
-                _discordChannel.SendMessageAsync("_" + msg + "_");
+                _discordChannel.SendMessageAsync("*" + msg + "*");
             }
         }
-
-        private void GameReady()
-        {
-            if (_discordChannel != null)
-            {
-                _discordChannel.SendMessageAsync(Lang.Get("th3essentials:start"));
-            }
-        }
-
 
         private Task MessageReceivedAsync(DiscordClient sender, MessageCreateEventArgs e)
         {
@@ -276,6 +288,14 @@ namespace Th3Essentials.Discord
             UpdatePlayers();
         }
 
+        private void GameReady()
+        {
+            if (_discordChannel != null)
+            {
+                _discordChannel.SendMessageAsync(Lang.Get("th3essentials:start"));
+            }
+        }
+
         private void UpdatePlayers()
         {
             _client.UpdateStatusAsync(new DiscordActivity($"players: {PlayersOnline}"));
@@ -296,8 +316,6 @@ namespace Th3Essentials.Discord
                 await _discordChannel.SendMessageAsync(Lang.Get("th3essentials:shutdown"));
             }
             _client.Dispose();
-
-            _api.Server.LogVerboseDebug("Discord client logged out and disposed.");
         }
     }
 }
