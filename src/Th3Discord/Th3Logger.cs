@@ -37,6 +37,10 @@ namespace Th3Essentials.Discord
             lock (_lock)
             {
                 string message = formatter(state, exception);
+                if (exception != null)
+                {
+                    message += "\n" + exception;
+                }
                 switch (logLevel)
                 {
                     case LogLevel.Trace:
