@@ -79,7 +79,7 @@ namespace Th3Essentials
 
             if (Config.IsDiscordConfigured())
             {
-                _th3Discord.Init(api);
+                _th3Discord.Init(_api);
             }
             else
             {

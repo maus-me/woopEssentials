@@ -3,10 +3,9 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-using Microsoft.Extensions.Logging;
+using Discord;
+using Discord.Net;
+using Discord.WebSocket;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -17,11 +16,11 @@ namespace Th3Essentials.Discord
 {
     public class Th3Discord
     {
-        private DiscordClient _client;
+        private DiscordSocketClient _client;
+
+        private IMessageChannel _discordChannel;
 
         private ICoreServerAPI _api;
-
-        private DiscordChannel _discordChannel;
 
         private Th3Config _config;
 
@@ -48,14 +47,10 @@ namespace Th3Essentials.Discord
 
 
             // create Discord client and set event methodes
-            _client = new DiscordClient(new DiscordConfiguration()
-            {
-                Token = _config.Token,
-                TokenType = TokenType.Bot,
-                LoggerFactory = new Th3LoggerFactory(_api, LogLevel.Debug)
-            });
+            _client = new DiscordSocketClient();
 
             _client.Ready += ReadyAsync;
+            _api.Server.LogVerboseDebug("Discord started");
 
             // start discord bot
             BotMainAsync();
@@ -63,18 +58,28 @@ namespace Th3Essentials.Discord
 
         public async void BotMainAsync()
         {
-            await _client.ConnectAsync();
+            await _client.LoginAsync(TokenType.Bot, _config.Token);
+            await _client.StartAsync();
+
 
             // keep the discord bot thread running
             await Task.Delay(Timeout.Infinite);
         }
 
-        private Task ReadyAsync(DiscordClient sender, ReadyEventArgs e)
+        private Task LogAsync(LogMessage log)
         {
+            _api.Server.LogVerboseDebug($"[Discord] {log.ToString()}");
+            return Task.CompletedTask;
+        }
+
+        private Task ReadyAsync()
+        {
+            _api.Server.LogVerboseDebug("Discord ReadyAsync");
             // needed since discord might disconect from the gateway and reconnect emitting the ReadyAsync again
             if (!initialized)
             {
-                _client.MessageCreated += MessageReceivedAsync;
+                _client.MessageReceived += MessageReceivedAsync;
+                _client.Log += LogAsync;
 
                 //add vs api events
                 _api.Event.PlayerChat += PlayerChatAsync;
@@ -83,7 +88,8 @@ namespace Th3Essentials.Discord
                 _api.Event.GameWorldSave += WorldSaveCreated;
                 _api.Event.PlayerDeath += PlayerDeathAsync;
                 _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
-                _client.CreateGuildApplicationCommandAsync(319938033140891649, new DiscordApplicationCommand("players", "Get a list of Players"));
+
+                CreateSlashCommand();
                 _client.InteractionCreated += InteractionCreated;
 
                 initialized = true;
@@ -92,33 +98,55 @@ namespace Th3Essentials.Discord
             _api.Server.LogVerboseDebug($"{_client.CurrentUser} is connected!");
 
             // get the channel to send messages from and to
-            _client.GetChannelAsync(_config.ChannelId).ContinueWith(task =>
+            _discordChannel = _client.GetChannel(_config.ChannelId) as IMessageChannel;
+            if (_discordChannel == null)
             {
-                _discordChannel = task.Result;
-                if (_discordChannel == null)
-                {
-                    _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
-                }
-            });
+                _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
+            }
             UpdatePlayers();
             return Task.CompletedTask;
         }
 
-        private Task InteractionCreated(DiscordClient sender, InteractionCreateEventArgs e)
+        private void CreateSlashCommand()
         {
-            if (e.Interaction.Data.Name == "players")
+            try
             {
-                string response = "";
-                foreach (IServerPlayer player in _api.Server.Players)
+                SlashCommandBuilder players = new SlashCommandBuilder
                 {
-                    response += player.PlayerName + " ";
-                }
-                DiscordInteractionResponseBuilder resp = new DiscordInteractionResponseBuilder
-                {
-                    Content = response
+                    Name = "players",
+                    Description = "Get a list of Players"
                 };
-                e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, resp);
-                e.Handled = true;
+                // Now that we have our builder, we can call the rest API to make our slash command.
+                _client.Rest.CreateGuildCommand(players.Build(), 319938033140891649);
+
+                // With global commands we dont need the guild id.
+                // await _client.Rest.CreateGlobalCommand(globalCommand.Build());
+            }
+            catch (ApplicationCommandException exception)
+            {
+                _api.Logger.VerboseDebug(exception.ToString());
+            }
+        }
+
+        private Task InteractionCreated(SocketInteraction interaction)
+        {
+            switch (interaction)
+            {
+                // Slash commands
+                case SocketSlashCommand commandInteraction:
+                    {
+
+                        if (commandInteraction.Data.Name == "players")
+                        {
+                            string response = "";
+                            foreach (IServerPlayer player in _api.Server.Players)
+                            {
+                                response += player.PlayerName + " ";
+                            }
+                            commandInteraction.RespondAsync(response);
+                        }
+                        break;
+                    }
             }
             return Task.CompletedTask;
         }
@@ -208,27 +236,27 @@ namespace Th3Essentials.Discord
             }
         }
 
-        private Task MessageReceivedAsync(DiscordClient sender, MessageCreateEventArgs e)
+        private Task MessageReceivedAsync(SocketMessage message)
         {
             // The bot should never respond to itself.
-            if (e.Author.Id == _client.CurrentUser.Id)
+            if (message.Author.Id == _client.CurrentUser.Id)
             {
                 return Task.CompletedTask;
             }
 
             // only send messages from specific channel to vs server chat
             // ignore empty messages (message is empty when only picture/file is send)
-            if (e.Channel.Id == _config.ChannelId && e.Message.Content != "")
+            if (message.Channel.Id == _config.ChannelId && message.Content != "")
             {
-                string msgRaw = CleanDiscordMessage(e.Message.Content);
+                string msgRaw = CleanDiscordMessage(message.Content);
                 if (msgRaw != "")
                 {
                     string msg;
                     // use blue font ingame for discord messages
                     const string format = "<font color=\"#7289DA\"><strong>{0}:</strong></font> {1}";
-                    msg = e.Message.Attachments.Count > 0
-                        ? string.Format(format, e.Author.Username, $" [Attachments] {msgRaw}")
-                        : string.Format(format, e.Author.Username, msgRaw);
+                    msg = message.Attachments.Count > 0
+                        ? string.Format(format, message.Author.Username, $" [Attachments] {msgRaw}")
+                        : string.Format(format, message.Author.Username, msgRaw);
                     _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
                 }
             }
@@ -298,7 +326,7 @@ namespace Th3Essentials.Discord
 
         private void UpdatePlayers()
         {
-            _client.UpdateStatusAsync(new DiscordActivity($"players: {PlayersOnline}"));
+            _client.SetGameAsync($"players: {PlayersOnline}");
         }
 
         public void Dispose()
