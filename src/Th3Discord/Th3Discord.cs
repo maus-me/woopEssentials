@@ -45,11 +45,12 @@ namespace Th3Essentials.Discord
             _config = Th3Essentials.Config;
             _api = api;
 
-
             // create Discord client and set event methodes
             _client = new DiscordSocketClient();
 
             _client.Ready += ReadyAsync;
+            _client.Log += LogAsync;
+
             _api.Server.LogVerboseDebug("Discord started");
 
             // start discord bot
@@ -60,7 +61,6 @@ namespace Th3Essentials.Discord
         {
             await _client.LoginAsync(TokenType.Bot, _config.Token);
             await _client.StartAsync();
-
 
             // keep the discord bot thread running
             await Task.Delay(Timeout.Infinite);
@@ -79,7 +79,6 @@ namespace Th3Essentials.Discord
             if (!initialized)
             {
                 _client.MessageReceived += MessageReceivedAsync;
-                _client.Log += LogAsync;
 
                 //add vs api events
                 _api.Event.PlayerChat += PlayerChatAsync;
@@ -88,6 +87,8 @@ namespace Th3Essentials.Discord
                 _api.Event.GameWorldSave += WorldSaveCreated;
                 _api.Event.PlayerDeath += PlayerDeathAsync;
                 _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
+                _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
+
 
                 CreateSlashCommand();
                 _client.InteractionCreated += InteractionCreated;
@@ -120,7 +121,7 @@ namespace Th3Essentials.Discord
                 _client.Rest.CreateGuildCommand(players.Build(), 319938033140891649);
 
                 // With global commands we dont need the guild id.
-                // await _client.Rest.CreateGlobalCommand(globalCommand.Build());
+                //_client.Rest.CreateGlobalCommand(players.Build());
             }
             catch (ApplicationCommandException exception)
             {
@@ -329,21 +330,16 @@ namespace Th3Essentials.Discord
             _client.SetGameAsync($"players: {PlayersOnline}");
         }
 
-        public void Dispose()
+        private async void Shutdown()
         {
             if (_client != null)
             {
-                ShutdownDiscord();
+                if (_discordChannel != null)
+                {
+                    await _discordChannel.SendMessageAsync(Lang.Get("th3essentials:shutdown"));
+                }
+                _client.Dispose();
             }
-        }
-
-        private async void ShutdownDiscord()
-        {
-            if (_discordChannel != null)
-            {
-                await _discordChannel.SendMessageAsync(Lang.Get("th3essentials:shutdown"));
-            }
-            _client.Dispose();
         }
     }
 }

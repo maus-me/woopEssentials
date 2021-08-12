@@ -9,13 +9,6 @@
       "problemMatcher": "$msCompile",
       "type": "shell",
       "command": "dotnet",
-      "linux": {
-        "options": {
-          "env": {
-            "FrameworkPathOverride": "/lib/mono/4.8-api/"
-          }
-        }
-      },
       "args": ["cake"]
     },
     {
@@ -26,92 +19,55 @@
       "problemMatcher": "$msCompile",
       "type": "shell",
       "command": "dotnet",
-      "linux": {
-        "options": {
-          "env": {
-            "FrameworkPathOverride": "/lib/mono/4.8-api/"
-          }
-        }
-      },
       "args": ["cake", "--configuration=Release"]
     },
     {
       "label": "clean",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=Clean"],
-      "linux": {
-        "options": {
-          "env": {
-            "FrameworkPathOverride": "/lib/mono/4.8-api/"
-          }
-        }
-      }
+      "args": ["cake", "--target=Clean"]
     },
     {
       "label": "clean (Package)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=CleanPackage"],
-      "linux": {
-        "options": {
-          "env": {
-            "FrameworkPathOverride": "/lib/mono/4.8-api/"
-          }
-        }
-      }
+      "args": ["cake", "--target=CleanPackage"]
     },
     {
       "label": "package (Debug)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=Package"],
-      "linux": {
-        "options": {
-          "env": {
-            "FrameworkPathOverride": "/lib/mono/4.8-api/"
-          }
-        }
-      }
+      "args": ["cake", "--target=Package"]
     },
     {
       "label": "package (Release)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=Package", "--configuration=Release"],
-      "linux": {
-        "options": {
-          "env": {
-            "FrameworkPathOverride": "/lib/mono/4.8-api/"
-          }
-        }
-      }
+      "args": ["cake", "--target=Package", "--configuration=Release"]
     },
     {
       "label": "deploy (Debug)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=Deploy"],
-      "linux": {
-        "options": {
-          "env": {
-            "FrameworkPathOverride": "/lib/mono/4.8-api/"
-          }
-        }
-      }
+      "args": ["cake", "--target=Deploy"]
     },
     {
       "label": "deploy (Release)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=Deploy", "--configuration=Release"],
-      "linux": {
-        "options": {
-          "env": {
-            "FrameworkPathOverride": "/lib/mono/4.8-api/"
-          }
-        }
-      }
+      "args": ["cake", "--target=Deploy", "--configuration=Release"]
+    },
+    {
+      "label": "deploy (Remmina,Debug)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["cake", "--target=DeployRemmina"]
+    },
+    {
+      "label": "deploy (Remmina,Release)",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["cake", "--target=DeployRemmina", "--configuration=Release"]
     },
     {
       "label": "run server",

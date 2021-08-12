@@ -1,3 +1,4 @@
+#addin nuget:?package=Newtonsoft.Json&version=13.0.1
 #addin nuget:?package=Cake.Json&version=6.0.1
 
 string target = Argument("target", "Build");
@@ -12,8 +13,6 @@ string zipFileName = $"{name}_{version}.zip";
 string zipfile = $"{packageFolderOut}/{zipFileName}";
 
 string serverData = EnvironmentVariable("VINTAGE_STORY_SERVER_DEV_DATA");
-
-
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -50,18 +49,14 @@ Task("Package")
     EnsureDirectoryExists(packages);
     EnsureDirectoryExists(packageFolder);
     EnsureDirectoryExists(packageFolderOut);
-    if (configuration == "Debug")
-    {
-        CopyFile($"bin/{configuration}/net48/{name}.pdb", $"{packageFolder}/{name}.pdb");
-    }
-    else
+    if (configuration == "Release")
     {
         if (FileExists($"{packageFolder}/{name}.pdb"))
         {
             DeleteFile($"{packageFolder}/{name}.pdb");
         }
     }
-    CopyFiles($"bin/{configuration}/net48/*.dll", $"{packageFolder}/");
+    CopyFiles($"bin/{configuration}/*", $"{packageFolder}/");
     CopyDirectory("resources/", packageFolder);
     Zip(packageFolder, zipfile);
 });
@@ -77,6 +72,20 @@ Task("Deploy")
     else
     {
         throw new Exception($"Server Data directory enviroment variabel is not set: {serverData}");
+    }
+});
+
+Task("DeployRemmina")
+    .IsDependentOn("Package")
+    .Does(() =>
+{
+    if (DirectoryExists("/home/dilli/remmina-share"))
+    {
+        CopyFile(zipfile, $"/home/dilli/remmina-share/{zipFileName}");
+    }
+    else
+    {
+        throw new Exception("Remmina share directory does not exist: /home/dilli/remmina-share");
     }
 });
 

@@ -134,11 +134,5 @@ namespace Th3Essentials
         {
             _api.StoreModConfig(PlayerConfig, _playerConfigFile);
         }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            _th3Discord.Dispose();
-        }
     }
 }
