@@ -32,10 +32,13 @@
     "st-setup": "Starterkit wurde gesetzt",
     "hs-noBack": "Es wurde noch keine zurück Position gespeichert",
     "hs-back": "Teleportiert zur letzten Position",
-    "shutdown": ":no_entry: *Server wurde heruntergefahren*",
-    "start": ":white_check_mark: *Server wurde gestartet*",
-    "connected": ":inbox_tray: *Spieler {0} hat den Server betreten*",
-    "disconnected": ":outbox_tray: *Spieler {0} hat den Server verlassen*",
+    "shutdown": ":no_entry: Server wurde heruntergefahren",
+    "start": ":white_check_mark: Server wurde gestartet",
+    "connected": ":inbox_tray: Spieler {0} hat den Server betreten",
+    "disconnected": ":outbox_tray: Spieler {0} hat den Server verlassen",
     "playerdeath": "Player {0} wurde getötet",
-    "playerdeathby": "Spieler {0} wurde getötet durch {1}"
+    "playerdeathby": "Spieler {0} wurde getötet durch {1}",
+    "slc-players": "Liste Spieler welche online sind auf",
+    "slc-date": "Zeige das momentane Spiel Datum und Uhrzeit an",
+    "slc-players-none": "Oh, es ist niemand Online"
 }

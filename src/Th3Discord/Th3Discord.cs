@@ -220,14 +220,14 @@ namespace Th3Essentials.Discord
                 {
                     msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
                 }
-                _discordChannel.SendMessageAsync("*" + msg + "*");
+                _discordChannel.SendMessageAsync(ServerMsg(msg));
             }
         }
 
-        private Task MessageReceivedAsync(SocketMessage message)
+        private string ServerMsg(string msg)
         {
-            // The bot should never respond to itself.
-            if (message.Author.Id == _client.CurrentUser.Id)
+            return $"*{msg}*";
+        }
             {
                 return Task.CompletedTask;
             }
@@ -279,7 +279,7 @@ namespace Th3Essentials.Discord
             if (_discordChannel != null)
             {
                 string msg = Lang.Get("th3essentials:disconnected", byPlayer.PlayerName);
-                _discordChannel.SendMessageAsync(msg);
+                _discordChannel.SendMessageAsync(ServerMsg(msg));
             }
         }
 
@@ -289,7 +289,7 @@ namespace Th3Essentials.Discord
             if (_discordChannel != null)
             {
                 string msg = Lang.Get("th3essentials:connected", byPlayer.PlayerName);
-                _discordChannel.SendMessageAsync(msg);
+                _discordChannel.SendMessageAsync(ServerMsg(msg));
             }
         }
 
@@ -297,7 +297,7 @@ namespace Th3Essentials.Discord
         {
             if (_discordChannel != null)
             {
-                _discordChannel.SendMessageAsync(Lang.Get("th3essentials:start"));
+                _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:start")));
             }
         }
 
@@ -316,7 +316,7 @@ namespace Th3Essentials.Discord
             {
                 if (_discordChannel != null)
                 {
-                    await _discordChannel.SendMessageAsync(Lang.Get("th3essentials:shutdown"));
+                    await _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:shutdown")));
                 }
                 _client.Dispose();
             }
