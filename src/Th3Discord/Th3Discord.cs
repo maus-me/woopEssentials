@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,19 +23,10 @@ namespace Th3Essentials.Discord
 
         private Th3Config _config;
 
-        private int PlayersOnline
-        {
-            [MethodImpl(MethodImplOptions.Synchronized)]
-            get;
-            [MethodImpl(MethodImplOptions.Synchronized)]
-            set;
-        }
-
         private bool initialized;
 
         public Th3Discord()
         {
-            PlayersOnline = 0;
             initialized = false;
         }
 
@@ -84,13 +74,10 @@ namespace Th3Essentials.Discord
                 _api.Event.PlayerChat += PlayerChatAsync;
                 _api.Event.PlayerDisconnect += PlayerDisconnectAsync;
                 _api.Event.PlayerNowPlaying += PlayerNowPlayingAsync;
-                _api.Event.GameWorldSave += WorldSaveCreated;
                 _api.Event.PlayerDeath += PlayerDeathAsync;
                 _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
                 _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
 
-
-                CreateSlashCommand();
                 _client.InteractionCreated += InteractionCreated;
 
                 initialized = true;
@@ -287,8 +274,8 @@ namespace Th3Essentials.Discord
 
         private void PlayerDisconnectAsync(IServerPlayer byPlayer)
         {
-            PlayersOnline--;
-            UpdatePlayers();
+            // update player count with allplayer -1 since the disconnecting player is still online while this event fires
+            UpdatePlayers(_api.World.AllOnlinePlayers.Length - 1);
             if (_discordChannel != null)
             {
                 string msg = Lang.Get("th3essentials:disconnected", byPlayer.PlayerName);
@@ -298,23 +285,12 @@ namespace Th3Essentials.Discord
 
         private void PlayerNowPlayingAsync(IServerPlayer byPlayer)
         {
-            PlayersOnline++;
             UpdatePlayers();
             if (_discordChannel != null)
             {
                 string msg = Lang.Get("th3essentials:connected", byPlayer.PlayerName);
                 _discordChannel.SendMessageAsync(msg);
             }
-        }
-
-        private void WorldSaveCreated()
-        {
-            if (PlayersOnline != _api.World.AllOnlinePlayers.Length)
-            {
-                _api.Server.LogVerboseDebug($"Player number incorrect {PlayersOnline} / {_api.World.AllOnlinePlayers.Length}");
-            }
-            PlayersOnline = _api.World.AllOnlinePlayers.Length;
-            UpdatePlayers();
         }
 
         private void GameReady()
@@ -325,9 +301,13 @@ namespace Th3Essentials.Discord
             }
         }
 
-        private void UpdatePlayers()
+        private void UpdatePlayers(int players = -1)
         {
-            _client.SetGameAsync($"players: {PlayersOnline}");
+            if (players < 0)
+            {
+                players = _api.World.AllOnlinePlayers.Length;
+            }
+            _client.SetGameAsync($"players: {players}");
         }
 
         private async void Shutdown()
