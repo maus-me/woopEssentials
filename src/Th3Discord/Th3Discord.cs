@@ -234,40 +234,72 @@ namespace Th3Essentials.Discord
 
             // only send messages from specific channel to vs server chat
             // ignore empty messages (message is empty when only picture/file is send)
-            if (message.Channel.Id == _config.ChannelId && message.Content != "")
+            else if (message.Channel.Id == _config.ChannelId && message.Content != "")
             {
-                string msgRaw = CleanDiscordMessage(message.Content);
-                if (msgRaw != "")
-                {
-                    string msg;
-                    // use blue font ingame for discord messages
-                    const string format = "<font color=\"#7289DA\"><strong>{0}:</strong></font> {1}";
-                    msg = message.Attachments.Count > 0
-                        ? string.Format(format, message.Author.Username, $" [Attachments] {msgRaw}")
-                        : string.Format(format, message.Author.Username, msgRaw);
-                    _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
-                }
+                string msg = CleanDiscordMessage(message);
+                // use blue font ingame for discord messages
+                const string format = "<font color=\"#7289DA\"><strong>{0}:</strong></font> {1}";
+                msg = message.Attachments.Count > 0
+                    ? string.Format(format, message.Author.Username, $" [Attachments] {msg}")
+                    : string.Format(format, message.Author.Username, msg);
+                _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
             }
             return Task.CompletedTask;
         }
 
-        private string CleanDiscordMessage(string message)
+        private string CleanDiscordMessage(SocketMessage message)
         {
-            message = Regex.Replace(message, "<(@|#)(&|!)*[0-9]*>", String.Empty);
-            message = Regex.Replace(message, "(<)", "&lt;");
-            message = Regex.Replace(message, "(>)", "&gt;");
-            return message;
+            string msg = message.Content;
+            // find user id (https://discord.com/developers/docs/reference#message-formatting)
+            MatchCollection userMention = Regex.Matches(msg, "<@!?([0-9]+)>");
+            foreach (Match user in userMention)
+            {
+                foreach (SocketUser mUser in message.MentionedUsers)
+                {
+                    if (mUser.Id.ToString() == user.Groups[1].Value)
+                    {
+                        msg = Regex.Replace(msg, $"<@!?{user.Groups[1].Value}>", $"@{mUser.Username}");
+                        break;
+                    }
+                }
+            }
+
+            MatchCollection roleMention = Regex.Matches(msg, "<@&([0-9]+)>");
+            foreach (Match role in roleMention)
+            {
+                foreach (SocketRole mRole in message.MentionedRoles)
+                {
+                    if (mRole.Id.ToString() == role.Groups[1].Value)
+                    {
+                        msg = msg.Replace($"<@&{role.Groups[1].Value}>", $"@{mRole.Name}");
+                        break;
+                    }
+                }
+            }
+
+            MatchCollection channelMention = Regex.Matches(msg, "<#([0-9]+)>");
+            foreach (Match channel in channelMention)
+            {
+                foreach (SocketChannel mChannel in message.MentionedChannels)
+                {
+                    if (mChannel.Id.ToString() == channel.Groups[1].Value)
+                    {
+                        msg = msg.Replace($"<#{channel.Groups[1].Value}>", $"#{mChannel}");
+                        break;
+                    }
+                }
+            }
+            return msg.Replace("<", "&lt;").Replace(">", "&gt;");
         }
 
         private void PlayerChatAsync(IServerPlayer byPlayer, int channelId, ref string message, ref string data, BoolRef consumed)
         {
             if (_discordChannel != null)
             {
-                Match playerMsg = Regex.Match(message, "(^.*)(</strong>|</font>)(.*)");
-                string msgRaw = playerMsg.Groups[3].Value;
-                msgRaw = Regex.Replace(msgRaw, "&lt;", "<");
-                msgRaw = Regex.Replace(msgRaw, "&gt;", ">");
-                string msg = string.Format("**{0}:** {1}", byPlayer.PlayerName, msgRaw);
+                Match playerMsg = Regex.Match(message, "> (.+)");
+                string msg = playerMsg.Groups[1].Value;
+                msg = msg.Replace("&lt;", "<").Replace("&gt;", ">");
+                msg = string.Format("**{0}:** {1}", byPlayer.PlayerName, msg);
                 _discordChannel.SendMessageAsync(msg);
             }
         }

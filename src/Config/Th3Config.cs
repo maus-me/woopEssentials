@@ -10,6 +10,8 @@ namespace Th3Essentials.Config
 
         public ulong ChannelId { get; set; }
 
+        public ulong GuildId { get; set; }
+
         public List<string> InfoMessages;
 
         public List<string> AnnouncementMessages;
@@ -26,6 +28,7 @@ namespace Th3Essentials.Config
         {
             Token = "";
             ChannelId = 0;
+            GuildId = 0;
             HomeLimit = 6;
             HomeCooldown = 5;
             AnnouncementInterval = 10;
@@ -36,9 +39,6 @@ namespace Th3Essentials.Config
 
         public void Init()
         {
-            AnnouncementMessages.Add("Welcome to Vintage Story :)");
-            AnnouncementMessages.Add("This server is running Th3Essentials.");
-
             InfoMessages.Add("--------------------");
             InfoMessages.Add("<strong>Important Commands:</strong>");
             InfoMessages.Add(".clients or .online | Shows you all online players");
@@ -56,7 +56,7 @@ namespace Th3Essentials.Config
 
         internal bool IsDiscordConfigured()
         {
-            return Token != "" && ChannelId != 0;
+            return Token != "" && ChannelId != 0 && GuildId != 0;
         }
     }
 }
