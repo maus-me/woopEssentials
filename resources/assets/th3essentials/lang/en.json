@@ -41,5 +41,9 @@
     "playerdeathby": "Player {0} got killed by {1}",
     "slc-players": "Get a list of online players",
     "slc-date": "Get the current ingame date and time",
-    "slc-players-none": "Oh, nobody is online"
+    "slc-restart": "Show time until next restart",
+    "slc-restart-resp": "Server is restarting in {0}h {1}min",
+    "slc-players-none": "Oh, nobody is online",
+    "restart-in-mins": "Server is restarting in {0} minutes",
+    "restart-in-min": "Server is restarting in 1 minute"
 }

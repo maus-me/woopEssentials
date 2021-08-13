@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Th3Essentials.Starterkit;
 
@@ -24,6 +25,12 @@ namespace Th3Essentials.Config
 
         public List<StarterkitItem> Items;
 
+        public bool ShutdownEnabled;
+
+        public TimeSpan ShutdownTime;
+
+        public int[] ShutdownAnnounce;
+
         public Th3Config()
         {
             Token = "";
@@ -35,6 +42,9 @@ namespace Th3Essentials.Config
             AnnouncementMessages = new List<string>();
             InfoMessages = new List<string>();
             Items = new List<StarterkitItem>();
+            ShutdownEnabled = true;
+            ShutdownTime = new TimeSpan();
+            ShutdownAnnounce = new int[0];
         }
 
         public void Init()
@@ -47,6 +57,7 @@ namespace Th3Essentials.Config
             InfoMessages.Add("/home [name] | Teleport to a homepoint");
             InfoMessages.Add("/starterkit| Recive a one time starterkit");
             InfoMessages.Add("--------------------");
+            ShutdownAnnounce = new int[] { 1, 2, 3, 4, 5, 10, 15, 20, 30 };
         }
 
         internal double GetAnnouncementInterval()

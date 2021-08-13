@@ -58,7 +58,15 @@ namespace Th3Essentials.Discord
 
         private Task ReadyAsync()
         {
-            _api.Server.LogVerboseDebug("Discord ReadyAsync");
+            _api.Server.LogVerboseDebug($"{_client.CurrentUser} is connected!");
+
+            // get the channel to send messages from and to
+            _discordChannel = _client.GetChannel(_config.ChannelId) as IMessageChannel;
+            if (_discordChannel == null)
+            {
+                _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
+            }
+
             // needed since discord might disconect from the gateway and reconnect emitting the ReadyAsync again
             if (!initialized)
             {
@@ -72,21 +80,62 @@ namespace Th3Essentials.Discord
                 _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
                 _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
 
+                if (_config.ShutdownEnabled)
+                {
+                    _api.Event.RegisterGameTickListener(CheckRestart, 60000);
+                }
+
                 _client.InteractionCreated += InteractionCreated;
 
                 initialized = true;
             }
 
-            _api.Server.LogVerboseDebug($"{_client.CurrentUser} is connected!");
 
-            // get the channel to send messages from and to
-            _discordChannel = _client.GetChannel(_config.ChannelId) as IMessageChannel;
-            if (_discordChannel == null)
-            {
-                _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
-            }
             UpdatePlayers();
             return Task.CompletedTask;
+        }
+
+        private void CheckRestart(float t1)
+        {
+            int TimeInMinutes = (int)GetTimeTillRestart().TotalMinutes;
+
+            // _api.Logger.VerboseDebug("checkrstart: " + (restartDate - now).ToString());
+            foreach (int time in _config.ShutdownAnnounce)
+            {
+                if (time == TimeInMinutes)
+                {
+                    string msg;
+                    if (TimeInMinutes == 1)
+                    {
+                        msg = Lang.Get("th3essentials:restart-in-min");
+                    }
+                    else
+                    {
+                        msg = Lang.Get("th3essentials:restart-in-mins", TimeInMinutes);
+                    }
+
+                    _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                    _discordChannel.SendMessageAsync(ServerMsg(msg));
+                    _api.Logger.Debug(msg);
+                }
+            }
+            if (TimeInMinutes < 1)
+            {
+                _api.Server.ShutDown();
+            }
+        }
+
+        private TimeSpan GetTimeTillRestart()
+        {
+            DateTime now = DateTime.Now;
+            DateTime restartDate = new DateTime(now.Year, now.Month, now.Day, _config.ShutdownTime.Hours, _config.ShutdownTime.Minutes, _config.ShutdownTime.Seconds);
+
+            if (now.TimeOfDay > _config.ShutdownTime)
+            {
+                restartDate = restartDate.AddDays(1);
+            }
+
+            return restartDate - now;
         }
 
         private void CreateSlashCommands()
@@ -98,7 +147,6 @@ namespace Th3Essentials.Discord
                     Name = "players",
                     Description = Lang.Get("th3essentials:slc-players")
                 };
-                // Now that we have our builder, we can call the rest API to make our slash command.
                 _client.Rest.CreateGuildCommand(players.Build(), _config.GuildId);
 
                 SlashCommandBuilder date = new SlashCommandBuilder
@@ -106,8 +154,14 @@ namespace Th3Essentials.Discord
                     Name = "date",
                     Description = Lang.Get("th3essentials:slc-date")
                 };
-                // Now that we have our builder, we can call the rest API to make our slash command.
                 _client.Rest.CreateGuildCommand(date.Build(), _config.GuildId);
+
+                SlashCommandBuilder restart = new SlashCommandBuilder
+                {
+                    Name = "restart",
+                    Description = Lang.Get("th3essentials:slc-restart")
+                };
+                _client.Rest.CreateGuildCommand(restart.Build(), _config.GuildId);
             }
             catch (ApplicationCommandException exception)
             {
@@ -141,6 +195,12 @@ namespace Th3Essentials.Discord
                             case "date":
                                 {
                                     response = _api.World.Calendar.PrettyDate();
+                                    break;
+                                }
+                            case "restart":
+                                {
+                                    TimeSpan restart = GetTimeTillRestart();
+                                    response = Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"), restart.Minutes.ToString("D2"));
                                     break;
                                 }
                             default:
