@@ -95,20 +95,25 @@ namespace Th3Essentials.Discord
             return Task.CompletedTask;
         }
 
-        private void CreateSlashCommand()
+        private void CreateSlashCommands()
         {
             try
             {
                 SlashCommandBuilder players = new SlashCommandBuilder
                 {
                     Name = "players",
-                    Description = "Get a list of Players"
+                    Description = Lang.Get("th3essentials:slc-players")
                 };
                 // Now that we have our builder, we can call the rest API to make our slash command.
-                _client.Rest.CreateGuildCommand(players.Build(), 319938033140891649);
+                _client.Rest.CreateGuildCommand(players.Build(), _config.GuildId);
 
-                // With global commands we dont need the guild id.
-                //_client.Rest.CreateGlobalCommand(players.Build());
+                SlashCommandBuilder date = new SlashCommandBuilder
+                {
+                    Name = "date",
+                    Description = Lang.Get("th3essentials:slc-date")
+                };
+                // Now that we have our builder, we can call the rest API to make our slash command.
+                _client.Rest.CreateGuildCommand(date.Build(), _config.GuildId);
             }
             catch (ApplicationCommandException exception)
             {
@@ -123,16 +128,34 @@ namespace Th3Essentials.Discord
                 // Slash commands
                 case SocketSlashCommand commandInteraction:
                     {
-
-                        if (commandInteraction.Data.Name == "players")
+                        string response;
+                        switch (commandInteraction.Data.Name)
                         {
-                            string response = "";
-                            foreach (IServerPlayer player in _api.Server.Players)
-                            {
-                                response += player.PlayerName + " ";
-                            }
-                            commandInteraction.RespondAsync(response);
+                            case "players":
+                                {
+                                    response = "";
+                                    foreach (IServerPlayer player in _api.Server.Players)
+                                    {
+                                        response += player.PlayerName + "\n";
+                                    }
+                                    if (response == string.Empty)
+                                    {
+                                        response = Lang.Get("th3essentials:slc-players-none");
+                                    }
+                                    break;
+                                }
+                            case "date":
+                                {
+                                    response = _api.World.Calendar.PrettyDate();
+                                    break;
+                                }
+                            default:
+                                {
+                                    response = "Unknown SlashCommand";
+                                    break;
+                                }
                         }
+                        commandInteraction.RespondAsync(ServerMsg(response));
                         break;
                     }
             }
@@ -228,10 +251,30 @@ namespace Th3Essentials.Discord
         {
             return $"*{msg}*";
         }
+
+        private Task MessageReceivedAsync(SocketMessage messageParam)
+        {
+            if (messageParam.Author.IsBot)
+            {
+                return Task.CompletedTask;
+            }
+            // check if message is from a user else do nothing
+            if (!(messageParam is SocketUserMessage message))
             {
                 return Task.CompletedTask;
             }
 
+            if (message.Content.ToLower().StartsWith("!reloadcommands"))
+            {
+                if (message.Author is SocketGuildUser guildUser)
+                {
+                    if (guildUser.GuildPermissions.Administrator)
+                    {
+                        CreateSlashCommands();
+                        message.ReplyAsync("reloadcommands executed");
+                    }
+                }
+            }
             // only send messages from specific channel to vs server chat
             // ignore empty messages (message is empty when only picture/file is send)
             else if (message.Channel.Id == _config.ChannelId && message.Content != "")
