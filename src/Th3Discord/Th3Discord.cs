@@ -56,12 +56,6 @@ namespace Th3Essentials.Discord
             await Task.Delay(Timeout.Infinite);
         }
 
-        private Task LogAsync(LogMessage log)
-        {
-            _api.Server.LogVerboseDebug($"[Discord] {log.ToString()}");
-            return Task.CompletedTask;
-        }
-
         private Task ReadyAsync()
         {
             _api.Server.LogVerboseDebug("Discord ReadyAsync");
@@ -247,10 +241,6 @@ namespace Th3Essentials.Discord
             }
         }
 
-        private string ServerMsg(string msg)
-        {
-            return $"*{msg}*";
-        }
 
         private Task MessageReceivedAsync(SocketMessage messageParam)
         {
@@ -368,14 +358,6 @@ namespace Th3Essentials.Discord
             }
         }
 
-        private void GameReady()
-        {
-            if (_discordChannel != null)
-            {
-                _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:start")));
-            }
-        }
-
         private void UpdatePlayers(int players = -1)
         {
             if (players < 0)
@@ -383,6 +365,14 @@ namespace Th3Essentials.Discord
                 players = _api.World.AllOnlinePlayers.Length;
             }
             _client.SetGameAsync($"players: {players}");
+        }
+
+        private void GameReady()
+        {
+            if (_discordChannel != null)
+            {
+                _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:start")));
+            }
         }
 
         private async void Shutdown()
@@ -395,6 +385,16 @@ namespace Th3Essentials.Discord
                 }
                 _client.Dispose();
             }
+        }
+        private string ServerMsg(string msg)
+        {
+            return $"*{msg}*";
+        }
+
+        private Task LogAsync(LogMessage log)
+        {
+            _api.Server.LogVerboseDebug($"[Discord] {log.ToString()}");
+            return Task.CompletedTask;
         }
     }
 }
