@@ -8,14 +8,14 @@ namespace Th3Essentials.Commands
     {
         internal override void Init(ICoreServerAPI api)
         {
-            api.RegisterCommand("serverinfo", Lang.Get("th3essentials:cd-info"), string.Empty,
-                (IServerPlayer player, int groupId, CmdArgs args) =>
-                {
-                    for (int i = 0; i < Th3Essentials.Config.InfoMessages.Count; i++)
+            if (Th3Essentials.Config.InfoMessage != null)
+            {
+                api.RegisterCommand("serverinfo", Lang.Get("th3essentials:cd-info"), string.Empty,
+                    (IServerPlayer player, int groupId, CmdArgs args) =>
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Th3Essentials.Config.InfoMessages[i], EnumChatType.Notification);
-                    }
-                }, Privilege.chat);
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Th3Essentials.Config.InfoMessage, EnumChatType.Notification);
+                    }, Privilege.chat);
+            }
         }
     }
 }

@@ -56,7 +56,7 @@ namespace Th3Essentials.Starterkit
             }
             else
             {
-                if (_config.Items.Count == 0)
+                if (_config.Items != null || _config.Items.Count == 0)
                 {
                     player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-notsetup"), EnumChatType.Notification);
                     return;

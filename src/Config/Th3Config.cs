@@ -13,7 +13,7 @@ namespace Th3Essentials.Config
 
         public ulong GuildId { get; set; }
 
-        public List<string> InfoMessages;
+        public string InfoMessage;
 
         public List<string> AnnouncementMessages;
 
@@ -31,32 +31,18 @@ namespace Th3Essentials.Config
 
         public int[] ShutdownAnnounce;
 
-        public Th3Config()
-        {
-            Token = "";
-            ChannelId = 0;
-            GuildId = 0;
-            HomeLimit = 6;
-            HomeCooldown = 5;
-            AnnouncementInterval = 10;
-            AnnouncementMessages = new List<string>();
-            InfoMessages = new List<string>();
-            Items = new List<StarterkitItem>();
-            ShutdownEnabled = true;
-            ShutdownTime = new TimeSpan();
-            ShutdownAnnounce = new int[0];
-        }
-
         public void Init()
         {
-            InfoMessages.Add("--------------------");
-            InfoMessages.Add("<strong>Important Commands:</strong>");
-            InfoMessages.Add(".clients or .online | Shows you all online players");
-            InfoMessages.Add("/spawn | Teleport back to the spawn");
-            InfoMessages.Add("/sethome [name] | Set a homepoint");
-            InfoMessages.Add("/home [name] | Teleport to a homepoint");
-            InfoMessages.Add("/starterkit| Recive a one time starterkit");
-            InfoMessages.Add("--------------------");
+            HomeCooldown = 1;
+            AnnouncementInterval = 10;
+            InfoMessage = "--------------------\n" +
+            "<strong>Important Commands:</strong>\n" +
+            ".clients or .online | Shows you all online players\n" +
+            "/spawn | Teleport back to the spawn\n" +
+            "/sethome [name] | Set a homepoint\n" +
+            "/home [name] | Teleport to a homepoint\n" +
+            "/starterkit| Recive a one time starterkit\n" +
+            "--------------------";
             ShutdownAnnounce = new int[] { 1, 2, 3, 4, 5, 10, 15, 20, 30 };
         }
 
@@ -67,7 +53,22 @@ namespace Th3Essentials.Config
 
         internal bool IsDiscordConfigured()
         {
-            return Token != "" && ChannelId != 0 && GuildId != 0;
+            return Token != null && ChannelId != 0 && GuildId != 0;
+        }
+
+        internal void Reload(Th3Config configTemp)
+        {
+            AnnouncementInterval = configTemp.AnnouncementInterval;
+            AnnouncementMessages.Clear();
+            AnnouncementMessages = configTemp.AnnouncementMessages;
+            InfoMessage = configTemp.InfoMessage;
+            Items.Clear();
+            Items.AddRange(configTemp.Items);
+            HomeCooldown = configTemp.HomeCooldown;
+            HomeLimit = configTemp.HomeLimit;
+            ShutdownEnabled = configTemp.ShutdownEnabled;
+            ShutdownAnnounce = configTemp.ShutdownAnnounce;
+            ShutdownTime = configTemp.ShutdownTime;
         }
     }
 }

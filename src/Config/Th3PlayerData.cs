@@ -7,9 +7,6 @@ namespace Th3Essentials.PlayerData
 {
     public class Th3PlayerData
     {
-        public static int DefaultHomeLimit;
-
-        public static int DefaultHomeCooldown;
 
         public string PlayerUID;
 
@@ -27,9 +24,6 @@ namespace Th3Essentials.PlayerData
 
         public Th3PlayerData()
         {
-            StarterkitRecived = false;
-            HomeLimit = DefaultHomeLimit;
-            HomeCooldown = DefaultHomeCooldown;
             HomePoints = new List<HomePoint>();
         }
 

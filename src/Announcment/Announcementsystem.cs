@@ -13,6 +13,8 @@ namespace Th3Essentials.Announcements
 
         private int _currentMsg;
 
+        private Timer announcer;
+
         public Announcementsystem()
         {
             _currentMsg = 0;
@@ -23,9 +25,9 @@ namespace Th3Essentials.Announcements
             _api = api;
             _config = Th3Essentials.Config;
 
-            if (_config.AnnouncementMessages.Count != 0)
+            if (_config.AnnouncementMessages != null && _config.AnnouncementMessages.Count != 0)
             {
-                Timer announcer = new Timer(_config.GetAnnouncementInterval());
+                announcer = new Timer(_config.GetAnnouncementInterval());
                 announcer.Elapsed += AnnounceMsg;
                 announcer.AutoReset = true;
                 announcer.Enabled = true;
@@ -34,6 +36,11 @@ namespace Th3Essentials.Announcements
 
         private void AnnounceMsg(object source, ElapsedEventArgs args)
         {
+            if (_config.AnnouncementMessages == null)
+            {
+                announcer.Elapsed -= AnnounceMsg;
+                return;
+            }
             if (_currentMsg >= _config.AnnouncementMessages.Count)
             {
                 _currentMsg = 0;

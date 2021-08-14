@@ -5,6 +5,7 @@
     "playerconfig-file-info": "Th3Essentials playerconfig file at {0}",
     "cd-reloadConfig": "reloads Th3Config and Th3PlayerConfig",
     "cd-reloadconfig-msg": "config realoaded",
+    "cd-reloadconfig-fail": "config reload failed, see Logs/server-debug.txt",
     "cd-sethome": "sets a homepoint to your current position with given name",
     "cd-home": "teleport you to the specified homepoint or without name displays list of homepoints",
     "cd-delhome": "delete homepoint",
@@ -45,5 +46,7 @@
     "slc-restart-resp": "Server is restarting in {0}h {1}min",
     "slc-players-none": "Oh, nobody is online",
     "restart-in-mins": "Server is restarting in {0} minutes",
-    "restart-in-min": "Server is restarting in 1 minute"
+    "restart-in-min": "Server is restarting in 1 minute",
+    "th3config-error": "Th3Config could not be loaded: {0}",
+    "disabled": "Th3Essentials config could not be loaded, mod will be disabled"
 }
