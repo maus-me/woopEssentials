@@ -43,6 +43,6 @@
     "slc-restart": "Zeige die Zeit bis zum nächsten Neustart an",
     "slc-restart-resp": "Server startet in {0}h {1}min neu",
     "slc-players-none": "Oh, es ist niemand Online",
-    "restart-in-mins": "Server startet in {0} minuten neu",
-    "restart-in-min": "Server startet in 1 minute neu"
+    "restart-in-mins": "Server startet in {0} Minuten neu",
+    "restart-in-min": "Server startet in 1 Minute neu"
 }
