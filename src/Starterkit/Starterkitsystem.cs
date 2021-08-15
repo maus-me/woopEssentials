@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Th3Essentials.Config;
 using Th3Essentials.PlayerData;
 using Vintagestory.API.Common;
@@ -31,7 +32,14 @@ namespace Th3Essentials.Starterkit
             api.RegisterCommand("setstarterkit", Lang.Get("th3essentials:cd-setstarterkit"), string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
-                _config.Items.Clear();
+                if (_config.Items == null)
+                {
+                    _config.Items = new List<StarterkitItem>();
+                }
+                else
+                {
+                    _config.Items.Clear();
+                }
                 IInventory inventory = player.InventoryManager.GetHotbarInventory();
                 for (int i = 0; i < inventory.Count; i++)
                 {
@@ -56,7 +64,7 @@ namespace Th3Essentials.Starterkit
             }
             else
             {
-                if (_config.Items != null || _config.Items.Count == 0)
+                if (_config.Items == null || _config.Items.Count == 0)
                 {
                     player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-notsetup"), EnumChatType.Notification);
                     return;
@@ -123,7 +131,7 @@ namespace Th3Essentials.Starterkit
                         {
                             StarterkitRecived = true
                         };
-                        _playerConfig.Players.Add(playerData);
+                        _playerConfig.Add(playerData);
                     }
                 }
                 catch (Exception e)

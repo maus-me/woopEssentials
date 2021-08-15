@@ -60,6 +60,7 @@ namespace Th3Essentials.Homepoints
             if (playerData != null)
             {
                 playerData.LastPosition = byPlayer.Entity.Pos.AsBlockPos;
+                _playerConfig.MarkDirty();
             }
         }
 
@@ -81,6 +82,7 @@ namespace Th3Essentials.Homepoints
                         playerData.LastPosition = player.Entity.Pos.AsBlockPos;
                         player.Entity.TeleportTo(teleportTo);
                         playerData.HomeLastuseage = DateTime.Now;
+                        _playerConfig.MarkDirty();
                         player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-back"), EnumChatType.Notification);
                     }
                 }
@@ -106,6 +108,7 @@ namespace Th3Essentials.Homepoints
                     playerData.LastPosition = player.Entity.Pos.AsBlockPos;
                     player.Entity.TeleportTo(_api.World.DefaultSpawnPosition);
                     playerData.HomeLastuseage = DateTime.Now;
+                    _playerConfig.MarkDirty();
                     player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-tp-spawn"), EnumChatType.Notification);
                 }
                 else
@@ -134,7 +137,6 @@ namespace Th3Essentials.Homepoints
                         for (int i = 0; i < playerData.HomePoints.Count; i++)
                         {
                             player.SendMessage(GlobalConstants.GeneralChatGroup, playerData.HomePoints[i].Name, EnumChatType.Notification);
-
                         }
                     }
                 }
@@ -148,6 +150,7 @@ namespace Th3Essentials.Homepoints
                             playerData.LastPosition = player.Entity.Pos.AsBlockPos;
                             player.Entity.TeleportTo(point.Position);
                             playerData.HomeLastuseage = DateTime.Now;
+                            _playerConfig.MarkDirty();
                             player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-tp-point", name), EnumChatType.Notification);
                         }
                         else
@@ -177,6 +180,7 @@ namespace Th3Essentials.Homepoints
                 if (point != null)
                 {
                     playerData.HomePoints.Remove(point);
+                    _playerConfig.MarkDirty();
                     player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-delete", name), EnumChatType.Notification);
                     return;
                 }
@@ -214,15 +218,16 @@ namespace Th3Essentials.Homepoints
             else
             {
                 playerData = new Th3PlayerData(player.PlayerUID);
-                _playerConfig.Players.Add(playerData);
+                _playerConfig.Add(playerData);
                 AddHomepoint(player, name, playerData);
             }
         }
 
-        private static void AddHomepoint(IServerPlayer player, string name, Th3PlayerData playerData)
+        private void AddHomepoint(IServerPlayer player, string name, Th3PlayerData playerData)
         {
             HomePoint newPoint = new HomePoint(name, player.Entity.Pos.XYZ.AsBlockPos);
             playerData.HomePoints.Add(newPoint);
+            _playerConfig.MarkDirty();
             player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-created", name), EnumChatType.Notification);
         }
 

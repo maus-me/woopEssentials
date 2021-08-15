@@ -9,6 +9,10 @@
 			<HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="protobuf-net">
+			<HintPath>$(VINTAGE_STORY)\Lib\protobuf-net.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Discord.Net.Labs" Version="2.4.9" />

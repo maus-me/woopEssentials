@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using Th3Essentials.Announcements;
 using Th3Essentials.Commands;
 using Th3Essentials.Config;
@@ -11,6 +10,7 @@ using Th3Essentials.Starterkit;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
+using Vintagestory.API.Util;
 
 [assembly: ModInfo("Th3Essentials",
     Description = "Th3Dilli essentials server mod",
@@ -22,11 +22,11 @@ namespace Th3Essentials
     {
         private const string _configFile = "Th3Config.json";
 
-        private const string _playerConfigFile = "Th3PlayerConfig.json";
-
         internal static Th3Config Config { get; private set; }
 
         internal static Th3PlayerConfig PlayerConfig { get; private set; }
+
+        internal static string Th3EssentialsModDataKey = "Th3Essentials";
 
         private ICoreServerAPI _api;
 
@@ -40,6 +40,7 @@ namespace Th3Essentials
         public override void StartServerSide(ICoreServerAPI api)
         {
             _api = api;
+            IServerPlayerData a = _api.PlayerData.GetPlayerDataByUid("");
 
             try
             {
@@ -59,13 +60,15 @@ namespace Th3Essentials
                 _api.Logger.Error(Lang.Get("th3essentials:th3config-error", e));
             }
 
+            PlayerConfig = new Th3PlayerConfig();
+
             if (Config == null)
             {
                 _api.Logger.Error(Lang.Get("th3essentials:disabled"));
                 return;
             }
 
-            _api.Event. += GameWorldSave;
+            _api.Event.GameWorldSave += GameWorldSave;
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
 
             CommandsLoader.Init(_api);
@@ -89,11 +92,22 @@ namespace Th3Essentials
 
         private void PlayerNowPlaying(IServerPlayer byPlayer)
         {
-            if (PlayerConfig.GetPlayerDataByUID(byPlayer.PlayerUID) == null)
+            byte[] data = byPlayer.WorldData.GetModdata(Th3EssentialsModDataKey);
+            Th3PlayerData playerData;
+            if (data != null)
             {
-                Th3PlayerData playerData = new Th3PlayerData(byPlayer.PlayerUID);
-                PlayerConfig.Players.Add(playerData);
+                playerData = SerializerUtil.Deserialize<Th3PlayerData>(data);
             }
+            else
+            {
+                playerData = new Th3PlayerData
+                {
+                    HomeLimit = Config.HomeLimit,
+                    HomeCooldown = Config.HomeCooldown
+                };
+            }
+            playerData.PlayerUID = byPlayer.PlayerUID;
+            PlayerConfig.Add(playerData);
         }
 
         private void GameWorldSave()
@@ -102,30 +116,23 @@ namespace Th3Essentials
             {
                 _api.StoreModConfig(Config, _configFile);
             }
+
+            PlayerConfig.GameWorldSave(_api);
         }
 
         private bool ReloadConfig()
         {
             try
             {
-                Config.Reload(_api.LoadModConfig<Th3Config>(_configFile));
+                Th3Config configTemp = _api.LoadModConfig<Th3Config>(_configFile);
+                Config.Reload(configTemp);
             }
             catch (Exception e)
             {
-                _api.Logger.Error("Error reloading Th3Config: ", e);
+                _api.Logger.Error("Error reloading Th3Config: ", e.ToString());
                 return false;
             }
             return true;
-        }
-
-        private void SaveConfig()
-        {
-            _api.StoreModConfig(Config, _configFile);
-        }
-
-        private void SavePlayerConfig()
-        {
-            _api.StoreModConfig(PlayerConfig, _playerConfigFile);
         }
     }
 }
