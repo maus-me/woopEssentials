@@ -7,6 +7,7 @@ namespace Th3Essentials.Commands
         internal static void Init(ICoreServerAPI api)
         {
             new Serverinfo().Init(api);
+            new Message().Init(api);
         }
     }
 }
