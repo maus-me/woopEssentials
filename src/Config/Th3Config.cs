@@ -59,11 +59,17 @@ namespace Th3Essentials.Config
         internal void Reload(Th3Config configTemp)
         {
             AnnouncementInterval = configTemp.AnnouncementInterval;
-            AnnouncementMessages.Clear();
-            AnnouncementMessages = configTemp.AnnouncementMessages;
+            if (AnnouncementMessages != null)
+            {
+                AnnouncementMessages.Clear();
+                AnnouncementMessages = configTemp.AnnouncementMessages;
+            }
             InfoMessage = configTemp.InfoMessage;
-            Items.Clear();
-            Items.AddRange(configTemp.Items);
+            if (Items != null)
+            {
+                Items.Clear();
+                Items.AddRange(configTemp.Items);
+            }
             HomeCooldown = configTemp.HomeCooldown;
             HomeLimit = configTemp.HomeLimit;
             ShutdownEnabled = configTemp.ShutdownEnabled;
