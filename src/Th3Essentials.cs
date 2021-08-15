@@ -85,8 +85,14 @@ namespace Th3Essentials
             _api.RegisterCommand("reloadconfig", Lang.Get("th3essentials:cd-reloadConfig"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
-                    string response = ReloadConfig() ? Lang.Get("th3essentials:cd-reloadconfig-msg") : Lang.Get("th3essentials:cd-reloadconfig-fail");
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, response, EnumChatType.Notification);
+                    if (ReloadConfig())
+                    {
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-reloadconfig-msg"), EnumChatType.CommandSuccess);
+                    }
+                    else
+                    {
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-reloadconfig-fail"), EnumChatType.CommandError);
+                    }
                 }, Privilege.controlserver);
         }
 

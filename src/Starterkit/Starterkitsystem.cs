@@ -51,7 +51,7 @@ namespace Th3Essentials.Starterkit
                         _config.Items.Add(new StarterkitItem(enumItemClass, code, stackSize));
                     }
                 }
-                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-setup"), EnumChatType.Notification);
+                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-setup"), EnumChatType.CommandSuccess);
             }, Privilege.controlserver);
         }
 
@@ -60,13 +60,13 @@ namespace Th3Essentials.Starterkit
             Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
             if (playerData != null && playerData.StarterkitRecived)
             {
-                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-hasalready"), EnumChatType.Notification);
+                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-hasalready"), EnumChatType.CommandSuccess);
             }
             else
             {
                 if (_config.Items == null || _config.Items.Count == 0)
                 {
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-notsetup"), EnumChatType.Notification);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-notsetup"), EnumChatType.CommandSuccess);
                     return;
                 }
                 try
@@ -82,7 +82,7 @@ namespace Th3Essentials.Starterkit
                     }
                     if (emptySlots < _config.Items.Count)
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-needspace", _config.Items.Count), EnumChatType.Notification);
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-needspace", _config.Items.Count), EnumChatType.CommandSuccess);
                         return;
                     }
                     for (int i = 0; i < _config.Items.Count; i++)
@@ -114,12 +114,12 @@ namespace Th3Essentials.Starterkit
                             }
                             if (!recived)
                             {
-                                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-wrong"), EnumChatType.Notification);
+                                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-wrong"), EnumChatType.CommandError);
                                 throw new Exception($"Could not give item/block: {_config.Items[i]}");
                             }
                         }
                     }
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-recived"), EnumChatType.Notification);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-recived"), EnumChatType.CommandSuccess);
 
                     if (playerData != null)
                     {
@@ -133,6 +133,7 @@ namespace Th3Essentials.Starterkit
                         };
                         _playerConfig.Add(playerData);
                     }
+                    playerData.MarkDirty();
                 }
                 catch (Exception e)
                 {

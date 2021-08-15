@@ -9,6 +9,8 @@ namespace Th3Essentials.PlayerData
     [ProtoContract]
     public class Th3PlayerData
     {
+        public bool IsDirty { get; internal set; }
+
         public string PlayerUID;
 
         [ProtoMember(1)]
@@ -47,6 +49,14 @@ namespace Th3Essentials.PlayerData
         public HomePoint FindPointByName(string name)
         {
             return HomePoints.Find(point => point.Name == name);
+        }
+
+        internal void MarkDirty()
+        {
+            if (!IsDirty)
+            {
+                IsDirty = true;
+            }
         }
     }
 }
