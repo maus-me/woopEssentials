@@ -80,14 +80,14 @@
       "command": "mono $VINTAGE_STORY_SERVER_DEV/VintagestoryServer.exe --dataPath $VINTAGE_STORY_SERVER_DEV_DATA --addModPath ${workspaceFolder}/bin/packages/mods"
     },
     {
-      "label": "run server pre",
+      "label": "run server (Debug)",
       "type": "shell",
       "group": {
         "kind": "build",
         "isDefault": true
       },
       "dependsOn": ["package (Debug)"],
-      "command": "mono $VINTAGE_STORY_SERVER_DEV_PRE/VintagestoryServer.exe --dataPath $VINTAGE_STORY_SERVER_DEV_DATA_PRE --addModPath ${workspaceFolder}/bin/packages/mods"
+      "command": "mono --debug --debugger-agent=transport=dt_socket,server=y,address=127.0.0.1:55555 $VINTAGE_STORY_SERVER_DEV/VintagestoryServer.exe --dataPath $VINTAGE_STORY_SERVER_DEV_DATA --addModPath ${workspaceFolder}/bin/packages/mods"
     }
   ]
 }

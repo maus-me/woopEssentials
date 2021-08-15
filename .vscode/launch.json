@@ -2,6 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug Server",
+      "type": "mono",
+      "request": "attach",
+      "address": "127.0.0.1",
+      "port": 55555
+    },
+    {
       "name": "Launch Client (Mono)",
       "type": "mono",
       "request": "launch",
