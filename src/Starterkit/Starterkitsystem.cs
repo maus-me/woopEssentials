@@ -58,7 +58,7 @@ namespace Th3Essentials.Starterkit
         private void TryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
         {
             Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
-            if (playerData != null && playerData.StarterkitRecived)
+            if (playerData.StarterkitRecived)
             {
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-hasalready"), EnumChatType.CommandSuccess);
             }
@@ -120,19 +120,7 @@ namespace Th3Essentials.Starterkit
                         }
                     }
                     player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-recived"), EnumChatType.CommandSuccess);
-
-                    if (playerData != null)
-                    {
-                        playerData.StarterkitRecived = true;
-                    }
-                    else
-                    {
-                        playerData = new Th3PlayerData(player.PlayerUID)
-                        {
-                            StarterkitRecived = true
-                        };
-                        _playerConfig.Add(playerData);
-                    }
+                    playerData.StarterkitRecived = true;
                     playerData.MarkDirty();
                 }
                 catch (Exception e)

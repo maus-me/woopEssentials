@@ -99,21 +99,12 @@ namespace Th3Essentials
         private void PlayerNowPlaying(IServerPlayer byPlayer)
         {
             byte[] data = byPlayer.WorldData.GetModdata(Th3EssentialsModDataKey);
-            Th3PlayerData playerData;
             if (data != null)
             {
-                playerData = SerializerUtil.Deserialize<Th3PlayerData>(data);
+                Th3PlayerData playerData = SerializerUtil.Deserialize<Th3PlayerData>(data);
+                playerData.PlayerUID = byPlayer.PlayerUID;
+                PlayerConfig.Add(playerData);
             }
-            else
-            {
-                playerData = new Th3PlayerData
-                {
-                    HomeLimit = Config.HomeLimit,
-                    HomeCooldown = Config.HomeCooldown
-                };
-            }
-            playerData.PlayerUID = byPlayer.PlayerUID;
-            PlayerConfig.Add(playerData);
         }
 
         private void GameWorldSave()

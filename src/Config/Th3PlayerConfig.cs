@@ -15,9 +15,24 @@ namespace Th3Essentials.Config
             Players = new List<Th3PlayerData>();
         }
 
+        /// <summary>
+        /// gets or creates a Th3PlayerData object with given UID
+        /// </summary>
+        /// <param name="playerUID"></param>
+        /// <returns>Th3PlayerData</returns>
         public Th3PlayerData GetPlayerDataByUID(string playerUID)
         {
-            return Players.Find(player => player.PlayerUID == playerUID);
+            Th3PlayerData playerData = Players.Find(player => player.PlayerUID == playerUID);
+            if (playerData == null)
+            {
+                playerData = new Th3PlayerData(playerUID)
+                {
+                    HomeLimit = Th3Essentials.Config.HomeLimit,
+                    HomeCooldown = Th3Essentials.Config.HomeCooldown
+                };
+                Add(playerData);
+            }
+            return playerData;
         }
 
         internal void GameWorldSave(ICoreServerAPI api)
