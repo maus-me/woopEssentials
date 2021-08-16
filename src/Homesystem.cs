@@ -118,7 +118,7 @@ namespace Th3Essentials.Homepoints
                 }
                 else
                 {
-                    string response = Lang.Get("th3essentials:hs-list");
+                    string response = Lang.Get("th3essentials:hs-list", $"{playerData.HomePoints.Count}/{playerData.HomeLimit}\n");
                     for (int i = 0; i < playerData.HomePoints.Count; i++)
                     {
                         response += playerData.HomePoints[i].Name + "\n";
