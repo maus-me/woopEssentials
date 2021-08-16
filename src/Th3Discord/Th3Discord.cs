@@ -332,10 +332,14 @@ namespace Th3Essentials.Discord
                 string msg = CleanDiscordMessage(message);
                 // use blue font ingame for discord messages
                 const string format = "<font color=\"#7289DA\"><strong>{0}:</strong></font> {1}";
-                msg = message.Attachments.Count > 0
-                    ? string.Format(format, message.Author.Username, $" [Attachments] {msg}")
-                    : string.Format(format, message.Author.Username, msg);
-                _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                if (message.Author is SocketGuildUser guildUser)
+                {
+                    string name = guildUser.Nickname ?? guildUser.Username;
+                    msg = message.Attachments.Count > 0
+                        ? string.Format(format, name, $" [Attachments] {msg}")
+                        : string.Format(format, name, msg);
+                    _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                }
             }
             return Task.CompletedTask;
         }
@@ -349,10 +353,14 @@ namespace Th3Essentials.Discord
             {
                 foreach (SocketUser mUser in message.MentionedUsers)
                 {
-                    if (mUser.Id.ToString() == user.Groups[1].Value)
+                    if (mUser is SocketGuildUser mGuildUser)
                     {
-                        msg = Regex.Replace(msg, $"<@!?{user.Groups[1].Value}>", $"@{mUser.Username}");
-                        break;
+                        if (mGuildUser.Id.ToString() == user.Groups[1].Value)
+                        {
+                            string name = mGuildUser.Nickname ?? mGuildUser.Username;
+                            msg = Regex.Replace(msg, $"<@!?{user.Groups[1].Value}>", $"@{name}");
+                            break;
+                        }
                     }
                 }
             }
