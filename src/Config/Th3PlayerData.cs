@@ -9,8 +9,8 @@ namespace Th3Essentials.PlayerData
     [ProtoContract]
     public class Th3PlayerData
     {
-        public bool IsDirty { get; internal set; }
-
+        //TODO: new moddata saving
+        // public bool IsDirty { get; internal set; }
         public string PlayerUID;
 
         [ProtoMember(1)]
@@ -53,10 +53,11 @@ namespace Th3Essentials.PlayerData
 
         internal void MarkDirty()
         {
-            if (!IsDirty)
-            {
-                IsDirty = true;
-            }
+            //TODO: new moddata saving
+            // if (!IsDirty)
+            // {
+            //     IsDirty = true;
+            // }
         }
     }
 }

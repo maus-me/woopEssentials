@@ -13,6 +13,10 @@
 			<HintPath>$(VINTAGE_STORY)\Lib\protobuf-net.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="Newtonsoft.Json">
+			<HintPath>$(VINTAGE_STORY)\Lib\Newtonsoft.Json.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Discord.Net.Labs" Version="2.4.9" />

@@ -8,7 +8,7 @@ namespace Th3Essentials.Config
 {
     public class Th3PlayerConfig
     {
-        private readonly List<Th3PlayerData> Players;
+        public readonly List<Th3PlayerData> Players;
 
         public Th3PlayerConfig()
         {
@@ -37,16 +37,17 @@ namespace Th3Essentials.Config
 
         internal void GameWorldSave(ICoreServerAPI api)
         {
-            foreach (Th3PlayerData playerData in Players)
-            {
-                if (playerData.IsDirty)
-                {
-                    playerData.IsDirty = false;
-                    byte[] data = SerializerUtil.Serialize(playerData);
-                    IPlayer player = api.World.PlayerByUid(playerData.PlayerUID);
-                    player.WorldData.SetModdata(Th3Essentials.Th3EssentialsModDataKey, data);
-                }
-            }
+            //TODO: new moddata saving
+            // foreach (Th3PlayerData playerData in Players)
+            // {
+            //     if (playerData.IsDirty)
+            //     {
+            //         playerData.IsDirty = false;
+            //         byte[] data = SerializerUtil.Serialize(playerData);
+            //         IPlayer player = api.World.PlayerByUid(playerData.PlayerUID);
+            //         player.WorldData.SetModdata(Th3Essentials.Th3EssentialsModDataKey, data);
+            //     }
+            // }
         }
 
         public void Add(Th3PlayerData playerData)
