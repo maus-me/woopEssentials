@@ -97,7 +97,7 @@ namespace Th3Essentials.Discord
 
         private void CheckRestart(float t1)
         {
-            int TimeInMinutes = (int)GetTimeTillRestart().TotalMinutes;
+            int TimeInMinutes = (int)Th3Util.GetTimeTillRestart().TotalMinutes;
 
             // _api.Logger.VerboseDebug("checkrstart: " + (restartDate - now).ToString());
             foreach (int time in _config.ShutdownAnnounce)
@@ -123,19 +123,6 @@ namespace Th3Essentials.Discord
             {
                 _api.Server.ShutDown();
             }
-        }
-
-        private TimeSpan GetTimeTillRestart()
-        {
-            DateTime now = DateTime.Now;
-            DateTime restartDate = new DateTime(now.Year, now.Month, now.Day, _config.ShutdownTime.Hours, _config.ShutdownTime.Minutes, _config.ShutdownTime.Seconds);
-
-            if (now.TimeOfDay > _config.ShutdownTime)
-            {
-                restartDate = restartDate.AddDays(1);
-            }
-
-            return restartDate - now;
         }
 
         private void CreateSlashCommands()
@@ -199,7 +186,7 @@ namespace Th3Essentials.Discord
                                 }
                             case "restart":
                                 {
-                                    TimeSpan restart = GetTimeTillRestart();
+                                    TimeSpan restart = Th3Util.GetTimeTillRestart();
                                     response = Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"), restart.Minutes.ToString("D2"));
                                     break;
                                 }
@@ -454,6 +441,7 @@ namespace Th3Essentials.Discord
                 _client.Dispose();
             }
         }
+
         private string ServerMsg(string msg)
         {
             return $"*{msg}*";
