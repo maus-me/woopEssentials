@@ -17,6 +17,7 @@
     "cd-msg": "Sende eine nachricht an einen Spieler der online ist",
     "cd-msg-param": "[Spielername] [Nachricht]",
     "cd-msg-fail": "Spieler \"{0}\" konnte nicht gefunden werden",
+    "cd-restart": "Zeigt die Zeit bis zum nächsten Neustart an",
     "hs-wait": "Du musst noch {0} min {1} sec warten",
     "hs-tp-spawn": "Teleportiert zum Spawn",
     "hs-tp-point": "Teleportiert zu {0}",
