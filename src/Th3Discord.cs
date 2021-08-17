@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -168,14 +169,18 @@ namespace Th3Essentials.Discord
                         {
                             case "players":
                                 {
-                                    response = "";
+                                    List<string> names = new List<string>();
                                     foreach (IServerPlayer player in _api.Server.Players)
                                     {
-                                        response += player.PlayerName + "\n";
+                                        names.Add(player.PlayerName);
                                     }
-                                    if (response == string.Empty)
+                                    if (names.Count == 0)
                                     {
                                         response = Lang.Get("th3essentials:slc-players-none");
+                                    }
+                                    else
+                                    {
+                                        response = string.Join("\n", names);
                                     }
                                     break;
                                 }

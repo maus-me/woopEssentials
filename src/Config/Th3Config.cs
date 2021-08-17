@@ -7,7 +7,6 @@ namespace Th3Essentials.Config
 {
     public class Th3Config
     {
-
         public string Token { get; set; }
 
         public ulong ChannelId { get; set; }
