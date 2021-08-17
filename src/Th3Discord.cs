@@ -136,7 +136,7 @@ namespace Th3Essentials.Discord
                             case "players":
                                 {
                                     List<string> names = new List<string>();
-                                    foreach (IServerPlayer player in _api.Server.Players)
+                                    foreach (IServerPlayer player in _api.World.AllOnlinePlayers)
                                     {
                                         names.Add(player.PlayerName);
                                     }
