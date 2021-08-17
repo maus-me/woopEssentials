@@ -81,10 +81,6 @@ namespace Th3Essentials.Discord
                 _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
                 _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
 
-                if (_config.ShutdownEnabled)
-                {
-                    _api.Event.RegisterGameTickListener(CheckRestart, 60000);
-                }
 
                 _client.InteractionCreated += InteractionCreated;
 
@@ -94,36 +90,6 @@ namespace Th3Essentials.Discord
 
             UpdatePlayers();
             return Task.CompletedTask;
-        }
-
-        private void CheckRestart(float t1)
-        {
-            int TimeInMinutes = (int)Th3Util.GetTimeTillRestart().TotalMinutes;
-
-            // _api.Logger.VerboseDebug("checkrstart: " + (restartDate - now).ToString());
-            foreach (int time in _config.ShutdownAnnounce)
-            {
-                if (time == TimeInMinutes)
-                {
-                    string msg;
-                    if (TimeInMinutes == 1)
-                    {
-                        msg = Lang.Get("th3essentials:restart-in-min");
-                    }
-                    else
-                    {
-                        msg = Lang.Get("th3essentials:restart-in-mins", TimeInMinutes);
-                    }
-
-                    _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
-                    _discordChannel.SendMessageAsync(ServerMsg(msg));
-                    _api.Logger.Debug(msg);
-                }
-            }
-            if (TimeInMinutes < 1)
-            {
-                _api.Server.ShutDown();
-            }
         }
 
         private void CreateSlashCommands()
@@ -206,6 +172,11 @@ namespace Th3Essentials.Discord
                     }
             }
             return Task.CompletedTask;
+        }
+
+        internal void SendMessage(string msg)
+        {
+            _discordChannel.SendMessageAsync(ServerMsg(msg));
         }
 
         private void PlayerDeathAsync(IServerPlayer byPlayer, DamageSource damageSource)

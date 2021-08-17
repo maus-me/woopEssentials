@@ -80,6 +80,11 @@ namespace Th3Essentials
             _api.Event.GameWorldSave += GameWorldSave;
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
 
+            if (Config.ShutdownEnabled)
+            {
+                _api.Event.RegisterGameTickListener(CheckRestart, 60000);
+            }
+
             CommandsLoader.Init(_api);
             new Homesystem().Init(_api);
             new Starterkitsystem().Init(_api);
@@ -103,6 +108,37 @@ namespace Th3Essentials
                         player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-reloadconfig-fail"), EnumChatType.CommandError);
                     }
                 }, Privilege.controlserver);
+        }
+
+        private void CheckRestart(float t1)
+        {
+            int TimeInMinutes = (int)Th3Util.GetTimeTillRestart().TotalMinutes;
+
+            // _api.Logger.VerboseDebug("checkrstart: " + TimeInMinutes.ToString());
+            foreach (int time in Config.ShutdownAnnounce)
+            {
+                if (time == TimeInMinutes)
+                {
+                    string msg;
+                    if (TimeInMinutes == 1)
+                    {
+                        msg = Lang.Get("th3essentials:restart-in-min");
+                    }
+                    else
+                    {
+                        msg = Lang.Get("th3essentials:restart-in-mins", TimeInMinutes);
+                    }
+
+                    _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                    _th3Discord.SendMessage(msg);
+                    _api.Logger.Debug(msg);
+                }
+            }
+            if (TimeInMinutes < 1)
+            {
+                _api.InjectConsole("/genbackup");
+                _api.Server.ShutDown();
+            }
         }
 
         private void PlayerNowPlaying(IServerPlayer byPlayer)
