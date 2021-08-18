@@ -136,7 +136,6 @@ namespace Th3Essentials
             }
             if (TimeInMinutes < 1)
             {
-                _api.InjectConsole("/genbackup");
                 _api.Server.ShutDown();
             }
         }
