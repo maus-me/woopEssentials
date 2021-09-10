@@ -11,8 +11,6 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
-using Vintagestory.Common;
-using Vintagestory.Server;
 
 [assembly: ModInfo("Th3Essentials",
     Description = "Th3Dilli essentials server mod",
@@ -23,8 +21,6 @@ namespace Th3Essentials
     public class Th3Essentials : ModSystem
     {
         private const string _configFile = "Th3Config.json";
-
-        private const string _playerConfigFile = "Th3PlayerConfig.json";
 
         internal static Th3Config Config { get; private set; }
 
@@ -63,8 +59,7 @@ namespace Th3Essentials
                 _api.Logger.Error(Lang.Get("th3essentials:th3config-error", e));
             }
 
-            PlayerConfig = _api.LoadModConfig<Th3PlayerConfig>(_playerConfigFile);
-            // PlayerConfig = new Th3PlayerConfig();
+            PlayerConfig = new Th3PlayerConfig();
 
 
             if (Config == null)
@@ -75,7 +70,6 @@ namespace Th3Essentials
 
             _api.Event.GameWorldSave += GameWorldSave;
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
-            // _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
 
             if (Config.ShutdownEnabled)
             {
@@ -105,26 +99,6 @@ namespace Th3Essentials
                         player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-reloadconfig-fail"), EnumChatType.CommandError);
                     }
                 }, Privilege.controlserver);
-        }
-
-        private void GameReady()
-        {
-            ServerMain server = (ServerMain)_api.World;
-            GameDatabase gameDatabase = new GameDatabase(ServerMain.Logger);
-            gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out int foundVersion, out string errorMessage, out bool isReadonly);
-            gameDatabase.UpgradeToWriteAccess();
-
-            foreach (Th3PlayerData th3d in PlayerConfig.Players)
-            {
-                byte[] pdata = gameDatabase.GetPlayerData(th3d.PlayerUID);
-                ServerWorldPlayerData swpdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(pdata);
-                byte[] newdata = SerializerUtil.Serialize(th3d);
-                swpdata.SetModdata(Th3EssentialsModDataKey, newdata);
-                byte[] snewdata = SerializerUtil.Serialize(swpdata);
-                gameDatabase.SetPlayerData(th3d.PlayerUID, snewdata);
-            }
-            gameDatabase.Dispose();
-            _api.Logger.VerboseDebug("Updated player data into savegame");
         }
 
         private void CheckRestart(float t1)
