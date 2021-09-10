@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Net;
+using Discord.Rest;
 using Discord.WebSocket;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
@@ -12,7 +13,7 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 
-namespace Th3Essentials.Discord
+namespace Th3Essentials.Discordbot
 {
     public class Th3Discord
     {
@@ -316,15 +317,28 @@ namespace Th3Essentials.Discord
             {
                 foreach (SocketUser mUser in message.MentionedUsers)
                 {
+                    string name = null;
                     if (mUser is SocketGuildUser mGuildUser)
                     {
                         if (mGuildUser.Id.ToString() == user.Groups[1].Value)
                         {
-                            string name = mGuildUser.Nickname ?? mGuildUser.Username;
-                            msg = Regex.Replace(msg, $"<@!?{user.Groups[1].Value}>", $"@{name}");
-                            break;
+                            name = mGuildUser.Nickname ?? mGuildUser.Username;
                         }
                     }
+                    else if (mUser is SocketUnknownUser)
+                    {
+                        RestGuildUser rgUser = _client.Rest.GetGuildUserAsync(_config.GuildId, mUser.Id).GetAwaiter().GetResult();
+                        if (rgUser.Id.ToString() == user.Groups[1].Value)
+                        {
+                            name = rgUser.Nickname ?? rgUser.Username;
+                        }
+                    }
+                    if (name != null)
+                    {
+                        msg = Regex.Replace(msg, $"<@!?{user.Groups[1].Value}>", $"@{name}");
+                        break;
+                    }
+
                 }
             }
 
