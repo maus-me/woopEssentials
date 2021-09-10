@@ -18,6 +18,37 @@
         "-p",
         "-o",
         "modding test world",
+        "--dataPath",
+        "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
+        "--addModPath",
+        "${workspaceFolder}/bin/packages/mods"
+      ],
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Launch Client no world no build (Mono)",
+      "type": "mono",
+      "request": "launch",
+      "program": "${env:VINTAGE_STORY}/Vintagestory.exe",
+      "args": [
+        "--dataPath",
+        "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
+        "--addModPath",
+        "${workspaceFolder}/bin/packages/mods"
+      ],
+      "console": "internalConsole",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Launch Client no world (Mono)",
+      "type": "mono",
+      "request": "launch",
+      "preLaunchTask": "package (Debug)",
+      "program": "${env:VINTAGE_STORY}/Vintagestory.exe",
+      "args": [
+        "--dataPath",
+        "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
         "--addModPath",
         "${workspaceFolder}/bin/packages/mods"
       ],
@@ -26,7 +57,7 @@
     },
     {
       "name": "Launch Client (.NET)",
-      "type": "clr",
+      "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "package (Debug)",
       "program": "${env:VINTAGE_STORY}/Vintagestory.exe",
@@ -34,6 +65,8 @@
         "-p",
         "-o",
         "modding test world",
+        "--dataPath",
+        "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
         "--addModPath",
         "${workspaceFolder}/bin/packages/mods"
       ],
