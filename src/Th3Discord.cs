@@ -298,7 +298,8 @@ namespace Th3Essentials.Discordbot
             {
                 string msg = CleanDiscordMessage(message);
                 // use blue font ingame for discord messages
-                const string format = "<font color=\"#7289DA\"><strong>{0}:</strong></font> {1}";
+                const string format = "<font color=\"#7289DA\"><strong>{0}: </strong></font><font family=\"Twitter Color Emoji\">{1}</font>";
+                // const string format = "<font color=\"#7289DA\"><strong>{0}: </strong></font>{1}";
                 if (message.Author is SocketGuildUser guildUser)
                 {
                     string name = guildUser.Nickname ?? guildUser.Username;
@@ -306,6 +307,7 @@ namespace Th3Essentials.Discordbot
                         ? string.Format(format, name, $" [Attachments] {msg}")
                         : string.Format(format, name, msg);
                     _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                    _api.Logger.Chat(msg);
                 }
             }
             return Task.CompletedTask;

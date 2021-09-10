@@ -9,8 +9,8 @@ namespace Th3Essentials.PlayerData
     [ProtoContract]
     public class Th3PlayerData
     {
-        //TODO: new moddata saving
-        // public bool IsDirty { get; internal set; }
+        public bool IsDirty { get; internal set; }
+
         public string PlayerUID;
 
         [ProtoMember(1)]
@@ -39,6 +39,7 @@ namespace Th3Essentials.PlayerData
         public Th3PlayerData(string playerUID) : this()
         {
             PlayerUID = playerUID;
+            IsDirty = true;
         }
 
         public bool HasMaxHomes()
@@ -53,11 +54,10 @@ namespace Th3Essentials.PlayerData
 
         internal void MarkDirty()
         {
-            //TODO: new moddata saving
-            // if (!IsDirty)
-            // {
-            //     IsDirty = true;
-            // }
+            if (!IsDirty)
+            {
+                IsDirty = true;
+            }
         }
     }
 }

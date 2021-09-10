@@ -37,17 +37,16 @@ namespace Th3Essentials.Config
 
         internal void GameWorldSave(ICoreServerAPI api)
         {
-            //TODO: new moddata saving
-            // foreach (Th3PlayerData playerData in Players)
-            // {
-            //     if (playerData.IsDirty)
-            //     {
-            //         playerData.IsDirty = false;
-            //         byte[] data = SerializerUtil.Serialize(playerData);
-            //         IPlayer player = api.World.PlayerByUid(playerData.PlayerUID);
-            //         player.WorldData.SetModdata(Th3Essentials.Th3EssentialsModDataKey, data);
-            //     }
-            // }
+            foreach (Th3PlayerData playerData in Players)
+            {
+                if (playerData.IsDirty)
+                {
+                    playerData.IsDirty = false;
+                    byte[] data = SerializerUtil.Serialize(playerData);
+                    IPlayer player = api.World.PlayerByUid(playerData.PlayerUID);
+                    player.WorldData.SetModdata(Th3Essentials.Th3EssentialsModDataKey, data);
+                }
+            }
         }
 
         public void Add(Th3PlayerData playerData)
