@@ -9,6 +9,10 @@
 			<HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="VintagestoryLib">
+			<HintPath>$(VINTAGE_STORY)/VintagestoryLib.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
 		<Reference Include="protobuf-net">
 			<HintPath>$(VINTAGE_STORY)\Lib\protobuf-net.dll</HintPath>
 			<Private>False</Private>
@@ -19,6 +23,6 @@
 		</Reference>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Discord.Net.Labs" Version="2.4.9" />
+		<PackageReference Include="Discord.Net.Labs" Version="3.0.2" />
 	</ItemGroup>
 </Project>
