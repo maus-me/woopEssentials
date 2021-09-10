@@ -177,7 +177,10 @@ namespace Th3Essentials.Discordbot
 
         internal void SendMessage(string msg)
         {
-            _discordChannel.SendMessageAsync(ServerMsg(msg));
+            if (_discordChannel != null)
+            {
+                _discordChannel.SendMessageAsync(ServerMsg(msg));
+            }
         }
 
         private void PlayerDeathAsync(IServerPlayer byPlayer, DamageSource damageSource)
