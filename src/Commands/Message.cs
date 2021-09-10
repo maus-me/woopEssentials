@@ -15,21 +15,38 @@ namespace Th3Essentials.Commands
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     string playername = args.PopWord();
-                    string msg = args.PopAll().Replace("<", "&lt;").Replace(">", "&gt;");
-                    msg = $"<font color=\"#ff9102\"><strong>{player.PlayerName}:</strong></font> {msg}";
-
-                    IEnumerable<IServerPlayer> otherPlayers = api.Server.Players.Where((curPlayer) => curPlayer.PlayerName.Equals(playername, StringComparison.InvariantCultureIgnoreCase));
-                    if (otherPlayers.LongCount() == 1)
+                    string msg = args.PopAll();
+                    if (playername != null && msg != string.Empty)
                     {
-                        otherPlayers.First().SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OwnMessage);
+                        msg = msg.Replace("<", "&lt;").Replace(">", "&gt;");
+                        msg = $"<font color=\"#ff9102\"><strong>{player.PlayerName}:</strong></font> {msg}";
+
+                        IEnumerable<IServerPlayer> otherPlayers = api.Server.Players.Where((curPlayer) => curPlayer.ConnectionState == EnumClientState.Playing && curPlayer.PlayerName.Equals(playername, StringComparison.InvariantCultureIgnoreCase));
+                        switch (otherPlayers.LongCount())
+                        {
+                            case 0:
+                                {
+                                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-msg-fail", playername), EnumChatType.CommandError);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    otherPlayers.First().SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                                    player.SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OwnMessage);
+                                    break;
+                                }
+                            default:
+                                {
+                                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-msg-fail-mult", playername), EnumChatType.CommandError);
+                                    break;
+                                }
+                        }
                     }
                     else
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-msg-fail", playername), EnumChatType.CommandError);
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, "/msg " + Lang.Get("th3essentials:cd-msg-param"), EnumChatType.CommandError);
                     }
                 }, Privilege.chat);
-
         }
     }
 }

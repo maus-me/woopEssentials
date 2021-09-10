@@ -17,6 +17,7 @@
     "cd-msg": "Send a message to a player that is online",
     "cd-msg-param": "[Playername] [Message]",
     "cd-msg-fail": "Player \"{0}\" could not be found",
+    "cd-msg-fail-mult": "There are multiple players named \"{0}\"",
     "cd-restart": "Shows time till next restart",
     "hs-wait": "you have to wait {0} min {1} sec",
     "hs-tp-spawn": "teleport to spawn",
