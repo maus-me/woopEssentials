@@ -115,7 +115,7 @@ namespace Th3Essentials
             {
                 ServerWorldPlayerData swpdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID));
                 Th3PlayerDataOld pold = SerializerUtil.Deserialize<Th3PlayerDataOld>(swpdata.GetModdata(Th3EssentialsModDataKey));
-                swpdata.SetModdata(Th3EssentialsModDataKey, SerializerUtil.Serialize(Th3PlayerDataOld.Convert(pold)));
+                swpdata.SetModdata(Th3EssentialsModDataKey, SerializerUtil.Serialize(pold.Convert()));
                 gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swpdata));
             }
             gameDatabase.Dispose();
