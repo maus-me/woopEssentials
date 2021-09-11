@@ -5,6 +5,9 @@ using Th3Essentials.PlayerData;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
+using Vintagestory.API.Util;
+using Vintagestory.Common;
+using Vintagestory.Server;
 
 namespace Th3Essentials.Starterkit
 {
@@ -52,6 +55,35 @@ namespace Th3Essentials.Starterkit
                     }
                 }
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-setup"), EnumChatType.CommandSuccess);
+            }, Privilege.controlserver);
+
+            api.RegisterCommand("resetstarterkitusage", Lang.Get("th3essentials:cd-resetstarterkitusage"), string.Empty,
+            (IServerPlayer player, int groupId, CmdArgs args) =>
+            {
+                ServerMain server = (ServerMain)api.World;
+                GameDatabase gameDatabase = new GameDatabase(ServerMain.Logger);
+                gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out int foundVersion, out string errorMessage, out bool isReadonly);
+                gameDatabase.UpgradeToWriteAccess();
+
+                foreach (ServerPlayerData th3d in server.PlayerDataManager.PlayerDataByUid.Values)
+                {
+
+                    Th3PlayerData onwdata = _playerConfig.GetPlayerDataByUID(th3d.PlayerUID, false);
+                    if (onwdata != null)
+                    {
+                        onwdata.StarterkitRecived = false;
+                        onwdata.MarkDirty();
+                    }
+                    else
+                    {
+                        ServerWorldPlayerData swpdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID));
+                        Th3PlayerData th3pdata = SerializerUtil.Deserialize<Th3PlayerData>(swpdata.GetModdata(Th3Essentials.Th3EssentialsModDataKey));
+                        th3pdata.StarterkitRecived = false;
+                        swpdata.SetModdata(Th3Essentials.Th3EssentialsModDataKey, SerializerUtil.Serialize(th3pdata));
+                        gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swpdata));
+                    }
+                }
+                gameDatabase.Dispose();
             }, Privilege.controlserver);
         }
 
