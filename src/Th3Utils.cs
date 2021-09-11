@@ -13,9 +13,7 @@ namespace Th3Essentials
             {
                 restartDate = restartDate.AddDays(1);
             }
-
             return restartDate - now;
         }
     }
-
 }

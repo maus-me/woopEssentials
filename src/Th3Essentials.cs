@@ -69,7 +69,7 @@ namespace Th3Essentials
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
             _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, OnReady);
 
-            if ((Config.ShutdownAnnounce != null && Config.ShutdownAnnounce.Length > 0) || Config.ShutdownEnabled)
+            if ((Config.ShutdownAnnounce != null && Config.ShutdownAnnounce.Length > 0) || (Config.ShutdownTime != null && Config.ShutdownEnabled))
             {
                 _api.Event.RegisterGameTickListener(CheckRestart, 60000);
             }

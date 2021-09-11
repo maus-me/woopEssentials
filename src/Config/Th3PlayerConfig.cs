@@ -20,10 +20,10 @@ namespace Th3Essentials.Config
         /// </summary>
         /// <param name="playerUID"></param>
         /// <returns>Th3PlayerData</returns>
-        public Th3PlayerData GetPlayerDataByUID(string playerUID)
+        public Th3PlayerData GetPlayerDataByUID(string playerUID, bool shouldCreate = true)
         {
             Th3PlayerData playerData = Players.Find(player => player.PlayerUID == playerUID);
-            if (playerData == null)
+            if (playerData == null && shouldCreate)
             {
                 playerData = new Th3PlayerData(playerUID);
                 Add(playerData);

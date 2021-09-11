@@ -158,8 +158,15 @@ namespace Th3Essentials.Discordbot
                                 }
                             case "restart":
                                 {
-                                    TimeSpan restart = Th3Util.GetTimeTillRestart();
-                                    response = Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"), restart.Minutes.ToString("D2"));
+                                    if (_config.ShutdownTime != null)
+                                    {
+                                        TimeSpan restart = Th3Util.GetTimeTillRestart();
+                                        response = Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"), restart.Minutes.ToString("D2"));
+                                    }
+                                    else
+                                    {
+                                        response = Lang.Get("th3essentials:slc-restart-disabled");
+                                    }
                                     break;
                                 }
                             default:
@@ -298,14 +305,14 @@ namespace Th3Essentials.Discordbot
             {
                 string msg = CleanDiscordMessage(message);
                 // use blue font ingame for discord messages
-                // const string format = "<font color=\"#7289DA\"><strong>{0}: </strong></font><font family=\"Twitter Color Emoji\">{1}</font>";
-                const string format = "<font color=\"#7289DA\"><strong>{0}: </strong></font>{1}";
+                // const string format = "<font color=\"{0}\"><strong>{1}: </strong></font><font family=\"Twitter Color Emoji\">{2}</font>";
+                const string format = "<font color=\"{0}\"><strong>{1}: </strong></font>{2}";
                 if (message.Author is SocketGuildUser guildUser)
                 {
                     string name = guildUser.Nickname ?? guildUser.Username;
                     msg = message.Attachments.Count > 0
-                        ? string.Format(format, name, $" [Attachments] {msg}")
-                        : string.Format(format, name, msg);
+                        ? string.Format(format, _config.DiscordChatColor, name, $" [Attachments] {msg}")
+                        : string.Format(format, _config.DiscordChatColor, name, msg);
                     _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
                     _api.Logger.Chat(msg);
                 }

@@ -7,33 +7,37 @@ namespace Th3Essentials.Config
 {
     public class Th3Config
     {
-        public string Token;
+        public string Token = null;
 
-        public ulong ChannelId;
+        public ulong ChannelId = 0;
 
-        public ulong GuildId;
+        public ulong GuildId = 0;
 
-        public string InfoMessage;
+        public string InfoMessage = null;
 
-        public List<string> AnnouncementMessages;
+        public List<string> AnnouncementMessages = null;
 
-        public int AnnouncementInterval;
+        public int AnnouncementInterval = 0;
 
-        public int HomeLimit;
+        public int HomeLimit = 0;
 
-        public int HomeCooldown;
+        public int HomeCooldown = 1;
 
-        public bool SpawnEnabled;
+        public bool SpawnEnabled = false;
 
-        public bool BackEnabled;
+        public bool BackEnabled = false;
 
-        public List<StarterkitItem> Items;
+        public List<StarterkitItem> Items = null;
 
-        public bool ShutdownEnabled;
+        public bool ShutdownEnabled = false;
 
-        public TimeSpan ShutdownTime;
+        public TimeSpan ShutdownTime = TimeSpan.Zero; // "00:00:00" in Th3Config.json
 
-        public int[] ShutdownAnnounce;
+        public int[] ShutdownAnnounce = null;
+
+        public string CmdMessageColor = "#ff9102";
+
+        public string DiscordChatColor = "#7289DA";
 
         public void Init()
         {
