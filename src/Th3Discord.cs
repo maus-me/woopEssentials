@@ -322,28 +322,21 @@ namespace Th3Essentials.Discordbot
             {
                 foreach (SocketUser mUser in message.MentionedUsers)
                 {
-                    string name = null;
-                    if (mUser is SocketGuildUser mGuildUser)
+                    if (mUser.Id.ToString() == user.Groups[1].Value)
                     {
-                        if (mGuildUser.Id.ToString() == user.Groups[1].Value)
+                        string name = "Unknown";
+                        if (mUser is SocketGuildUser mGuildUser)
                         {
                             name = mGuildUser.Nickname ?? mGuildUser.Username;
                         }
-                    }
-                    else if (mUser is SocketUnknownUser)
-                    {
-                        RestGuildUser rgUser = _client.Rest.GetGuildUserAsync(_config.GuildId, mUser.Id).GetAwaiter().GetResult();
-                        if (rgUser.Id.ToString() == user.Groups[1].Value)
+                        else if (mUser is SocketUnknownUser)
                         {
+                            RestGuildUser rgUser = _client.Rest.GetGuildUserAsync(_config.GuildId, mUser.Id).GetAwaiter().GetResult();
                             name = rgUser.Nickname ?? rgUser.Username;
                         }
-                    }
-                    if (name != null)
-                    {
                         msg = Regex.Replace(msg, $"<@!?{user.Groups[1].Value}>", $"@{name}");
                         break;
                     }
-
                 }
             }
 
