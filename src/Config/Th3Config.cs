@@ -7,11 +7,11 @@ namespace Th3Essentials.Config
 {
     public class Th3Config
     {
-        public string Token { get; set; }
+        public string Token;
 
-        public ulong ChannelId { get; set; }
+        public ulong ChannelId;
 
-        public ulong GuildId { get; set; }
+        public ulong GuildId;
 
         public string InfoMessage;
 
@@ -23,6 +23,10 @@ namespace Th3Essentials.Config
 
         public int HomeCooldown;
 
+        public bool SpawnEnabled;
+
+        public bool BackEnabled;
+
         public List<StarterkitItem> Items;
 
         public bool ShutdownEnabled;
@@ -33,11 +37,9 @@ namespace Th3Essentials.Config
 
         public void Init()
         {
-            HomeCooldown = 1;
-            AnnouncementInterval = 10;
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("--------------------");
-            sb.AppendLine("<a href=\"https://discord.gg/gE92jaWq9N\">Discord</a>");
+            sb.AppendLine("<a href=\"https://discord.gg/\">Discord</a>");
             sb.AppendLine("<strong>Important Commands:</strong>");
             sb.AppendLine(".clients or .online | Shows you all online players");
             sb.AppendLine("/spawn | Teleport back to the spawn");
@@ -46,13 +48,12 @@ namespace Th3Essentials.Config
             sb.AppendLine("/home [name] | Teleport to a homepoint");
             sb.AppendLine("/sethome [name] | Set a homepoint");
             sb.AppendLine("/delhome [name] | Delete a homepoint");
-            sb.AppendLine("/restart [name] | Shows time till next restart");
+            sb.AppendLine("/restart | Shows time till next restart");
             sb.AppendLine("/msg [Name] [Message] | Send a message to a player that is online");
             sb.AppendLine("/starterkit | Recive a one time starterkit");
             sb.AppendLine("/serverinfo | Show this information");
             sb.AppendLine("--------------------");
             InfoMessage = sb.ToString();
-            ShutdownAnnounce = new int[] { 1, 2, 3, 4, 5, 10, 15, 20, 30 };
         }
 
         internal double GetAnnouncementInterval()

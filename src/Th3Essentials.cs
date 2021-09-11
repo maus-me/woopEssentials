@@ -59,22 +59,17 @@ namespace Th3Essentials
             catch (Exception e)
             {
                 _api.Logger.Error(Lang.Get("th3essentials:th3config-error", e));
-            }
-
-            PlayerConfig = new Th3PlayerConfig();
-
-
-            if (Config == null)
-            {
                 _api.Logger.Error(Lang.Get("th3essentials:disabled"));
                 return;
             }
+
+            PlayerConfig = new Th3PlayerConfig();
 
             _api.Event.GameWorldSave += GameWorldSave;
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
             _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, OnReady);
 
-            if (Config.ShutdownAnnounce.Length > 0)
+            if ((Config.ShutdownAnnounce != null && Config.ShutdownAnnounce.Length > 0) || Config.ShutdownEnabled)
             {
                 _api.Event.RegisterGameTickListener(CheckRestart, 60000);
             }
@@ -106,48 +101,43 @@ namespace Th3Essentials
 
         private void OnReady()
         {
-            ServerMain server = (ServerMain)_api.World;
-            GameDatabase gameDatabase = new GameDatabase(ServerMain.Logger);
-            gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out int foundVersion, out string errorMessage, out bool isReadonly);
-            gameDatabase.UpgradeToWriteAccess();
+            //TODO
+            // ServerMain server = (ServerMain)_api.World;
+            // GameDatabase gameDatabase = new GameDatabase(ServerMain.Logger);
+            // gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out int foundVersion, out string errorMessage, out bool isReadonly);
+            // gameDatabase.UpgradeToWriteAccess();
 
-            foreach (ServerPlayerData th3d in server.PlayerDataManager.PlayerDataByUid.Values)
-            {
-                ServerWorldPlayerData swpdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID));
-                Th3PlayerDataOld pold = SerializerUtil.Deserialize<Th3PlayerDataOld>(swpdata.GetModdata(Th3EssentialsModDataKey));
-                swpdata.SetModdata(Th3EssentialsModDataKey, SerializerUtil.Serialize(pold.Convert()));
-                gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swpdata));
-                _api.Logger.VerboseDebug("Updated data for {0}", th3d.LastKnownPlayername);
-            }
-            gameDatabase.Dispose();
-            _api.Logger.VerboseDebug("Updated player data into savegame");
+            // foreach (ServerPlayerData th3d in server.PlayerDataManager.PlayerDataByUid.Values)
+            // {
+            //     ServerWorldPlayerData swpdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID));
+            //     Th3PlayerDataOld pold = SerializerUtil.Deserialize<Th3PlayerDataOld>(swpdata.GetModdata(Th3EssentialsModDataKey));
+            //     swpdata.SetModdata(Th3EssentialsModDataKey, SerializerUtil.Serialize(pold.Convert()));
+            //     gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swpdata));
+            //     _api.Logger.VerboseDebug("Updated data for {0}", th3d.LastKnownPlayername);
+            // }
+            // gameDatabase.Dispose();
+            // _api.Logger.VerboseDebug("Updated player data into savegame");
         }
 
         private void CheckRestart(float t1)
         {
             int TimeInMinutes = (int)Th3Util.GetTimeTillRestart().TotalMinutes;
 
-            // _api.Logger.VerboseDebug("checkrstart: " + TimeInMinutes.ToString());
-            foreach (int time in Config.ShutdownAnnounce)
+            _api.Logger.VerboseDebug("checkrstart: " + TimeInMinutes.ToString());
+            if (Config.ShutdownAnnounce != null)
             {
-                if (time == TimeInMinutes)
+                foreach (int time in Config.ShutdownAnnounce)
                 {
-                    string msg;
-                    if (TimeInMinutes == 1)
+                    if (time == TimeInMinutes)
                     {
-                        msg = Lang.Get("th3essentials:restart-in-min");
+                        string msg = TimeInMinutes == 1 ? Lang.Get("th3essentials:restart-in-min") : Lang.Get("th3essentials:restart-in-mins", TimeInMinutes);
+                        _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                        _th3Discord.SendMessage(msg);
+                        _api.Logger.Debug(msg);
                     }
-                    else
-                    {
-                        msg = Lang.Get("th3essentials:restart-in-mins", TimeInMinutes);
-                    }
-
-                    _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
-                    _th3Discord.SendMessage(msg);
-                    _api.Logger.Debug(msg);
                 }
             }
-            if (TimeInMinutes < 1 && Config.ShutdownEnabled)
+            if (Config.ShutdownEnabled && TimeInMinutes < 1)
             {
                 _api.Server.ShutDown();
             }

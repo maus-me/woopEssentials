@@ -21,40 +21,43 @@ namespace Th3Essentials.Homepoints
             _api = api;
             _playerConfig = Th3Essentials.PlayerConfig;
             _config = Th3Essentials.Config;
-            RegisterCommands();
-            _api.Event.PlayerDeath += PlayerDied;
-        }
-
-        private void RegisterCommands()
-        {
-            _api.RegisterCommand("sethome", Lang.Get("th3essentials:cd-sethome"), "[Name]",
-                (IServerPlayer player, int groupId, CmdArgs args) =>
-                {
-                    SetHome(player, args.PopAll());
-                }, Privilege.chat);
-
-            _api.RegisterCommand("home", Lang.Get("th3essentials:cd-home"), "[Name]",
-                (IServerPlayer player, int groupId, CmdArgs args) =>
-                {
-                    Home(player, args.PopAll());
-                }, Privilege.chat);
-
-            _api.RegisterCommand("delhome", Lang.Get("th3essentials:cd-delhome"), "[Name]",
-                (IServerPlayer player, int groupId, CmdArgs args) =>
-                {
-                    DeleteHome(player, args.PopAll());
-                }, Privilege.chat);
-
-            _api.RegisterCommand("spawn", Lang.Get("th3essentials:cd-spawn"), string.Empty,
-                (IServerPlayer player, int groupId, CmdArgs args) =>
-                {
-                    ToSpawn(player);
-                }, Privilege.chat);
-            _api.RegisterCommand("back", Lang.Get("th3essentials:cd-back"), string.Empty,
-            (IServerPlayer player, int groupId, CmdArgs args) =>
+            if (_config.HomeLimit > 0)
             {
-                TeleportBack(player);
-            }, Privilege.chat);
+                _api.RegisterCommand("sethome", Lang.Get("th3essentials:cd-sethome"), "[Name]",
+                    (IServerPlayer player, int groupId, CmdArgs args) =>
+                    {
+                        SetHome(player, args.PopAll());
+                    }, Privilege.chat);
+
+                _api.RegisterCommand("home", Lang.Get("th3essentials:cd-home"), "[Name]",
+                    (IServerPlayer player, int groupId, CmdArgs args) =>
+                    {
+                        Home(player, args.PopAll());
+                    }, Privilege.chat);
+
+                _api.RegisterCommand("delhome", Lang.Get("th3essentials:cd-delhome"), "[Name]",
+                    (IServerPlayer player, int groupId, CmdArgs args) =>
+                    {
+                        DeleteHome(player, args.PopAll());
+                    }, Privilege.chat);
+            }
+            if (_config.SpawnEnabled)
+            {
+                _api.RegisterCommand("spawn", Lang.Get("th3essentials:cd-spawn"), string.Empty,
+                    (IServerPlayer player, int groupId, CmdArgs args) =>
+                    {
+                        ToSpawn(player);
+                    }, Privilege.chat);
+            }
+            if (_config.BackEnabled)
+            {
+                _api.Event.PlayerDeath += PlayerDied;
+                _api.RegisterCommand("back", Lang.Get("th3essentials:cd-back"), string.Empty,
+                (IServerPlayer player, int groupId, CmdArgs args) =>
+                {
+                    TeleportBack(player);
+                }, Privilege.chat);
+            }
         }
 
         private void PlayerDied(IServerPlayer byPlayer, DamageSource damageSource)
@@ -155,7 +158,7 @@ namespace Th3Essentials.Homepoints
             }
         }
 
-        public void DeleteHome(IServerPlayer player, string name) //delhome Befehl
+        public void DeleteHome(IServerPlayer player, string name)
         {
             Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
             HomePoint point = playerData.FindPointByName(name);
@@ -172,7 +175,7 @@ namespace Th3Essentials.Homepoints
             }
         }
 
-        public void SetHome(IServerPlayer player, string name) //sethome Befehl
+        public void SetHome(IServerPlayer player, string name)
         {
             if (name == string.Empty || name == " " || name == null)
             {
