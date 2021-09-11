@@ -25,7 +25,7 @@ namespace Th3Essentials.Announcements
             _api = api;
             _config = Th3Essentials.Config;
 
-            if (_config.AnnouncementMessages != null && _config.AnnouncementMessages.Count != 0)
+            if (_config.AnnouncementMessages != null && _config.AnnouncementMessages.Count != 0 && _config.AnnouncementInterval > 0)
             {
                 announcer = new Timer(_config.GetAnnouncementInterval());
                 announcer.Elapsed += AnnounceMsg;
