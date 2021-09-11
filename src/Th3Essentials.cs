@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Th3Essentials.Announcements;
 using Th3Essentials.Commands;
@@ -71,7 +71,7 @@ namespace Th3Essentials
             _api.Event.GameWorldSave += GameWorldSave;
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
 
-            if (Config.ShutdownEnabled)
+            if (Config.ShutdownAnnounce.Length > 0)
             {
                 _api.Event.RegisterGameTickListener(CheckRestart, 60000);
             }
@@ -125,7 +125,7 @@ namespace Th3Essentials
                     _api.Logger.Debug(msg);
                 }
             }
-            if (TimeInMinutes < 1)
+            if (TimeInMinutes < 1 && Config.ShutdownEnabled)
             {
                 _api.Server.ShutDown();
             }
