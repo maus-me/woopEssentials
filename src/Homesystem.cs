@@ -12,12 +12,15 @@ namespace Th3Essentials.Homepoints
     {
         private Th3PlayerConfig _playerConfig;
 
+        private Th3Config _config;
+
         private ICoreServerAPI _api;
 
         internal void Init(ICoreServerAPI api)
         {
             _api = api;
             _playerConfig = Th3Essentials.PlayerConfig;
+            _config = Th3Essentials.Config;
             RegisterCommands();
             _api.Event.PlayerDeath += PlayerDied;
         }
@@ -82,7 +85,7 @@ namespace Th3Essentials.Homepoints
             }
             else
             {
-                TimeSpan diff = playerData.HomeLastuseage.AddMinutes(playerData.HomeCooldown) - DateTime.Now;
+                TimeSpan diff = playerData.HomeLastuseage.AddMinutes(_config.HomeCooldown) - DateTime.Now;
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds), EnumChatType.CommandSuccess);
             }
         }
@@ -100,7 +103,7 @@ namespace Th3Essentials.Homepoints
             }
             else
             {
-                TimeSpan diff = playerData.HomeLastuseage.AddMinutes(playerData.HomeCooldown) - DateTime.Now;
+                TimeSpan diff = playerData.HomeLastuseage.AddMinutes(_config.HomeCooldown) - DateTime.Now;
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds), EnumChatType.CommandSuccess);
             }
 
@@ -118,7 +121,7 @@ namespace Th3Essentials.Homepoints
                 }
                 else
                 {
-                    string response = Lang.Get("th3essentials:hs-list", $"{playerData.HomePoints.Count}/{playerData.HomeLimit}\n");
+                    string response = Lang.Get("th3essentials:hs-list", $"{playerData.HomePoints.Count}/{_config.HomeLimit}\n");
                     for (int i = 0; i < playerData.HomePoints.Count; i++)
                     {
                         response += playerData.HomePoints[i].Name + "\n";
@@ -141,7 +144,7 @@ namespace Th3Essentials.Homepoints
                     }
                     else
                     {
-                        TimeSpan diff = playerData.HomeLastuseage.AddMinutes(playerData.HomeCooldown) - DateTime.Now;
+                        TimeSpan diff = playerData.HomeLastuseage.AddMinutes(_config.HomeCooldown) - DateTime.Now;
                         player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds), EnumChatType.CommandSuccess);
                     }
                 }
@@ -178,7 +181,7 @@ namespace Th3Essentials.Homepoints
             }
 
             Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
-            if (playerData.HasMaxHomes())
+            if (playerData.HomePoints.Count >= _config.HomeLimit)
             {
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-max"), EnumChatType.CommandSuccess);
             }
@@ -200,7 +203,7 @@ namespace Th3Essentials.Homepoints
 
         public bool CanTravel(Th3PlayerData playerData)
         {
-            DateTime canTravel = playerData.HomeLastuseage.AddMinutes(playerData.HomeCooldown);
+            DateTime canTravel = playerData.HomeLastuseage.AddMinutes(_config.HomeCooldown);
             return canTravel <= DateTime.Now;
         }
     }

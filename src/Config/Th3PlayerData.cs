@@ -14,21 +14,15 @@ namespace Th3Essentials.PlayerData
         public string PlayerUID;
 
         [ProtoMember(1)]
-        public int HomeLimit;
-
-        [ProtoMember(2)]
-        public int HomeCooldown;
-
-        [ProtoMember(3)]
         public DateTime HomeLastuseage;
 
-        [ProtoMember(4)]
+        [ProtoMember(2)]
         public bool StarterkitRecived;
 
-        [ProtoMember(5)]
+        [ProtoMember(3)]
         public BlockPos LastPosition;
 
-        [ProtoMember(6)]
+        [ProtoMember(4)]
         public List<HomePoint> HomePoints;
 
         public Th3PlayerData()
@@ -40,11 +34,6 @@ namespace Th3Essentials.PlayerData
         {
             PlayerUID = playerUID;
             IsDirty = true;
-        }
-
-        public bool HasMaxHomes()
-        {
-            return HomePoints.Count >= HomeLimit;
         }
 
         public HomePoint FindPointByName(string name)

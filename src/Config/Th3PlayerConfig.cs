@@ -25,11 +25,7 @@ namespace Th3Essentials.Config
             Th3PlayerData playerData = Players.Find(player => player.PlayerUID == playerUID);
             if (playerData == null)
             {
-                playerData = new Th3PlayerData(playerUID)
-                {
-                    HomeLimit = Th3Essentials.Config.HomeLimit,
-                    HomeCooldown = Th3Essentials.Config.HomeCooldown
-                };
+                playerData = new Th3PlayerData(playerUID);
                 Add(playerData);
             }
             return playerData;
