@@ -111,12 +111,13 @@ namespace Th3Essentials
             gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out int foundVersion, out string errorMessage, out bool isReadonly);
             gameDatabase.UpgradeToWriteAccess();
 
-            foreach (IServerPlayer th3d in _api.Server.Players)
+            foreach (ServerPlayerData th3d in server.PlayerDataManager.PlayerDataByUid.Values)
             {
                 ServerWorldPlayerData swpdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID));
                 Th3PlayerDataOld pold = SerializerUtil.Deserialize<Th3PlayerDataOld>(swpdata.GetModdata(Th3EssentialsModDataKey));
                 swpdata.SetModdata(Th3EssentialsModDataKey, SerializerUtil.Serialize(pold.Convert()));
                 gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swpdata));
+                _api.Logger.VerboseDebug("Updated data for {0}", th3d.LastKnownPlayername);
             }
             gameDatabase.Dispose();
             _api.Logger.VerboseDebug("Updated player data into savegame");
