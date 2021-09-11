@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using Th3Essentials.Announcements;
 using Th3Essentials.Commands;
@@ -11,6 +11,8 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
+using Vintagestory.Common;
+using Vintagestory.Server;
 
 [assembly: ModInfo("Th3Essentials",
     Description = "Th3Dilli essentials server mod",
@@ -70,6 +72,7 @@ namespace Th3Essentials
 
             _api.Event.GameWorldSave += GameWorldSave;
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
+            _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, OnReady);
 
             if (Config.ShutdownAnnounce.Length > 0)
             {
@@ -99,6 +102,24 @@ namespace Th3Essentials
                         player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-reloadconfig-fail"), EnumChatType.CommandError);
                     }
                 }, Privilege.controlserver);
+        }
+
+        private void OnReady()
+        {
+            ServerMain server = (ServerMain)_api.World;
+            GameDatabase gameDatabase = new GameDatabase(ServerMain.Logger);
+            gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out int foundVersion, out string errorMessage, out bool isReadonly);
+            gameDatabase.UpgradeToWriteAccess();
+
+            foreach (IServerPlayer th3d in _api.Server.Players)
+            {
+                ServerWorldPlayerData swpdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID));
+                Th3PlayerDataOld pold = SerializerUtil.Deserialize<Th3PlayerDataOld>(swpdata.GetModdata(Th3EssentialsModDataKey));
+                swpdata.SetModdata(Th3EssentialsModDataKey, SerializerUtil.Serialize(Th3PlayerDataOld.Convert(pold)));
+                gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swpdata));
+            }
+            gameDatabase.Dispose();
+            _api.Logger.VerboseDebug("Updated player data into savegame");
         }
 
         private void CheckRestart(float t1)
