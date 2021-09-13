@@ -67,7 +67,6 @@ namespace Th3Essentials
 
             _api.Event.GameWorldSave += GameWorldSave;
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
-            _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, OnReady);
 
             if ((Config.ShutdownAnnounce != null && Config.ShutdownAnnounce.Length > 0) || (Config.ShutdownTime != null && Config.ShutdownEnabled))
             {
@@ -84,6 +83,10 @@ namespace Th3Essentials
             {
                 _th3Discord.Init(_api);
             }
+            else
+            {
+                _api.Logger.Debug("Discordbot needs to be configured, functionality disabled!!!");
+            }
 
             _api.RegisterCommand("reloadth3config", Lang.Get("th3essentials:cd-reloadConfig"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
@@ -97,37 +100,6 @@ namespace Th3Essentials
                         player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-reloadconfig-fail"), EnumChatType.CommandError);
                     }
                 }, Privilege.controlserver);
-        }
-
-        private void OnReady()
-        {
-            //TODO
-            ServerMain server = (ServerMain)_api.World;
-            GameDatabase gameDatabase = new GameDatabase(ServerMain.Logger);
-            gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out int foundVersion, out string errorMessage, out bool isReadonly);
-            gameDatabase.UpgradeToWriteAccess();
-
-            foreach (ServerPlayerData th3d in server.PlayerDataManager.PlayerDataByUid.Values)
-            {
-                ServerWorldPlayerData swpdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID), null);
-                if (swpdata != null)
-                {
-                    Th3PlayerDataOld pold = SerializerUtil.Deserialize<Th3PlayerDataOld>(swpdata.GetModdata(Th3EssentialsModDataKey), null);
-                    if (pold != null)
-                    {
-                        swpdata.SetModdata(Th3EssentialsModDataKey, SerializerUtil.Serialize(pold.Convert()));
-                        _api.Logger.VerboseDebug("Updated data for {0}", th3d.LastKnownPlayername);
-                        gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swpdata));
-                    }
-                    else
-                    {
-                        _api.Logger.VerboseDebug("pold for {0} null", th3d.LastKnownPlayername);
-                    }
-                }
-                else { _api.Logger.VerboseDebug("swpdata for {0} null", th3d.LastKnownPlayername); }
-            }
-            gameDatabase.Dispose();
-            _api.Logger.VerboseDebug("Updated player data into savegame");
         }
 
         private void CheckRestart(float t1)
