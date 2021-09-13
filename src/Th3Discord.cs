@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -95,6 +98,11 @@ namespace Th3Essentials.Discordbot
 
         private void CreateSlashCommands()
         {
+            IReadOnlyCollection<RestGuildCommand> commands = _client.Rest.GetGuildApplicationCommands(_config.GuildId).GetAwaiter().GetResult();
+            foreach (RestGuildCommand cmd in commands)
+            {
+                cmd.DeleteAsync();
+            }
             try
             {
                 SlashCommandBuilder players = new SlashCommandBuilder
@@ -117,6 +125,24 @@ namespace Th3Essentials.Discordbot
                     Description = Lang.Get("th3essentials:slc-restart")
                 };
                 _client.Rest.CreateGuildCommand(restart.Build(), _config.GuildId);
+
+                List<SlashCommandOptionBuilder> options = new List<SlashCommandOptionBuilder>()
+                {
+                    new SlashCommandOptionBuilder()
+                    {
+                        Name = "channel",
+                        Description = Lang.Get("th3essentials:slc-setchannel"),
+                        Type = ApplicationCommandOptionType.Channel,
+                        Required = true
+                    }
+                };
+                SlashCommandBuilder setchannel = new SlashCommandBuilder
+                {
+                    Name = "setchannel",
+                    Description = Lang.Get("th3essentials:slc-setchannel"),
+                    Options = options
+                };
+                _client.Rest.CreateGuildCommand(setchannel.Build(), _config.GuildId);
             }
             catch (ApplicationCommandException exception)
             {
@@ -166,6 +192,43 @@ namespace Th3Essentials.Discordbot
                                     else
                                     {
                                         response = Lang.Get("th3essentials:slc-restart-disabled");
+                                    }
+                                    break;
+                                }
+                            case "setchannel":
+                                {
+                                    if (commandInteraction.User is SocketGuildUser guildUser)
+                                    {
+                                        if (guildUser.GuildPermissions.Administrator)
+                                        {
+                                            SocketSlashCommandDataOption option = commandInteraction.Data.Options.First();
+                                            if (option.Value is SocketTextChannel channel)
+                                            {
+                                                _config.ChannelId = channel.Id;
+                                                _discordChannel = _client.GetChannel(_config.ChannelId) as IMessageChannel;
+                                                if (_discordChannel == null)
+                                                {
+                                                    _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
+                                                    response = $"Could not find channel with id: {_config.ChannelId}";
+                                                }
+                                                else
+                                                {
+                                                    response = $"Channel was set to {channel.Name}";
+                                                }
+                                            }
+                                            else
+                                            {
+                                                response = "Error: Channel needs to be a Text Channel";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            response = "You need to have Administrator permissions to do that";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        response = "Something went wrong: User was not a GuildUser";
                                     }
                                     break;
                                 }
@@ -288,14 +351,15 @@ namespace Th3Essentials.Discordbot
                 return Task.CompletedTask;
             }
 
-            if (message.Content.ToLower().StartsWith("!reloadcommands"))
+            if (message.Content.ToLower().StartsWith("!setupvsbot"))
             {
                 if (message.Author is SocketGuildUser guildUser)
                 {
                     if (guildUser.GuildPermissions.Administrator)
                     {
+                        _config.GuildId = guildUser.Guild.Id;
                         CreateSlashCommands();
-                        message.ReplyAsync("reloadcommands executed");
+                        message.ReplyAsync("setupvsbot executed");
                     }
                 }
             }
@@ -305,8 +369,8 @@ namespace Th3Essentials.Discordbot
             {
                 string msg = CleanDiscordMessage(message);
                 // use blue font ingame for discord messages
-                // const string format = "<font color=\"{0}\"><strong>{1}: </strong></font><font family=\"Twitter Color Emoji\">{2}</font>";
-                const string format = "<font color=\"{0}\"><strong>{1}: </strong></font>{2}";
+                // const string format = "<font color=\"#{0}\"><strong>{1}: </strong></font><font family=\"Twitter Color Emoji\">{2}</font>";
+                const string format = "<font color=\"#{0}\"><strong>{1}: </strong></font>{2}";
                 if (message.Author is SocketGuildUser guildUser)
                 {
                     string name = guildUser.Nickname ?? guildUser.Username;

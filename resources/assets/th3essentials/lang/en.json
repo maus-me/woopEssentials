@@ -57,6 +57,7 @@
     "slc-restart-resp": "Server is restarting in {0}h {1}min",
     "slc-restart-disabled": "Server restart command is disbled",
     "slc-players-none": "Oh, nobody is online",
+    "slc-setchannel": "Set the channel to send to/from ingame chat",
     "restart-in-mins": "Server is restarting in {0} minutes",
     "restart-in-min": "Server is restarting in 1 minute",
     "th3config-error": "Th3Config could not be loaded: {0}",

@@ -57,6 +57,7 @@
     "slc-restart-resp": "Server startet in {0}h {1}min neu",
     "slc-restart-disabled": "Server neustart Befehl ist deaktiviert",
     "slc-players-none": "Oh, es ist niemand Online",
+    "slc-setchannel": "Setze den Kanal für Nachrichten von/zu ingame Chat",
     "restart-in-mins": "Server startet in {0} Minuten neu",
     "restart-in-min": "Server startet in 1 Minute neu",
     "th3config-error": "Th3Config konnte nicht geldaden werden: {0}",
