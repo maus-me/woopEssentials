@@ -21,7 +21,7 @@ namespace Th3Essentials.Config
 
         public int HomeLimit = 0;
 
-        public int HomeCooldown = 1;
+        public int HomeCooldown = 60;
 
         public bool SpawnEnabled = false;
 
@@ -37,9 +37,9 @@ namespace Th3Essentials.Config
 
         public int[] ShutdownAnnounce = null;
 
-        public string MessageCmdColor = "#ff9102";
+        public string MessageCmdColor = "ff9102";
 
-        public string DiscordChatColor = "#7289DA";
+        public string DiscordChatColor = "7289DA";
 
         public void Init()
         {
@@ -69,7 +69,7 @@ namespace Th3Essentials.Config
 
         internal bool IsDiscordConfigured()
         {
-            return Token != null && ChannelId != 0 && GuildId != 0;
+            return Token != null && Token != string.Empty;
         }
 
         internal void Reload(Th3Config configTemp)

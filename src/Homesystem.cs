@@ -88,7 +88,7 @@ namespace Th3Essentials.Homepoints
             }
             else
             {
-                TimeSpan diff = playerData.HomeLastuseage.AddMinutes(_config.HomeCooldown) - DateTime.Now;
+                TimeSpan diff = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown) - DateTime.Now;
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds), EnumChatType.CommandSuccess);
             }
         }
@@ -106,7 +106,7 @@ namespace Th3Essentials.Homepoints
             }
             else
             {
-                TimeSpan diff = playerData.HomeLastuseage.AddMinutes(_config.HomeCooldown) - DateTime.Now;
+                TimeSpan diff = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown) - DateTime.Now;
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds), EnumChatType.CommandSuccess);
             }
 
@@ -147,7 +147,7 @@ namespace Th3Essentials.Homepoints
                     }
                     else
                     {
-                        TimeSpan diff = playerData.HomeLastuseage.AddMinutes(_config.HomeCooldown) - DateTime.Now;
+                        TimeSpan diff = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown) - DateTime.Now;
                         player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds), EnumChatType.CommandSuccess);
                     }
                 }
@@ -206,7 +206,7 @@ namespace Th3Essentials.Homepoints
 
         public bool CanTravel(Th3PlayerData playerData)
         {
-            DateTime canTravel = playerData.HomeLastuseage.AddMinutes(_config.HomeCooldown);
+            DateTime canTravel = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown);
             return canTravel <= DateTime.Now;
         }
     }

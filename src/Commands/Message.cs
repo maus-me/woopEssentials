@@ -21,7 +21,7 @@ namespace Th3Essentials.Commands
                         if (playername != null && msg != string.Empty)
                         {
                             msg = msg.Replace("<", "&lt;").Replace(">", "&gt;");
-                            msg = $"<font color=\"{Th3Essentials.Config.MessageCmdColor}\"><strong>{player.PlayerName}:</strong></font> {msg}";
+                            msg = $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>{player.PlayerName}:</strong></font> {msg}";
 
                             IEnumerable<IServerPlayer> otherPlayers = api.Server.Players.Where((curPlayer) => curPlayer.ConnectionState == EnumClientState.Playing && curPlayer.PlayerName.Equals(playername, StringComparison.InvariantCultureIgnoreCase));
                             switch (otherPlayers.LongCount())
