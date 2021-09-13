@@ -27,6 +27,8 @@ namespace Th3Essentials.Config
 
         public bool BackEnabled = false;
 
+        public bool MessageEnabled = false;
+
         public List<StarterkitItem> Items = null;
 
         public bool ShutdownEnabled = false;
@@ -35,7 +37,7 @@ namespace Th3Essentials.Config
 
         public int[] ShutdownAnnounce = null;
 
-        public string CmdMessageColor = "#ff9102";
+        public string MessageCmdColor = "#ff9102";
 
         public string DiscordChatColor = "#7289DA";
 
@@ -73,20 +75,19 @@ namespace Th3Essentials.Config
         internal void Reload(Th3Config configTemp)
         {
             AnnouncementInterval = configTemp.AnnouncementInterval;
-            if (AnnouncementMessages != null)
-            {
-                AnnouncementMessages = configTemp.AnnouncementMessages;
-            }
+            AnnouncementMessages = configTemp.AnnouncementMessages;
             InfoMessage = configTemp.InfoMessage;
-            if (Items != null)
-            {
-                Items = configTemp.Items;
-            }
+            Items = configTemp.Items;
             HomeCooldown = configTemp.HomeCooldown;
             HomeLimit = configTemp.HomeLimit;
             ShutdownEnabled = configTemp.ShutdownEnabled;
             ShutdownAnnounce = configTemp.ShutdownAnnounce;
             ShutdownTime = configTemp.ShutdownTime;
+            SpawnEnabled = configTemp.SpawnEnabled;
+            BackEnabled = configTemp.BackEnabled;
+            MessageCmdColor = configTemp.MessageCmdColor;
+            DiscordChatColor = configTemp.DiscordChatColor;
+            MessageEnabled = configTemp.MessageEnabled;
         }
     }
 }

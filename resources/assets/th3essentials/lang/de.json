@@ -3,7 +3,7 @@
     "config-file-info": "Th3Essentials config file at {0}",
     "playerconfig-init": "Th3Essentials playerconfig initialized with default config!!!",
     "playerconfig-file-info": "Th3Essentials playerconfig file at {0}",
-    "cd-reloadConfig": "reloads Th3Config and Th3PlayerConfig",
+    "cd-reloadConfig": "reloads Th3Config",
     "cd-reloadconfig-msg": "config wurde neugeladen",
     "cd-reloadconfig-fail": "Config neuladen ist fehlgeschlagen, schau in Logs/server-debug.txt",
     "cd-sethome": "setzt einen Homepoint auf deine aktuelle Position",

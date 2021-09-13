@@ -98,7 +98,7 @@ namespace Th3Essentials.Starterkit
                 }
                 else
                 {
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-rst-usage"), EnumChatType.CommandSuccess);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-rst"), EnumChatType.CommandSuccess);
                 }
             }, Privilege.controlserver);
 
