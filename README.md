@@ -114,7 +114,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
     yay your should have your bot now on your discord server :)
 
-This sample config shows all features disabled:
+## This sample config shows all features disabled:
 
 ```json
 {
