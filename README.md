@@ -91,6 +91,10 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
   If you wanna support a different language just copy the en.json and replace the `en` with whatever language-code you wanna support and change all values inside .json file.
 
+  The language that is used by the mod can be changed in the serverconfig.json `"ServerLanguage": "en",`
+
+  from VS-Wiki:` 2-letter code of localization to use on this server. Determines language of server messages.`
+
 ## Creating a Discord Bot
 
 1.  Got to [Discord Developers](https://discord.com/developers/applications) and login with your discord account
