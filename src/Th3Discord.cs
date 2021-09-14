@@ -65,9 +65,7 @@ namespace Th3Essentials.Discordbot
         {
             _api.Server.LogVerboseDebug($"{_client.CurrentUser} is connected!");
 
-            // get the channel to send messages from and to
-            _discordChannel = _client.GetChannel(_config.ChannelId) as IMessageChannel;
-            if (_discordChannel == null)
+            if (!GetDiscordChannel())
             {
                 _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
             }
@@ -205,8 +203,7 @@ namespace Th3Essentials.Discordbot
                                             if (option.Value is SocketTextChannel channel)
                                             {
                                                 _config.ChannelId = channel.Id;
-                                                _discordChannel = _client.GetChannel(_config.ChannelId) as IMessageChannel;
-                                                if (_discordChannel == null)
+                                                if (!GetDiscordChannel())
                                                 {
                                                     _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
                                                     response = $"Could not find channel with id: {_config.ChannelId}";
@@ -245,7 +242,7 @@ namespace Th3Essentials.Discordbot
             return Task.CompletedTask;
         }
 
-        internal void SendMessage(string msg)
+        internal void SendServerMessage(string msg)
         {
             if (_discordChannel != null)
             {
@@ -351,15 +348,25 @@ namespace Th3Essentials.Discordbot
                 return Task.CompletedTask;
             }
 
-            if (message.Content.ToLower().StartsWith("!setupvsbot"))
+            if (message.Content.ToLower().StartsWith("!setupth3essentials"))
             {
                 if (message.Author is SocketGuildUser guildUser)
                 {
                     if (guildUser.GuildPermissions.Administrator)
                     {
                         _config.GuildId = guildUser.Guild.Id;
+                        _config.ChannelId = message.Channel.Id;
+
                         CreateSlashCommands();
-                        message.ReplyAsync("setupvsbot executed");
+                        if (!GetDiscordChannel())
+                        {
+                            _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
+                            message.ReplyAsync($"Could not find channel with id: {_config.ChannelId}");
+                        }
+                        else
+                        {
+                            message.ReplyAsync("Th3Essentials: Commands, Guild and Channel are setup :thumbsup:");
+                        }
                     }
                 }
             }
@@ -382,6 +389,12 @@ namespace Th3Essentials.Discordbot
                 }
             }
             return Task.CompletedTask;
+        }
+
+        private bool GetDiscordChannel()
+        {
+            _discordChannel = _client.GetChannel(_config.ChannelId) as IMessageChannel;
+            return _discordChannel != null;
         }
 
         private string CleanDiscordMessage(SocketMessage message)

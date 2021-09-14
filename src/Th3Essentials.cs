@@ -115,7 +115,7 @@ namespace Th3Essentials
                     {
                         string msg = TimeInMinutes == 1 ? Lang.Get("th3essentials:restart-in-min") : Lang.Get("th3essentials:restart-in-mins", TimeInMinutes);
                         _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
-                        _th3Discord.SendMessage(msg);
+                        _th3Discord.SendServerMessage(msg);
                         _api.Logger.Debug(msg);
                     }
                 }
