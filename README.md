@@ -45,6 +45,13 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
   All system messages like Startup/Shutdown/Restart warnings and Player join/leave will be in italics.
 
+  ### Currently supported Slashcommands
+
+  - /players - Get a list of online players
+  - /date - Get the current ingame date and time
+  - /restart - Show time until next restart
+  - /setchannel - Set the channel to send to/from ingame chat [Admin]
+
 - Shutdownsystem
 
   Notice: The shutdown system can only shut the server down, you will need something to automatically start the server when it is shutdown!!!
@@ -124,7 +131,8 @@ Download the mod and put it into your mods folder. Start your server once to gen
 {
   // Discord Bot Token
   // to turn it off - "Token": null,
-  // else set it to the token of your discord bot
+  // else set it to the token of your discord bot surrounded by "
+  // example value: "your_bot_token"
   "Token": null,
   // Discord ChannelID to send messages from and to ingame chat
   "ChannelId": 0,
