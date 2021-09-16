@@ -498,6 +498,7 @@ namespace Th3Essentials.Discordbot
                         if (msg.Equals(tmpMsg))
                         {
                             _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:temporalStormPrefix") + msg));
+                            break;
                         }
                     }
                 }
