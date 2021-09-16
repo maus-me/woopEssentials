@@ -64,6 +64,8 @@
     "slc-whitelist-time": "The time the player should be whitelisted, does nothing on unwhitelist [default = 50]",
     "slc-whitelist-reason": "The reason why the player got whitlisted",
     "slc-whitelist-timetype": "How the time parameter should be interpreted [hour,day,month,year] [default = year]",
+    "slc-allowcharselonce": "Allows the player to re-select their class after doing so already",
+    "slc-allowcharselonce-playername": "The name of the player",
     "restart-in-mins": "Server is restarting in {0} minutes",
     "restart-in-min": "Server is restarting in 1 minute",
     "th3config-error": "Th3Config could not be loaded: {0}",

@@ -13,6 +13,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
+using Vintagestory.API.Util;
 using Vintagestory.Server;
 
 namespace Th3Essentials.Discordbot
@@ -190,6 +191,24 @@ namespace Th3Essentials.Discordbot
                     Options = whitelistOptions
                 };
                 _ = _client.Rest.CreateGuildCommand(whitelist.Build(), _config.GuildId);
+
+                List<SlashCommandOptionBuilder> charSelectOptions = new List<SlashCommandOptionBuilder>()
+                {
+                    new SlashCommandOptionBuilder()
+                    {
+                        Name = "playername",
+                        Description = Lang.Get("th3essentials:slc-allowcharselonce-playername"),
+                        Type = ApplicationCommandOptionType.String,
+                        Required = true
+                    }
+                };
+                SlashCommandBuilder allowcharselonce = new SlashCommandBuilder
+                {
+                    Name = "allowcharselonce",
+                    Description = Lang.Get("th3essentials:slc-allowcharselonce"),
+                    Options = charSelectOptions
+                };
+                _ = _client.Rest.CreateGuildCommand(allowcharselonce.Build(), _config.GuildId);
             }
             catch (ApplicationCommandException exception)
             {
@@ -362,6 +381,50 @@ namespace Th3Essentials.Discordbot
                                             else
                                             {
                                                 response = "Could not find player";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            response = "You need to have Administrator permissions to do that";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        response = "Something went wrong: User was not a GuildUser";
+                                    }
+                                    break;
+                                }
+                            case "allowcharselonce":
+                                {
+                                    if (commandInteraction.User is SocketGuildUser guildUser)
+                                    {
+                                        if (guildUser.GuildPermissions.Administrator)
+                                        {
+                                            SocketSlashCommandDataOption option = commandInteraction.Data.Options.First();
+                                            if (option.Value is string playername)
+                                            {
+                                                IServerPlayerData player = _api.PlayerData.GetPlayerDataByLastKnownName(playername);
+                                                if (player != null)
+                                                {
+                                                    IPlayer playerWoldData = _api.World.PlayerByUid(player.PlayerUID);
+                                                    if (playerWoldData != null && SerializerUtil.Deserialize<bool>(playerWoldData.WorldData.GetModdata("createCharacter"), false))
+                                                    {
+                                                        playerWoldData.WorldData.SetModdata("createCharacter", SerializerUtil.Serialize(false));
+                                                        response = Lang.Get("Ok, player can now run .charsel (or rejoin the world) to change skin and character class once");
+                                                    }
+                                                    else
+                                                    {
+                                                        response = "Player is not online";
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    response = "Could not find that player";
+                                                }
+                                            }
+                                            else
+                                            {
+                                                response = "Error: playername needs to be set";
                                             }
                                         }
                                         else
