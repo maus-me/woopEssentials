@@ -126,7 +126,7 @@ namespace Th3Essentials
 
         private void PlayerNowPlaying(IServerPlayer byPlayer)
         {
-            if (!PlayerConfig.Players.TryGetValue(byPlayer.PlayerUID, out Th3PlayerData playerdata))
+            if (!PlayerConfig.Players.TryGetValue(byPlayer.PlayerUID, out _))
             {
                 byte[] data = byPlayer.WorldData.GetModdata(Th3EssentialsModDataKey);
                 if (data != null)
