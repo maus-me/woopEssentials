@@ -155,21 +155,17 @@ namespace Th3Essentials
 
         private void LogEntryAdded(EnumLogType logType, string message, object[] args)
         {
-            if (logType == EnumLogType.Notification && args?.Length != 0 && args?[0] != null)
+            if (logType == EnumLogType.Notification && args?.Length > 0 && args[0] is string msg)
             {
-                if (args[0] is string msg)
+                foreach (string tmpMsg in TemporalStorm)
                 {
-                    foreach (string tmpMsg in TemporalStorm)
+                    if (msg.Equals(tmpMsg))
                     {
-                        if (msg.Equals(tmpMsg))
-                        {
-                            _th3Discord.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + msg);
-                            return;
-                        }
+                        _th3Discord.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + msg);
+                        return;
                     }
                 }
             }
-
         }
 
         private void GameWorldSave()
