@@ -3,7 +3,7 @@
 ## Features:
 
 - Discord integration (send messages from game to discord and back, Ingame-GenralChat to one specific Discord-channel, customizable color) [on/off]
-  - restart/death/join messages are send to discord
+  - restart/death/join/temporal messages are send to discord
   - discord slashcommands for restart-time , ingame time and online players
   - display playercount in the activity of the bot
   - display discord mentions (user/channel/role) correctly
@@ -55,6 +55,8 @@ Download the mod and put it into your mods folder. Start your server once to gen
   - /date - Get the current ingame date and time
   - /restart - Show time until next restart
   - /setchannel - Set the channel to send to/from ingame chat [Admin]
+  - /whitelist - Change the whitelist status of a player (also the time duration is customizable) [Admin]
+  - /allowcharselonce - Allows the player to re-select their class after doing so already [Admin]
 
 - Shutdownsystem
 
