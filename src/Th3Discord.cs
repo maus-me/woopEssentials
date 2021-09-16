@@ -85,6 +85,7 @@ namespace Th3Essentials.Discordbot
             if (!initialized)
             {
                 _client.MessageReceived += MessageReceivedAsync;
+                _client.InteractionCreated += InteractionCreated;
 
                 //add vs api events
                 _api.Event.PlayerChat += PlayerChatAsync;
@@ -94,9 +95,6 @@ namespace Th3Essentials.Discordbot
                 _api.Logger.EntryAdded += LogEntryAdded;
                 _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
                 _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
-
-
-                _client.InteractionCreated += InteractionCreated;
 
                 initialized = true;
             }
@@ -346,7 +344,6 @@ namespace Th3Essentials.Discordbot
                 _discordChannel.SendMessageAsync(ServerMsg(msg));
             }
         }
-
 
         private Task MessageReceivedAsync(SocketMessage messageParam)
         {
