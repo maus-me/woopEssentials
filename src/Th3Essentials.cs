@@ -32,6 +32,21 @@ namespace Th3Essentials
 
         private Th3Discord _th3Discord;
 
+        private readonly string[] TemporalStorm;
+
+        public Th3Essentials()
+        {
+            TemporalStorm = new string[7]{
+                Lang.Get("A light temporal storm is approaching"),
+                Lang.Get("A light temporal storm is imminent"),
+                Lang.Get("A medium temporal storm is approaching"),
+                Lang.Get("A medium temporal storm is imminent"),
+                Lang.Get("A heavy temporal storm is approaching"),
+                Lang.Get("A heavy temporal storm is imminent"),
+                Lang.Get("The temporal storm seems to be waning")
+            };
+        }
+
         public override bool ShouldLoad(EnumAppSide forSide)
         {
             return forSide == EnumAppSide.Server;
@@ -65,6 +80,7 @@ namespace Th3Essentials
 
             _api.Event.GameWorldSave += GameWorldSave;
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
+            _api.Logger.EntryAdded += LogEntryAdded;
 
             if ((Config.ShutdownAnnounce != null && Config.ShutdownAnnounce.Length > 0) || (Config.ShutdownTime != null && Config.ShutdownEnabled))
             {
@@ -135,6 +151,25 @@ namespace Th3Essentials
                     PlayerConfig.Add(byPlayer.PlayerUID, playerData);
                 }
             }
+        }
+
+        private void LogEntryAdded(EnumLogType logType, string message, object[] args)
+        {
+            if (logType == EnumLogType.Notification && args?.Length != 0 && args?[0] != null)
+            {
+                if (args[0] is string msg)
+                {
+                    foreach (string tmpMsg in TemporalStorm)
+                    {
+                        if (msg.Equals(tmpMsg))
+                        {
+                            _th3Discord.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + msg);
+                            return;
+                        }
+                    }
+                }
+            }
+
         }
 
         private void GameWorldSave()
