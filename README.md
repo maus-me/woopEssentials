@@ -47,6 +47,8 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
   All system messages like Startup/Shutdown/Restart warnings and Player join/leave will be in italics.
 
+  The ingame "General" and "Info log" channels will be redirected to discord. Why the Info log? because it uses the same channel identifier.
+
   ### Currently supported Slashcommands
 
   - /players - Get a list of online players
