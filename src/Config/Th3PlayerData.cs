@@ -9,9 +9,7 @@ namespace Th3Essentials.PlayerData
     [ProtoContract]
     public class Th3PlayerData
     {
-        public bool IsDirty { get; internal set; }
-
-        public string PlayerUID;
+        public bool IsDirty;
 
         [ProtoMember(1)]
         public DateTime HomeLastuseage;
@@ -28,12 +26,6 @@ namespace Th3Essentials.PlayerData
         public Th3PlayerData()
         {
             HomePoints = new List<HomePoint>();
-        }
-
-        public Th3PlayerData(string playerUID) : this()
-        {
-            PlayerUID = playerUID;
-            IsDirty = true;
         }
 
         public HomePoint FindPointByName(string name)
