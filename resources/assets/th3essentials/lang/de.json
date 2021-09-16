@@ -61,5 +61,6 @@
     "restart-in-mins": "Server startet in {0} Minuten neu",
     "restart-in-min": "Server startet in 1 Minute neu",
     "th3config-error": "Th3Config konnte nicht geldaden werden: {0}",
-    "disabled": "Th3Essentials Config konnte nicht geladen werden, Mod wird deaktiviert"
+    "disabled": "Th3Essentials Config konnte nicht geladen werden, Mod wird deaktiviert",
+    "temporalStormPrefix": ":thunder_cloud_rain: "
 }

@@ -61,5 +61,6 @@
     "restart-in-mins": "Server is restarting in {0} minutes",
     "restart-in-min": "Server is restarting in 1 minute",
     "th3config-error": "Th3Config could not be loaded: {0}",
-    "disabled": "Th3Essentials config could not be loaded, mod will be disabled"
+    "disabled": "Th3Essentials config could not be loaded, mod will be disabled",
+    "temporalStormPrefix": ":thunder_cloud_rain: "
 }

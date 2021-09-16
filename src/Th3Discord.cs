@@ -28,9 +28,20 @@ namespace Th3Essentials.Discordbot
 
         private bool initialized;
 
+        private readonly string[] TemporalStorm;
+
         public Th3Discord()
         {
             initialized = false;
+            TemporalStorm = new string[7]{
+                Lang.Get("A light temporal storm is approaching"),
+                Lang.Get("A light temporal storm is imminent"),
+                Lang.Get("A medium temporal storm is approaching"),
+                Lang.Get("A medium temporal storm is imminent"),
+                Lang.Get("A heavy temporal storm is approaching"),
+                Lang.Get("A heavy temporal storm is imminent"),
+                Lang.Get("The temporal storm seems to be waning")
+            };
         }
 
         public void Init(ICoreServerAPI api)
@@ -80,6 +91,7 @@ namespace Th3Essentials.Discordbot
                 _api.Event.PlayerDisconnect += PlayerDisconnectAsync;
                 _api.Event.PlayerNowPlaying += PlayerNowPlayingAsync;
                 _api.Event.PlayerDeath += PlayerDeathAsync;
+                _api.Logger.EntryAdded += LogEntryAdded;
                 _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
                 _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
 
@@ -472,6 +484,23 @@ namespace Th3Essentials.Discordbot
             {
                 string msg = Lang.Get("th3essentials:disconnected", byPlayer.PlayerName);
                 _discordChannel.SendMessageAsync(ServerMsg(msg));
+            }
+        }
+
+        private void LogEntryAdded(EnumLogType logType, string message, object[] args)
+        {
+            if (logType == EnumLogType.Notification && args?.Length != 0 && args?[0] != null)
+            {
+                if (args[0] is string msg)
+                {
+                    foreach (string tmpMsg in TemporalStorm)
+                    {
+                        if (msg.Equals(tmpMsg))
+                        {
+                            _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:temporalStormPrefix") + msg));
+                        }
+                    }
+                }
             }
         }
 
