@@ -13,6 +13,8 @@ namespace Th3Essentials.Config
 
         public ulong GuildId = 0;
 
+        public bool UseEphermalCmdResponse = true;
+
         public string InfoMessage = null;
 
         public List<string> AnnouncementMessages = null;
@@ -88,6 +90,7 @@ namespace Th3Essentials.Config
             MessageCmdColor = configTemp.MessageCmdColor;
             DiscordChatColor = configTemp.DiscordChatColor;
             MessageEnabled = configTemp.MessageEnabled;
+            UseEphermalCmdResponse = configTemp.UseEphermalCmdResponse;
         }
     }
 }

@@ -39,8 +39,10 @@ namespace Th3Essentials.Discordbot
             _api = api;
 
             // create Discord client and set event methodes
-            _client = new DiscordSocketClient();
-
+            _client = new DiscordSocketClient(new DiscordSocketConfig()
+            {
+                AlwaysAcknowledgeInteractions = false
+            });
             _client.Ready += ReadyAsync;
             _client.Log += LogAsync;
 
@@ -233,7 +235,7 @@ namespace Th3Essentials.Discordbot
                                     break;
                                 }
                         }
-                        commandInteraction.RespondAsync(ServerMsg(response));
+                        commandInteraction.RespondAsync(ServerMsg(response), ephemeral: _config.UseEphermalCmdResponse);
                         break;
                     }
             }
@@ -452,7 +454,7 @@ namespace Th3Essentials.Discordbot
 
         private void PlayerChatAsync(IServerPlayer byPlayer, int channelId, ref string message, ref string data, BoolRef consumed)
         {
-            if (_discordChannel != null)
+            if (_discordChannel != null && channelId == GlobalConstants.GeneralChatGroup)
             {
                 Match playerMsg = Regex.Match(message, "> (.+)");
                 string msg = playerMsg.Groups[1].Value;
