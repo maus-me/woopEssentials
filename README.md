@@ -41,6 +41,8 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
   `!setupth3essentials` will create all commands that can be used from Discord and setup the Guild (Discord Server) to be used with the VS-Server. That should set everything up. If you want to change the linked channel type: `/setchannel` this will ask for an option called channel, type the channel name to link with the ingame chat and hit enter.
 
+  With `"UseEphermalCmdResponse": true,` set to true only the user that uses a discord slashcommand will see the response from the bot, when set to false it will be send so everyone can see the command and response.
+
   Additionally you can customize the color of the playername that will be shown ingame form Discord messages via `"DiscordChatColor" : "7289DA"`, this is a hex color code, [Online ColorPicker](https://colorpicker.me/) and pick the Hex Code value without the #
 
   All system messages like Startup/Shutdown/Restart warnings and Player join/leave will be in italics.
@@ -125,7 +127,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
     yay your should have your bot now on your discord server :)
 
-## This sample config shows all features disabled:
+## This sample config shows all default settings:
 
 ```json
 {
@@ -138,6 +140,8 @@ Download the mod and put it into your mods folder. Start your server once to gen
   "ChannelId": 0,
   // Discord GuildID to link all discord features to
   "GuildId": 0,
+  // if true only the user that uses a discord slashcommand will see the response from the bot
+  "UseEphermalCmdResponse": true,
 
   // text displayed when using /serverinfo
   // example value: "This is a Info message"
