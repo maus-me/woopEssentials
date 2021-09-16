@@ -13,6 +13,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
+using Vintagestory.Server;
 
 namespace Th3Essentials.Discordbot
 {
@@ -107,23 +108,23 @@ namespace Th3Essentials.Discordbot
                     Name = "players",
                     Description = Lang.Get("th3essentials:slc-players")
                 };
-                _client.Rest.CreateGuildCommand(players.Build(), _config.GuildId);
+                _ = _client.Rest.CreateGuildCommand(players.Build(), _config.GuildId);
 
                 SlashCommandBuilder date = new SlashCommandBuilder
                 {
                     Name = "date",
                     Description = Lang.Get("th3essentials:slc-date")
                 };
-                _client.Rest.CreateGuildCommand(date.Build(), _config.GuildId);
+                _ = _client.Rest.CreateGuildCommand(date.Build(), _config.GuildId);
 
                 SlashCommandBuilder restart = new SlashCommandBuilder
                 {
                     Name = "restart",
                     Description = Lang.Get("th3essentials:slc-restart")
                 };
-                _client.Rest.CreateGuildCommand(restart.Build(), _config.GuildId);
+                _ = _client.Rest.CreateGuildCommand(restart.Build(), _config.GuildId);
 
-                List<SlashCommandOptionBuilder> options = new List<SlashCommandOptionBuilder>()
+                List<SlashCommandOptionBuilder> channelOptions = new List<SlashCommandOptionBuilder>()
                 {
                     new SlashCommandOptionBuilder()
                     {
@@ -137,9 +138,58 @@ namespace Th3Essentials.Discordbot
                 {
                     Name = "setchannel",
                     Description = Lang.Get("th3essentials:slc-setchannel"),
-                    Options = options
+                    Options = channelOptions
                 };
-                _client.Rest.CreateGuildCommand(setchannel.Build(), _config.GuildId);
+                _ = _client.Rest.CreateGuildCommand(setchannel.Build(), _config.GuildId);
+
+                List<SlashCommandOptionBuilder> whitelistOptions = new List<SlashCommandOptionBuilder>()
+                {
+                    new SlashCommandOptionBuilder()
+                    {
+                        Name = "playername",
+                        Description = Lang.Get("th3essentials:slc-whitelist-playername"),
+                        Type = ApplicationCommandOptionType.String,
+                        Required = true
+                    } ,
+                    new SlashCommandOptionBuilder()
+                    {
+                        Name = "mode",
+                        Description = Lang.Get("th3essentials:slc-whitelist-mode"),
+                        Type = ApplicationCommandOptionType.Boolean,
+                        Required = true
+                    },
+                    new SlashCommandOptionBuilder()
+                    {
+                        Name = "time",
+                        Description = Lang.Get("th3essentials:slc-whitelist-time"),
+                        Type = ApplicationCommandOptionType.Integer,
+                    },
+                    new SlashCommandOptionBuilder()
+                    {
+                        Name = "timetype",
+                        Description = Lang.Get("th3essentials:slc-whitelist-timetype"),
+                        Type = ApplicationCommandOptionType.String,
+                        Choices = new List<ApplicationCommandOptionChoiceProperties>(){
+                            new ApplicationCommandOptionChoiceProperties(){Name = "hours", Value = "hours"},
+                            new ApplicationCommandOptionChoiceProperties(){Name = "days", Value = "days"},
+                            new ApplicationCommandOptionChoiceProperties(){Name = "months", Value = "months"},
+                            new ApplicationCommandOptionChoiceProperties(){Name = "years", Value = "years"}
+                        }
+                    },
+                    new SlashCommandOptionBuilder()
+                    {
+                        Name = "reason",
+                        Description = Lang.Get("th3essentials:slc-whitelist-reason"),
+                        Type = ApplicationCommandOptionType.String
+                    }
+                };
+                SlashCommandBuilder whitelist = new SlashCommandBuilder
+                {
+                    Name = "whitelist",
+                    Description = Lang.Get("th3essentials:slc-whitelist"),
+                    Options = whitelistOptions
+                };
+                _ = _client.Rest.CreateGuildCommand(whitelist.Build(), _config.GuildId);
             }
             catch (ApplicationCommandException exception)
             {
@@ -164,14 +214,7 @@ namespace Th3Essentials.Discordbot
                                     {
                                         names.Add(player.PlayerName);
                                     }
-                                    if (names.Count == 0)
-                                    {
-                                        response = Lang.Get("th3essentials:slc-players-none");
-                                    }
-                                    else
-                                    {
-                                        response = string.Join("\n", names);
-                                    }
+                                    response = names.Count == 0 ? Lang.Get("th3essentials:slc-players-none") : string.Join("\n", names);
                                     break;
                                 }
                             case "date":
@@ -228,15 +271,122 @@ namespace Th3Essentials.Discordbot
                                     }
                                     break;
                                 }
+                            case "whitelist":
+                                {
+                                    if (commandInteraction.User is SocketGuildUser guildUser)
+                                    {
+                                        if (guildUser.GuildPermissions.Administrator)
+                                        {
+                                            string targetPlayer = null;
+                                            bool? mode = null;
+                                            long? time = null;
+                                            string timetype = null;
+                                            string reason = null;
+
+                                            foreach (SocketSlashCommandDataOption option in commandInteraction.Data.Options)
+                                            {
+                                                switch (option.Name)
+                                                {
+                                                    case "playername":
+                                                        {
+                                                            targetPlayer = option.Value as string;
+                                                            break;
+                                                        }
+                                                    case "mode":
+                                                        {
+                                                            mode = option.Value as bool?;
+                                                            break;
+                                                        }
+                                                    case "time":
+                                                        {
+                                                            time = option.Value as long?;
+                                                            break;
+                                                        }
+                                                    case "reason":
+                                                        {
+                                                            reason = option.Value as string;
+                                                            break;
+                                                        }
+                                                    case "timetype": { timetype = option.Value as string; break; }
+                                                    default:
+                                                        {
+                                                            _api.Logger.VerboseDebug("Something went wrong getting slc-whitelist option");
+                                                            break;
+                                                        }
+                                                }
+                                            }
+
+                                            IServerPlayerData player = _api.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
+                                            if (targetPlayer != null && mode != null && player != null)
+                                            {
+                                                if (mode == true)
+                                                {
+                                                    reason = reason ?? "";
+                                                    timetype = timetype ?? "years";
+                                                    int timenew = (int?)time ?? 50;
+                                                    DateTime datetime = DateTime.Now.ToLocalTime();
+                                                    switch (timetype)
+                                                    {
+                                                        case "hours":
+                                                            {
+                                                                datetime = datetime.AddHours(timenew);
+                                                                break;
+                                                            }
+                                                        case "days":
+                                                            {
+                                                                datetime = datetime.AddDays(timenew);
+                                                                break;
+                                                            }
+                                                        case "months":
+                                                            {
+                                                                datetime = datetime.AddMonths(timenew);
+                                                                break;
+                                                            }
+                                                        case "years":
+                                                        default:
+                                                            {
+                                                                datetime = datetime.AddYears(timenew);
+                                                                break;
+                                                            }
+                                                    }
+                                                    string name = guildUser.Nickname ?? guildUser.Username;
+                                                    ((ServerMain)_api.World).PlayerDataManager.WhitelistPlayer(targetPlayer, player.PlayerUID, name, reason, datetime);
+                                                    response = $"Player is now whitelisted until {datetime}";
+                                                }
+                                                else
+                                                {
+                                                    _ = ((ServerMain)_api.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, player.PlayerUID);
+                                                    response = "Player is now removed from whitelist";
+                                                }
+                                            }
+                                            else
+                                            {
+                                                response = "Could not find player";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            response = "You need to have Administrator permissions to do that";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        response = "Something went wrong: User was not a GuildUser";
+                                    }
+                                    break;
+                                }
                             default:
                                 {
                                     response = "Unknown SlashCommand";
                                     break;
                                 }
                         }
-                        commandInteraction.RespondAsync(ServerMsg(response), ephemeral: _config.UseEphermalCmdResponse);
+                        _ = commandInteraction.RespondAsync(ServerMsg(response), ephemeral: _config.UseEphermalCmdResponse);
                         break;
                     }
+
+                default:
+                    break;
             }
             return Task.CompletedTask;
         }
@@ -245,7 +395,7 @@ namespace Th3Essentials.Discordbot
         {
             if (_discordChannel != null)
             {
-                _discordChannel.SendMessageAsync(ServerMsg(msg));
+                _ = _discordChannel.SendMessageAsync(ServerMsg(msg));
             }
         }
 
@@ -330,7 +480,7 @@ namespace Th3Essentials.Discordbot
                 {
                     msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
                 }
-                _discordChannel.SendMessageAsync(ServerMsg(msg));
+                _ = _discordChannel.SendMessageAsync(ServerMsg(msg));
             }
         }
 
@@ -359,11 +509,11 @@ namespace Th3Essentials.Discordbot
                         if (!GetDiscordChannel())
                         {
                             _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
-                            message.ReplyAsync($"Could not find channel with id: {_config.ChannelId}");
+                            _ = message.ReplyAsync($"Could not find channel with id: {_config.ChannelId}");
                         }
                         else
                         {
-                            message.ReplyAsync("Th3Essentials: Commands, Guild and Channel are setup :thumbsup:");
+                            _ = message.ReplyAsync("Th3Essentials: Commands, Guild and Channel are setup :thumbsup:");
                         }
                     }
                 }
@@ -458,7 +608,7 @@ namespace Th3Essentials.Discordbot
                 string msg = playerMsg.Groups[1].Value;
                 msg = msg.Replace("&lt;", "<").Replace("&gt;", ">");
                 msg = string.Format("**{0}:** {1}", byPlayer.PlayerName, msg);
-                _discordChannel.SendMessageAsync(msg);
+                _ = _discordChannel.SendMessageAsync(msg);
             }
         }
 
@@ -469,7 +619,7 @@ namespace Th3Essentials.Discordbot
             if (_discordChannel != null)
             {
                 string msg = Lang.Get("th3essentials:disconnected", byPlayer.PlayerName);
-                _discordChannel.SendMessageAsync(ServerMsg(msg));
+                _ = _discordChannel.SendMessageAsync(ServerMsg(msg));
             }
         }
 
@@ -479,7 +629,7 @@ namespace Th3Essentials.Discordbot
             if (_discordChannel != null)
             {
                 string msg = Lang.Get("th3essentials:connected", byPlayer.PlayerName);
-                _discordChannel.SendMessageAsync(ServerMsg(msg));
+                _ = _discordChannel.SendMessageAsync(ServerMsg(msg));
             }
         }
 
@@ -489,14 +639,14 @@ namespace Th3Essentials.Discordbot
             {
                 players = _api.World.AllOnlinePlayers.Length;
             }
-            _client.SetGameAsync($"players: {players}");
+            _ = _client.SetGameAsync($"players: {players}");
         }
 
         private void GameReady()
         {
             if (_discordChannel != null)
             {
-                _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:start")));
+                _ = _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:start")));
             }
         }
 
@@ -506,7 +656,7 @@ namespace Th3Essentials.Discordbot
             {
                 if (_discordChannel != null)
                 {
-                    await _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:shutdown")));
+                    _ = await _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:shutdown")));
                 }
                 _client.Dispose();
             }
