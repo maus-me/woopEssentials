@@ -119,8 +119,6 @@ namespace Th3Essentials
     private void CheckRestart(float t1)
     {
       int TimeInMinutes = (int)Th3Util.GetTimeTillRestart().TotalMinutes;
-
-      _api.Logger.VerboseDebug("checkrstart: " + TimeInMinutes.ToString());
       if (Config.ShutdownAnnounce != null)
       {
         foreach (int time in Config.ShutdownAnnounce)
