@@ -2,13 +2,13 @@ using Vintagestory.API.Server;
 
 namespace Th3Essentials.Commands
 {
-    public class CommandsLoader
+  public class CommandsLoader
+  {
+    internal static void Init(ICoreServerAPI api)
     {
-        internal static void Init(ICoreServerAPI api)
-        {
-            new Serverinfo().Init(api);
-            new Message().Init(api);
-            new Restart().Init(api);
-        }
+      new Serverinfo().Init(api);
+      new Message().Init(api);
+      new Restart().Init(api);
     }
+  }
 }
