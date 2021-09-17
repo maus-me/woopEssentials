@@ -100,7 +100,7 @@ namespace Th3Essentials.Discordbot
       IReadOnlyCollection<RestGuildCommand> commands = _client.Rest.GetGuildApplicationCommands(_config.GuildId).GetAwaiter().GetResult();
       foreach (RestGuildCommand cmd in commands)
       {
-        cmd.DeleteAsync();
+        cmd.DeleteAsync().Wait();
       }
       try
       {
