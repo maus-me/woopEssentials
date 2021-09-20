@@ -46,6 +46,7 @@ namespace Th3Essentials.Discordbot
       {
         AlwaysAcknowledgeInteractions = false
       });
+
       _client.Ready += ReadyAsync;
       _client.Log += LogAsync;
 
@@ -97,11 +98,7 @@ namespace Th3Essentials.Discordbot
 
     private void CreateSlashCommands()
     {
-      IReadOnlyCollection<RestGuildCommand> commands = _client.Rest.GetGuildApplicationCommands(_config.GuildId).GetAwaiter().GetResult();
-      foreach (RestGuildCommand cmd in commands)
-      {
-        cmd.DeleteAsync().Wait();
-      }
+      DeleteCommands();
       try
       {
         SlashCommandBuilder players = new SlashCommandBuilder
@@ -213,6 +210,19 @@ namespace Th3Essentials.Discordbot
       catch (ApplicationCommandException exception)
       {
         _api.Logger.VerboseDebug(exception.ToString());
+      }
+    }
+
+    private async void DeleteCommands()
+    {
+      IReadOnlyCollection<RestGuildCommand> commands = await _client.Rest.GetGuildApplicationCommands(_config.GuildId);
+      foreach (RestGuildCommand cmd in commands)
+      {
+        string[] cmds = { "players", "date", "restart", "setchannel", "whitelist", "allowcharselonce" };
+        if (!cmds.Contains(cmd.Name))
+        {
+          await cmd.DeleteAsync();
+        }
       }
     }
 
