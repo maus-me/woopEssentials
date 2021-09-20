@@ -2,11 +2,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Server",
+      "name": "Launch Server (Mono)",
       "type": "mono",
-      "request": "attach",
-      "address": "127.0.0.1",
-      "port": 55555
+      "request": "launch",
+      "preLaunchTask": "package (Debug)",
+      "program": "${env:VINTAGE_STORY_SERVER_DEV}/VintagestoryServer.exe",
+      "args": [
+        "--dataPath",
+        "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
+        "--addModPath",
+        "${workspaceFolder}/bin/packages/mods"
+      ],
+      "console": "integratedTerminal"
     },
     {
       "name": "Launch Client (Mono)",
@@ -22,23 +29,7 @@
         "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
         "--addModPath",
         "${workspaceFolder}/bin/packages/mods"
-      ],
-      "console": "internalConsole",
-      "internalConsoleOptions": "openOnSessionStart"
-    },
-    {
-      "name": "Launch Client no world no build (Mono)",
-      "type": "mono",
-      "request": "launch",
-      "program": "${env:VINTAGE_STORY}/Vintagestory.exe",
-      "args": [
-        "--dataPath",
-        "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
-        "--addModPath",
-        "${workspaceFolder}/bin/packages/mods"
-      ],
-      "console": "internalConsole",
-      "internalConsoleOptions": "openOnSessionStart"
+      ]
     },
     {
       "name": "Launch Client no world (Mono)",
@@ -51,27 +42,19 @@
         "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
         "--addModPath",
         "${workspaceFolder}/bin/packages/mods"
-      ],
-      "console": "internalConsole",
-      "internalConsoleOptions": "openOnSessionStart"
+      ]
     },
     {
-      "name": "Launch Client (.NET)",
-      "type": "coreclr",
+      "name": "Launch Client no world no build (Mono)",
+      "type": "mono",
       "request": "launch",
-      "preLaunchTask": "package (Debug)",
       "program": "${env:VINTAGE_STORY}/Vintagestory.exe",
       "args": [
-        "-p",
-        "-o",
-        "modding test world",
         "--dataPath",
         "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
         "--addModPath",
         "${workspaceFolder}/bin/packages/mods"
-      ],
-      "console": "internalConsole",
-      "internalConsoleOptions": "openOnSessionStart"
+      ]
     }
   ]
 }

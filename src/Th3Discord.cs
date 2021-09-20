@@ -207,22 +207,31 @@ namespace Th3Essentials.Discordbot
         };
         _ = _client.Rest.CreateGuildCommand(allowcharselonce.Build(), _config.GuildId);
       }
-      catch (ApplicationCommandException exception)
+      catch (Exception exception)
       {
-        _api.Logger.VerboseDebug(exception.ToString());
+        _api.Logger.Error("Slashcommand create:" + exception.ToString());
+        _api.Logger.Error("Maybe you forgot to add the applications.commands for your bot");
       }
     }
 
     private async void DeleteCommands()
     {
-      IReadOnlyCollection<RestGuildCommand> commands = await _client.Rest.GetGuildApplicationCommands(_config.GuildId);
-      foreach (RestGuildCommand cmd in commands)
+      try
       {
-        string[] cmds = { "players", "date", "restart", "setchannel", "whitelist", "allowcharselonce" };
-        if (!cmds.Contains(cmd.Name))
+        IReadOnlyCollection<RestGuildCommand> commands = await _client.Rest.GetGuildApplicationCommands(_config.GuildId);
+        foreach (RestGuildCommand cmd in commands)
         {
-          await cmd.DeleteAsync();
+          string[] cmds = { "players", "date", "restart", "setchannel", "whitelist", "allowcharselonce" };
+          if (!cmds.Contains(cmd.Name))
+          {
+            await cmd.DeleteAsync();
+          }
         }
+      }
+      catch (Exception exception)
+      {
+        _api.Logger.Error("Slashcommand delete:" + exception.ToString());
+        _api.Logger.Error("Maybe you forgot to add the applications.commands for your bot");
       }
     }
 

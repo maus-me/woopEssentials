@@ -3,71 +3,145 @@
   "tasks": [
     {
       "label": "build (Debug)",
-      "presentation": {
-        "reveal": "silent"
-      },
       "problemMatcher": "$msCompile",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake"]
+      "args": ["cake"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
     {
       "label": "build (Release)",
-      "presentation": {
-        "reveal": "silent"
-      },
       "problemMatcher": "$msCompile",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--configuration=Release"]
+      "args": ["cake", "--configuration=Release"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
     {
       "label": "clean",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=Clean"]
+      "args": ["cake", "--target=Clean"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
     {
       "label": "clean (Package)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=CleanPackage"]
+      "args": ["cake", "--target=CleanPackage"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
     {
       "label": "package (Debug)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=Package"]
+      "args": ["cake", "--target=Package"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
     {
       "label": "package (Release)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=Package", "--configuration=Release"]
+      "args": ["cake", "--target=Package", "--configuration=Release"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
     {
       "label": "deploy (Debug)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=Deploy"]
+      "args": ["cake", "--target=Deploy"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
     {
       "label": "deploy (Release)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=Deploy", "--configuration=Release"]
+      "args": ["cake", "--target=Deploy", "--configuration=Release"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
     {
       "label": "deploy (Remmina,Debug)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=DeployRemmina"]
+      "args": ["cake", "--target=DeployRemmina"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
     {
       "label": "deploy (Remmina,Release)",
       "type": "shell",
       "command": "dotnet",
-      "args": ["cake", "--target=DeployRemmina", "--configuration=Release"]
+      "args": ["cake", "--target=DeployRemmina", "--configuration=Release"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     },
     {
       "label": "run server",
@@ -77,17 +151,15 @@
         "isDefault": true
       },
       "dependsOn": ["package (Debug)"],
-      "command": "mono $VINTAGE_STORY_SERVER_DEV/VintagestoryServer.exe --dataPath $VINTAGE_STORY_SERVER_DEV_DATA --addModPath ${workspaceFolder}/bin/packages/mods"
-    },
-    {
-      "label": "run server (Debug)",
-      "type": "shell",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "dependsOn": ["package (Debug)"],
-      "command": "mono --debug --debugger-agent=transport=dt_socket,server=y,address=127.0.0.1:55555 $VINTAGE_STORY_SERVER_DEV/VintagestoryServer.exe --dataPath $VINTAGE_STORY_SERVER_DEV_DATA --addModPath ${workspaceFolder}/bin/packages/mods"
+      "command": "mono $VINTAGE_STORY_SERVER_DEV/VintagestoryServer.exe --dataPath $VINTAGE_STORY_SERVER_DEV_DATA --addModPath ${workspaceFolder}/bin/packages/mods",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     }
   ]
 }
