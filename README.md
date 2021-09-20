@@ -112,11 +112,17 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
 1.  Got to [Discord Developers](https://discord.com/developers/applications) and login with your discord account
 2.  Create a new Application as Discord calls it. On the top right you should see a button for that.
-3.  Once you created the Application click on the "Bot" menu entry on the left, there you need to click on "Add Bot" and confirm. After that you will see in in the center of the screen Token and "Click to Reveal Token" and also "Copy" here you will get your discord bot token that is needed in the Th3Config.json file, copy it and paste it into the Th3Config.json file.
+3.  Once you created the Application click on the "Bot" menu entry on the left, there you need to click on "Add Bot" and confirm. \
 
-    In the Th3Config.json it should look like this:
+- Look for "PUBLIC BOT"\
+   Public bots can be added by anyone. When unchecked, only you can join this bot to servers.\
+   And make sure you **uncheck** it. \
+  <span style="color:red">Otherwise if someone has your Bots Application ID they could add the bot and link it to their discord server and interact with your server.</span>
+- After look for Token and "Click to Reveal Token" and also "Copy" here you will get your discord bot token that is needed in the Th3Config.json file, copy it and paste it into the Th3Config.json file.
 
-    `"Token": "your_bot_token",`
+  In the Th3Config.json it should look like this:
+
+  `"Token": "your_bot_token",`
 
 4.  Click on the OAuth2 menu entry on the left. Here you can setup the permission and invite your bot to your discord server. Scroll down to the "SCOPES" section and tick the box for
 
@@ -125,7 +131,10 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
     once those are ticked a section for "BOT PERMISSIONS" will appear on there tick
 
+    - View Channels
     - Send Messages
+    - Send Messages in Threads
+    - Read Message History
 
     after that you can click on "Copy" and open that link in your browser, this will ask you to invite your bot to one of your server where you have permissions to invite a bot to
 
