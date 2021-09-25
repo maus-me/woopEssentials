@@ -20,13 +20,13 @@ namespace Th3Essentials.Discordbot
 {
   public class Th3Discord
   {
-    private DiscordSocketClient _client;
+    internal DiscordSocketClient _client;
 
-    private IMessageChannel _discordChannel;
+    internal IMessageChannel _discordChannel;
 
-    private ICoreServerAPI _api;
+    internal ICoreServerAPI _api;
 
-    private Th3Config _config;
+    internal Th3Config _config;
 
     private bool initialized;
 
@@ -88,7 +88,6 @@ namespace Th3Essentials.Discordbot
         initialized = true;
       }
 
-
       UpdatePlayers();
       return Task.CompletedTask;
     }
@@ -98,111 +97,7 @@ namespace Th3Essentials.Discordbot
       DeleteCommands();
       try
       {
-        SlashCommandBuilder players = new SlashCommandBuilder
-        {
-          Name = "players",
-          Description = Lang.Get("th3essentials:slc-players")
-        };
-        _ = _client.Rest.CreateGuildCommand(players.Build(), _config.GuildId);
-
-        SlashCommandBuilder date = new SlashCommandBuilder
-        {
-          Name = "date",
-          Description = Lang.Get("th3essentials:slc-date")
-        };
-        _ = _client.Rest.CreateGuildCommand(date.Build(), _config.GuildId);
-
-        SlashCommandBuilder restart = new SlashCommandBuilder
-        {
-          Name = "restart",
-          Description = Lang.Get("th3essentials:slc-restart")
-        };
-        _ = _client.Rest.CreateGuildCommand(restart.Build(), _config.GuildId);
-
-        List<SlashCommandOptionBuilder> channelOptions = new List<SlashCommandOptionBuilder>()
-          {
-            new SlashCommandOptionBuilder()
-            {
-              Name = "channel",
-              Description = Lang.Get("th3essentials:slc-setchannel"),
-              Type = ApplicationCommandOptionType.Channel,
-              Required = true
-            }
-          };
-        SlashCommandBuilder setchannel = new SlashCommandBuilder
-        {
-          Name = "setchannel",
-          Description = Lang.Get("th3essentials:slc-setchannel"),
-          Options = channelOptions
-        };
-        _ = _client.Rest.CreateGuildCommand(setchannel.Build(), _config.GuildId);
-
-        List<SlashCommandOptionBuilder> whitelistOptions = new List<SlashCommandOptionBuilder>()
-                {
-                    new SlashCommandOptionBuilder()
-                    {
-                        Name = "playername",
-                        Description = Lang.Get("th3essentials:slc-whitelist-playername"),
-                        Type = ApplicationCommandOptionType.String,
-                        Required = true
-                    } ,
-                    new SlashCommandOptionBuilder()
-                    {
-                        Name = "mode",
-                        Description = Lang.Get("th3essentials:slc-whitelist-mode"),
-                        Type = ApplicationCommandOptionType.Boolean,
-                        Required = true
-                    },
-                    new SlashCommandOptionBuilder()
-                    {
-                        Name = "time",
-                        Description = Lang.Get("th3essentials:slc-whitelist-time"),
-                        Type = ApplicationCommandOptionType.Integer,
-                    },
-                    new SlashCommandOptionBuilder()
-                    {
-                        Name = "timetype",
-                        Description = Lang.Get("th3essentials:slc-whitelist-timetype"),
-                        Type = ApplicationCommandOptionType.String,
-                        Choices = new List<ApplicationCommandOptionChoiceProperties>(){
-                            new ApplicationCommandOptionChoiceProperties(){Name = "hours", Value = "hours"},
-                            new ApplicationCommandOptionChoiceProperties(){Name = "days", Value = "days"},
-                            new ApplicationCommandOptionChoiceProperties(){Name = "months", Value = "months"},
-                            new ApplicationCommandOptionChoiceProperties(){Name = "years", Value = "years"}
-                        }
-                    },
-                    new SlashCommandOptionBuilder()
-                    {
-                        Name = "reason",
-                        Description = Lang.Get("th3essentials:slc-whitelist-reason"),
-                        Type = ApplicationCommandOptionType.String
-                    }
-                };
-        SlashCommandBuilder whitelist = new SlashCommandBuilder
-        {
-          Name = "whitelist",
-          Description = Lang.Get("th3essentials:slc-whitelist"),
-          Options = whitelistOptions
-        };
-        _ = _client.Rest.CreateGuildCommand(whitelist.Build(), _config.GuildId);
-
-        List<SlashCommandOptionBuilder> charSelectOptions = new List<SlashCommandOptionBuilder>()
-        {
-          new SlashCommandOptionBuilder()
-          {
-            Name = "playername",
-            Description = Lang.Get("th3essentials:slc-allowcharselonce-playername"),
-            Type = ApplicationCommandOptionType.String,
-            Required = true
-          }
-        };
-        SlashCommandBuilder allowcharselonce = new SlashCommandBuilder
-        {
-          Name = "allowcharselonce",
-          Description = Lang.Get("th3essentials:slc-allowcharselonce"),
-          Options = charSelectOptions
-        };
-        _ = _client.Rest.CreateGuildCommand(allowcharselonce.Build(), _config.GuildId);
+        Th3SlashCommands.CreateGuildCommands(_client);
       }
       catch (Exception exception)
       {
@@ -218,7 +113,7 @@ namespace Th3Essentials.Discordbot
         IReadOnlyCollection<RestGuildCommand> commands = await _client.Rest.GetGuildApplicationCommands(_config.GuildId);
         foreach (RestGuildCommand cmd in commands)
         {
-          string[] cmds = { "players", "date", "restart", "setchannel", "whitelist", "allowcharselonce" };
+          string[] cmds = Enum.GetNames(typeof(SlashCommands)).Select(scmd => scmd.ToLower()).ToArray();
           if (!cmds.Contains(cmd.Name))
           {
             await cmd.DeleteAsync();
@@ -239,228 +134,7 @@ namespace Th3Essentials.Discordbot
         // Slash commands
         case SocketSlashCommand commandInteraction:
           {
-            string response;
-            switch (commandInteraction.Data.Name)
-            {
-              case "players":
-                {
-                  List<string> names = new List<string>();
-                  foreach (IServerPlayer player in _api.World.AllOnlinePlayers)
-                  {
-                    names.Add(player.PlayerName);
-                  }
-                  response = names.Count == 0 ? Lang.Get("th3essentials:slc-players-none") : string.Join("\n", names);
-                  break;
-                }
-              case "date":
-                {
-                  response = _api.World.Calendar.PrettyDate();
-                  break;
-                }
-              case "restart":
-                {
-                  if (_config.ShutdownTime != null)
-                  {
-                    TimeSpan restart = Th3Util.GetTimeTillRestart();
-                    response = Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"), restart.Minutes.ToString("D2"));
-                  }
-                  else
-                  {
-                    response = Lang.Get("th3essentials:slc-restart-disabled");
-                  }
-                  break;
-                }
-              case "setchannel":
-                {
-                  if (commandInteraction.User is SocketGuildUser guildUser)
-                  {
-                    if (guildUser.GuildPermissions.Administrator)
-                    {
-                      SocketSlashCommandDataOption option = commandInteraction.Data.Options.First();
-                      if (option.Value is SocketTextChannel channel)
-                      {
-                        _config.ChannelId = channel.Id;
-                        if (!GetDiscordChannel())
-                        {
-                          _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
-                          response = $"Could not find channel with id: {_config.ChannelId}";
-                        }
-                        else
-                        {
-                          response = $"Channel was set to {channel.Name}";
-                        }
-                      }
-                      else
-                      {
-                        response = "Error: Channel needs to be a Text Channel";
-                      }
-                    }
-                    else
-                    {
-                      response = "You need to have Administrator permissions to do that";
-                    }
-                  }
-                  else
-                  {
-                    response = "Something went wrong: User was not a GuildUser";
-                  }
-                  break;
-                }
-              case "whitelist":
-                {
-                  if (commandInteraction.User is SocketGuildUser guildUser)
-                  {
-                    if (guildUser.GuildPermissions.Administrator)
-                    {
-                      string targetPlayer = null;
-                      bool? mode = null;
-                      long? time = null;
-                      string timetype = null;
-                      string reason = null;
-
-                      foreach (SocketSlashCommandDataOption option in commandInteraction.Data.Options)
-                      {
-                        switch (option.Name)
-                        {
-                          case "playername":
-                            {
-                              targetPlayer = option.Value as string;
-                              break;
-                            }
-                          case "mode":
-                            {
-                              mode = option.Value as bool?;
-                              break;
-                            }
-                          case "time":
-                            {
-                              time = option.Value as long?;
-                              break;
-                            }
-                          case "reason":
-                            {
-                              reason = option.Value as string;
-                              break;
-                            }
-                          case "timetype": { timetype = option.Value as string; break; }
-                          default:
-                            {
-                              _api.Logger.VerboseDebug("Something went wrong getting slc-whitelist option");
-                              break;
-                            }
-                        }
-                      }
-
-                      IServerPlayerData player = _api.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
-                      if (targetPlayer != null && mode != null && player != null)
-                      {
-                        if (mode == true)
-                        {
-                          reason = reason ?? "";
-                          timetype = timetype ?? "years";
-                          int timenew = (int?)time ?? 50;
-                          DateTime datetime = DateTime.Now.ToLocalTime();
-                          switch (timetype)
-                          {
-                            case "hours":
-                              {
-                                datetime = datetime.AddHours(timenew);
-                                break;
-                              }
-                            case "days":
-                              {
-                                datetime = datetime.AddDays(timenew);
-                                break;
-                              }
-                            case "months":
-                              {
-                                datetime = datetime.AddMonths(timenew);
-                                break;
-                              }
-                            case "years":
-                            default:
-                              {
-                                datetime = datetime.AddYears(timenew);
-                                break;
-                              }
-                          }
-                          string name = guildUser.Nickname ?? guildUser.Username;
-                          ((ServerMain)_api.World).PlayerDataManager.WhitelistPlayer(targetPlayer, player.PlayerUID, name, reason, datetime);
-                          response = $"Player is now whitelisted until {datetime}";
-                        }
-                        else
-                        {
-                          _ = ((ServerMain)_api.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, player.PlayerUID);
-                          response = "Player is now removed from whitelist";
-                        }
-                      }
-                      else
-                      {
-                        response = "Could not find player";
-                      }
-                    }
-                    else
-                    {
-                      response = "You need to have Administrator permissions to do that";
-                    }
-                  }
-                  else
-                  {
-                    response = "Something went wrong: User was not a GuildUser";
-                  }
-                  break;
-                }
-              case "allowcharselonce":
-                {
-                  if (commandInteraction.User is SocketGuildUser guildUser)
-                  {
-                    if (guildUser.GuildPermissions.Administrator)
-                    {
-                      SocketSlashCommandDataOption option = commandInteraction.Data.Options.First();
-                      if (option.Value is string playername)
-                      {
-                        IServerPlayerData player = _api.PlayerData.GetPlayerDataByLastKnownName(playername);
-                        if (player != null)
-                        {
-                          IPlayer playerWoldData = _api.World.PlayerByUid(player.PlayerUID);
-                          if (playerWoldData != null && SerializerUtil.Deserialize<bool>(playerWoldData.WorldData.GetModdata("createCharacter"), false))
-                          {
-                            playerWoldData.WorldData.SetModdata("createCharacter", SerializerUtil.Serialize(false));
-                            response = Lang.Get("Ok, player can now run .charsel (or rejoin the world) to change skin and character class once");
-                          }
-                          else
-                          {
-                            response = "Player is not online";
-                          }
-                        }
-                        else
-                        {
-                          response = "Could not find that player";
-                        }
-                      }
-                      else
-                      {
-                        response = "Error: playername needs to be set";
-                      }
-                    }
-                    else
-                    {
-                      response = "You need to have Administrator permissions to do that";
-                    }
-                  }
-                  else
-                  {
-                    response = "Something went wrong: User was not a GuildUser";
-                  }
-                  break;
-                }
-              default:
-                {
-                  response = "Unknown SlashCommand";
-                  break;
-                }
-            }
-            _ = commandInteraction.RespondAsync(ServerMsg(response), ephemeral: _config.UseEphermalCmdResponse);
+            Th3SlashCommands.HandleSlashCommand(this, commandInteraction);
             break;
           }
 
@@ -618,7 +292,7 @@ namespace Th3Essentials.Discordbot
       return Task.CompletedTask;
     }
 
-    private bool GetDiscordChannel()
+    internal bool GetDiscordChannel()
     {
       _discordChannel = _client.GetChannel(_config.ChannelId) as IMessageChannel;
       return _discordChannel != null;
@@ -732,7 +406,7 @@ namespace Th3Essentials.Discordbot
       }
     }
 
-    private string ServerMsg(string msg)
+    internal string ServerMsg(string msg)
     {
       return $"*{msg}*";
     }
