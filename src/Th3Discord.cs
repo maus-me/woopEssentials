@@ -559,7 +559,7 @@ namespace Th3Essentials.Discordbot
         {
           msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
         }
-        _ = _discordChannel.SendMessageAsync(ServerMsg(msg));
+        SendServerMessage(msg);
       }
     }
 
@@ -695,21 +695,15 @@ namespace Th3Essentials.Discordbot
     {
       // update player count with allplayer -1 since the disconnecting player is still online while this event fires
       UpdatePlayers(_api.World.AllOnlinePlayers.Length - 1);
-      if (_discordChannel != null)
-      {
-        string msg = Lang.Get("th3essentials:disconnected", byPlayer.PlayerName);
-        _ = _discordChannel.SendMessageAsync(ServerMsg(msg));
-      }
+
+      SendServerMessage(Lang.Get("th3essentials:disconnected", byPlayer.PlayerName));
     }
 
     private void PlayerNowPlayingAsync(IServerPlayer byPlayer)
     {
       UpdatePlayers();
-      if (_discordChannel != null)
-      {
-        string msg = Lang.Get("th3essentials:connected", byPlayer.PlayerName);
-        _ = _discordChannel.SendMessageAsync(ServerMsg(msg));
-      }
+
+      SendServerMessage(Lang.Get("th3essentials:connected", byPlayer.PlayerName));
     }
 
     private void UpdatePlayers(int players = -1)
@@ -723,10 +717,7 @@ namespace Th3Essentials.Discordbot
 
     private void GameReady()
     {
-      if (_discordChannel != null)
-      {
-        _ = _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:start")));
-      }
+      SendServerMessage(Lang.Get("th3essentials:start"));
     }
 
     private async void Shutdown()
