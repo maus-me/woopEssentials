@@ -42,10 +42,7 @@ namespace Th3Essentials.Discordbot
       _api = api;
 
       // create Discord client and set event methodes
-      _client = new DiscordSocketClient(new DiscordSocketConfig()
-      {
-        AlwaysAcknowledgeInteractions = false
-      });
+      _client = new DiscordSocketClient();
 
       _client.Ready += ReadyAsync;
       _client.Log += LogAsync;
