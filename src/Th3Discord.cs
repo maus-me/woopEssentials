@@ -368,25 +368,26 @@ namespace Th3Essentials.Discordbot
     private void PlayerDisconnectAsync(IServerPlayer byPlayer)
     {
       // update player count with allplayer -1 since the disconnecting player is still online while this event fires
-      UpdatePlayers(_api.World.AllOnlinePlayers.Length - 1);
+      int players = UpdatePlayers(_api.World.AllOnlinePlayers.Length - 1);
 
-      SendServerMessage(Lang.Get("th3essentials:disconnected", byPlayer.PlayerName));
+      SendServerMessage(Lang.Get("th3essentials:disconnected", byPlayer.PlayerName, players, _api.Server.Config.MaxClients));
     }
 
     private void PlayerNowPlayingAsync(IServerPlayer byPlayer)
     {
-      UpdatePlayers();
+      int players = UpdatePlayers();
 
-      SendServerMessage(Lang.Get("th3essentials:connected", byPlayer.PlayerName));
+      SendServerMessage(Lang.Get("th3essentials:connected", byPlayer.PlayerName, players, _api.Server.Config.MaxClients));
     }
 
-    private void UpdatePlayers(int players = -1)
+    private int UpdatePlayers(int players = -1)
     {
       if (players < 0)
       {
         players = _api.World.AllOnlinePlayers.Length;
       }
       _ = _client.SetGameAsync($"players: {players}");
+      return players;
     }
 
     private void GameReady()
