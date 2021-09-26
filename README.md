@@ -55,8 +55,9 @@ Download the mod and put it into your mods folder. Start your server once to gen
   - /date - Get the current ingame date and time
   - /restart - Show time until next restart
   - /setchannel - Set the channel to send to/from ingame chat [Admin]
-  - /whitelist - Change the whitelist status of a player (also the time duration is customizable) [Admin]
-  - /allowcharselonce - Allows the player to re-select their class after doing so already [Admin]
+  - /modifypermissions - add/remove/clear additional roles to use moderation commands [Admin]
+  - /whitelist - Change the whitelist status of a player (also the time duration is customizable) [Admin or Configured Role]
+  - /allowcharselonce - Allows the player to re-select their class after doing so already [Admin or Configured Role]
 
 - Shutdownsystem
 

@@ -13,6 +13,8 @@ namespace Th3Essentials.Config
 
     public ulong GuildId = 0;
 
+    public List<ulong> ModerationRoles = null;
+
     public bool UseEphermalCmdResponse = true;
 
     public string InfoMessage = null;
@@ -91,6 +93,7 @@ namespace Th3Essentials.Config
       DiscordChatColor = configTemp.DiscordChatColor;
       MessageEnabled = configTemp.MessageEnabled;
       UseEphermalCmdResponse = configTemp.UseEphermalCmdResponse;
+      ModerationRoles = configTemp.ModerationRoles;
     }
   }
 }

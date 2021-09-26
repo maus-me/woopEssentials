@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Discord;
-using Discord.Rest;
 using Discord.WebSocket;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -25,13 +24,6 @@ namespace Th3Essentials.Discordbot
           {
             new SlashCommandOptionBuilder()
             {
-              Name = "role",
-              Description = Lang.Get("th3essentials:slc-modifypermissions"),
-              Type = ApplicationCommandOptionType.Role,
-              Required = true
-            },
-            new SlashCommandOptionBuilder()
-            {
                 Name = "mode",
                 Description = Lang.Get("th3essentials:slc-modifypermissions-mode"),
                 Type = ApplicationCommandOptionType.String,
@@ -39,7 +31,14 @@ namespace Th3Essentials.Discordbot
                     new ApplicationCommandOptionChoiceProperties(){Name = "add", Value = "add"},
                     new ApplicationCommandOptionChoiceProperties(){Name = "remove", Value = "remove"},
                     new ApplicationCommandOptionChoiceProperties(){Name = "clear", Value = "clear"}
-                }
+                },
+                Required = true
+            },
+            new SlashCommandOptionBuilder()
+            {
+              Name = "role",
+              Description = Lang.Get("th3essentials:slc-modifypermissions"),
+              Type = ApplicationCommandOptionType.Role
             }
           };
       SlashCommandBuilder modifypermissions = new SlashCommandBuilder
@@ -232,7 +231,7 @@ namespace Th3Essentials.Discordbot
             {
               if (commandInteraction.User is SocketGuildUser guildUser)
               {
-                if (guildUser.GuildPermissions.Administrator)
+                if (guildUser.GuildPermissions.Administrator || HasPermission(guildUser, discord._config.ModerationRoles))
                 {
                   string targetPlayer = null;
                   bool? mode = null;
@@ -327,7 +326,7 @@ namespace Th3Essentials.Discordbot
                 }
                 else
                 {
-                  response = "You need to have Administrator permissions to do that";
+                  response = "You do not have permissions to do that";
                 }
               }
               else
@@ -340,7 +339,7 @@ namespace Th3Essentials.Discordbot
             {
               if (commandInteraction.User is SocketGuildUser guildUser)
               {
-                if (guildUser.GuildPermissions.Administrator)
+                if (guildUser.GuildPermissions.Administrator || HasPermission(guildUser, discord._config.ModerationRoles))
                 {
                   SocketSlashCommandDataOption option = commandInteraction.Data.Options.First();
                   if (option.Value is string playername)
@@ -371,7 +370,7 @@ namespace Th3Essentials.Discordbot
                 }
                 else
                 {
-                  response = "You need to have Administrator permissions to do that";
+                  response = "You do not have permissions to do that";
                 }
               }
               else
@@ -386,15 +385,15 @@ namespace Th3Essentials.Discordbot
               {
                 if (guildUser.GuildPermissions.Administrator)
                 {
-                  ulong roleid;
-                  string mode;
+                  SocketRole role = null;
+                  string mode = null;
                   foreach (SocketSlashCommandDataOption option in commandInteraction.Data.Options)
                   {
                     switch (option.Name)
                     {
                       case "role":
                         {
-                          roleid = (option.Value as SocketRole).Id;
+                          role = option.Value as SocketRole;
                           break;
                         }
                       case "mode":
@@ -405,11 +404,74 @@ namespace Th3Essentials.Discordbot
                       default: { break; }
                     }
                   }
-                  response = "Error: Channel needs to be a Text Channel";
+                  switch (mode)
+                  {
+                    case "add":
+                      {
+                        if (role != null)
+                        {
+                          if (discord._config.ModerationRoles == null)
+                          {
+                            discord._config.ModerationRoles = new List<ulong>();
+                          }
+                          discord._config.ModerationRoles.Add(role.Id);
+                          response = $"Added role: {role.Name}";
+                        }
+                        else
+                        {
+                          response = "Invalid role";
+                        }
+                        break;
+                      }
+                    case "remove":
+                      {
+                        if (role != null)
+                        {
+                          if (discord._config.ModerationRoles != null)
+                          {
+                            if (discord._config.ModerationRoles.Remove(role.Id))
+                            {
+                              response = $"Removed role: {role.Name}";
+                            }
+                            else
+                            {
+                              response = "Role had not permissions, nothing to remove";
+                            }
+                          }
+                          else
+                          {
+                            response = "Nothing to remove";
+                          }
+                        }
+                        else
+                        {
+                          response = "Invalid role";
+                        }
+                        break;
+                      }
+                    case "clear":
+                      {
+                        if (discord._config.ModerationRoles != null)
+                        {
+                          discord._config.ModerationRoles.Clear();
+                          response = "All moderation roles removed";
+                        }
+                        else
+                        {
+                          response = "Nothing to remove";
+                        }
+                        break;
+                      }
+                    default:
+                      {
+                        response = $"Error: Mode option invalid: {mode}";
+                        break;
+                      }
+                  }
                 }
                 else
                 {
-                  response = "You need to have Administrator permissions to do that";
+                  response = "You do not have permissions to do that";
                 }
               }
               else
@@ -430,6 +492,11 @@ namespace Th3Essentials.Discordbot
         response = "Unknown SlashCommand";
       }
       _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: discord._config.UseEphermalCmdResponse);
+    }
+
+    private static bool HasPermission(SocketGuildUser guildUser, List<ulong> moderationRoles)
+    {
+      return guildUser.Roles.Select(r => r.Id).ToArray().Intersect(moderationRoles).Count() > 0;
     }
   }
 }
