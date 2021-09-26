@@ -14,13 +14,42 @@ namespace Th3Essentials.Discordbot
 {
   public enum SlashCommands
   {
-    Players, Date, Restart, SetChannel, Whitelist, AllowCharSelOnce
+    Players, Date, Restart, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions
   }
 
   public class Th3SlashCommands
   {
     public static void CreateGuildCommands(DiscordSocketClient _client)
     {
+      List<SlashCommandOptionBuilder> modifypermissionsOptions = new List<SlashCommandOptionBuilder>()
+          {
+            new SlashCommandOptionBuilder()
+            {
+              Name = "role",
+              Description = Lang.Get("th3essentials:slc-modifypermissions"),
+              Type = ApplicationCommandOptionType.Role,
+              Required = true
+            },
+            new SlashCommandOptionBuilder()
+            {
+                Name = "mode",
+                Description = Lang.Get("th3essentials:slc-modifypermissions-mode"),
+                Type = ApplicationCommandOptionType.String,
+                Choices = new List<ApplicationCommandOptionChoiceProperties>(){
+                    new ApplicationCommandOptionChoiceProperties(){Name = "add", Value = "add"},
+                    new ApplicationCommandOptionChoiceProperties(){Name = "remove", Value = "remove"},
+                    new ApplicationCommandOptionChoiceProperties(){Name = "clear", Value = "clear"}
+                }
+            }
+          };
+      SlashCommandBuilder modifypermissions = new SlashCommandBuilder
+      {
+        Name = SlashCommands.ModifyPermissions.ToString().ToLower(),
+        Description = Lang.Get("th3essentials:slc-modifypermissions"),
+        Options = modifypermissionsOptions
+      };
+      _ = _client.Rest.CreateGuildCommand(modifypermissions.Build(), Th3Essentials.Config.GuildId);
+
       SlashCommandBuilder players = new SlashCommandBuilder
       {
         Name = SlashCommands.Players.ToString().ToLower(),
@@ -235,7 +264,11 @@ namespace Th3Essentials.Discordbot
                           reason = option.Value as string;
                           break;
                         }
-                      case "timetype": { timetype = option.Value as string; break; }
+                      case "timetype":
+                        {
+                          timetype = option.Value as string;
+                          break;
+                        }
                       default:
                         {
                           discord._api.Logger.VerboseDebug("Something went wrong getting slc-whitelist option");
@@ -335,6 +368,44 @@ namespace Th3Essentials.Discordbot
                   {
                     response = "Error: playername needs to be set";
                   }
+                }
+                else
+                {
+                  response = "You need to have Administrator permissions to do that";
+                }
+              }
+              else
+              {
+                response = "Something went wrong: User was not a GuildUser";
+              }
+              break;
+            }
+          case SlashCommands.ModifyPermissions:
+            {
+              if (commandInteraction.User is SocketGuildUser guildUser)
+              {
+                if (guildUser.GuildPermissions.Administrator)
+                {
+                  ulong roleid;
+                  string mode;
+                  foreach (SocketSlashCommandDataOption option in commandInteraction.Data.Options)
+                  {
+                    switch (option.Name)
+                    {
+                      case "role":
+                        {
+                          roleid = (option.Value as SocketRole).Id;
+                          break;
+                        }
+                      case "mode":
+                        {
+                          mode = option.Value as string;
+                          break;
+                        }
+                      default: { break; }
+                    }
+                  }
+                  response = "Error: Channel needs to be a Text Channel";
                 }
                 else
                 {
