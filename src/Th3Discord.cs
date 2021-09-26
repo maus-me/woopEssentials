@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
-using Discord.Net;
 using Discord.Rest;
 using Discord.WebSocket;
 using Th3Essentials.Config;
@@ -14,7 +13,6 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
-using Vintagestory.Server;
 
 namespace Th3Essentials.Discordbot
 {
