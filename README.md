@@ -154,6 +154,8 @@ Download the mod and put it into your mods folder. Start your server once to gen
   "ChannelId": 0,
   // Discord GuildID to link all discord features to
   "GuildId": 0,
+  // Roles that are allowd to use whitelist/allowcharselonce - use the /modifypermissions slashcommand to add/remove roles
+  "ModerationRoles": null,
   // if true only the user that uses a discord slashcommand will see the response from the bot
   "UseEphermalCmdResponse": true,
 
