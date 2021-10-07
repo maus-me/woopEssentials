@@ -276,8 +276,7 @@ namespace Th3Essentials.Discordbot
                     }
                   }
 
-                  IServerPlayerData player = discord._api.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
-                  if (targetPlayer != null && mode != null && player != null)
+                  if (targetPlayer != null && mode != null)
                   {
                     if (mode == true)
                     {
@@ -310,18 +309,25 @@ namespace Th3Essentials.Discordbot
                           }
                       }
                       string name = guildUser.Nickname ?? guildUser.Username;
-                      ((ServerMain)discord._api.World).PlayerDataManager.WhitelistPlayer(targetPlayer, player.PlayerUID, name, reason, datetime);
+
+                      GetPlayerUID(discord, targetPlayer, (playerUID) =>
+                        {
+                          ((ServerMain)discord._api.World).PlayerDataManager.WhitelistPlayer(targetPlayer, playerUID, name, reason, datetime);
+                        });
                       response = $"Player is now whitelisted until {datetime}";
                     }
                     else
                     {
-                      _ = ((ServerMain)discord._api.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, player.PlayerUID);
+                      GetPlayerUID(discord, targetPlayer, (playerUID) =>
+                        {
+                          _ = ((ServerMain)discord._api.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, playerUID);
+                        });
                       response = "Player is now removed from whitelist";
                     }
                   }
                   else
                   {
-                    response = "Could not find player";
+                    response = "Playername or mode missing";
                   }
                 }
                 else
@@ -492,6 +498,25 @@ namespace Th3Essentials.Discordbot
         response = "Unknown SlashCommand";
       }
       _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: discord._config.UseEphermalCmdResponse);
+    }
+
+    private static void GetPlayerUID(Th3Discord discord, string targetPlayer, Vintagestory.API.Common.Action<string> OnHavePlayerUid)
+    {
+      IServerPlayerData player = discord._api.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
+      if (player == null)
+      {
+        AuthServerComm.ResolvePlayerName(targetPlayer, (result, playeruid) => discord._api.Event.EnqueueMainThreadTask(() =>
+        {
+          if (result == EnumServerResponse.Good)
+          {
+            OnHavePlayerUid(playeruid);
+          }
+        }, "th3discord-whitelist-getuid"));
+      }
+      else
+      {
+        OnHavePlayerUid(player.PlayerUID);
+      }
     }
 
     private static bool HasPermission(SocketGuildUser guildUser, List<ulong> moderationRoles)
