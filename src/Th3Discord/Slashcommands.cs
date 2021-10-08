@@ -13,7 +13,7 @@ namespace Th3Essentials.Discordbot
 {
   public enum SlashCommands
   {
-    Players, Date, Restart, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions
+    Players, Date, RestartTime, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions, Shutdown
   }
 
   public class Th3SlashCommands
@@ -65,7 +65,7 @@ namespace Th3Essentials.Discordbot
 
       SlashCommandBuilder restart = new SlashCommandBuilder
       {
-        Name = SlashCommands.Restart.ToString().ToLower(),
+        Name = SlashCommands.RestartTime.ToString().ToLower(),
         Description = Lang.Get("th3essentials:slc-restart")
       };
       _ = _client.Rest.CreateGuildCommand(restart.Build(), Th3Essentials.Config.GuildId);
@@ -154,11 +154,53 @@ namespace Th3Essentials.Discordbot
         Options = charSelectOptions
       };
       _ = _client.Rest.CreateGuildCommand(allowcharselonce.Build(), Th3Essentials.Config.GuildId);
+
+      SlashCommandBuilder shutdown = new SlashCommandBuilder
+      {
+        Name = SlashCommands.Shutdown.ToString().ToLower(),
+        Description = Lang.Get("th3essentials:slc-shutdown")
+      };
+      _ = _client.Rest.CreateGuildCommand(shutdown.Build(), Th3Essentials.Config.GuildId);
+    }
+
+    internal static void HandleButtonExecuted(Th3Discord discord, SocketMessageComponent component)
+    {
+      string response;
+      switch (component.Data.CustomId)
+      {
+        case "shutdown-confirm":
+          {
+            if (component.User is SocketGuildUser guildUser)
+            {
+              if (HasPermission(guildUser, discord._config.ModerationRoles))
+              {
+                discord._api.Server.ShutDown();
+                response = "Server is going to shutdown now.";
+              }
+              else
+              {
+                response = "You do not have permissions to do that";
+              }
+            }
+            else
+            {
+              response = "Something went wrong: User was not a GuildUser";
+            }
+            break;
+          }
+        default:
+          {
+            response = "";
+            break;
+          }
+      }
+      component.RespondAsync(response, ephemeral: discord._config.UseEphermalCmdResponse);
     }
 
     internal static void HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
     {
       string response;
+      MessageComponent components = null;
       if (Enum.TryParse(commandInteraction.Data.Name, true, out SlashCommands cmd))
       {
         switch (cmd)
@@ -178,7 +220,7 @@ namespace Th3Essentials.Discordbot
               response = discord._api.World.Calendar.PrettyDate();
               break;
             }
-          case SlashCommands.Restart:
+          case SlashCommands.RestartTime:
             {
               if (discord._config.ShutdownTime != null)
               {
@@ -231,7 +273,7 @@ namespace Th3Essentials.Discordbot
             {
               if (commandInteraction.User is SocketGuildUser guildUser)
               {
-                if (guildUser.GuildPermissions.Administrator || HasPermission(guildUser, discord._config.ModerationRoles))
+                if (HasPermission(guildUser, discord._config.ModerationRoles))
                 {
                   string targetPlayer = null;
                   bool? mode = null;
@@ -345,7 +387,7 @@ namespace Th3Essentials.Discordbot
             {
               if (commandInteraction.User is SocketGuildUser guildUser)
               {
-                if (guildUser.GuildPermissions.Administrator || HasPermission(guildUser, discord._config.ModerationRoles))
+                if (HasPermission(guildUser, discord._config.ModerationRoles))
                 {
                   SocketSlashCommandDataOption option = commandInteraction.Data.Options.First();
                   if (option.Value is string playername)
@@ -486,6 +528,27 @@ namespace Th3Essentials.Discordbot
               }
               break;
             }
+          case SlashCommands.Shutdown:
+            {
+              if (commandInteraction.User is SocketGuildUser guildUser)
+              {
+                if (HasPermission(guildUser, discord._config.ModerationRoles))
+                {
+                  ComponentBuilder builder = new ComponentBuilder().WithButton("Confirm", "shutdown-confirm");
+                  components = builder.Build();
+                  response = "Do you really want to shutdown the server?";
+                }
+                else
+                {
+                  response = "You do not have permissions to do that";
+                }
+              }
+              else
+              {
+                response = "Something went wrong: User was not a GuildUser";
+              }
+              break;
+            }
           default:
             {
               response = "Unknown SlashCommand";
@@ -497,7 +560,7 @@ namespace Th3Essentials.Discordbot
       {
         response = "Unknown SlashCommand";
       }
-      _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: discord._config.UseEphermalCmdResponse);
+      _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: discord._config.UseEphermalCmdResponse, component: components);
     }
 
     private static void GetPlayerUID(Th3Discord discord, string targetPlayer, Vintagestory.API.Common.Action<string> OnHavePlayerUid)
@@ -521,7 +584,7 @@ namespace Th3Essentials.Discordbot
 
     private static bool HasPermission(SocketGuildUser guildUser, List<ulong> moderationRoles)
     {
-      return guildUser.Roles.Select(r => r.Id).ToArray().Intersect(moderationRoles).Count() > 0;
+      return guildUser.GuildPermissions.Administrator || guildUser.Roles.Select(r => r.Id).ToArray().Intersect(moderationRoles).Count() > 0;
     }
   }
 }

@@ -68,6 +68,7 @@
     "slc-setchannel": "Setze den Kanal für Nachrichten von/zu ingame Chat",
     "slc-modifypermissions": "Ändere die Rolen welche whitelist/allowcharselonce verwenden können",
     "slc-modifypermissions-mode": "Die Opertaion um eine Role zu ändern add/remove/clear",
+    "slc-shutdown": "Fährt den Vintage Story Server herunter (wird neustarten falls konfiguriert)",
     "restart-in-mins": "Server startet in {0} Minuten neu",
     "restart-in-min": "Server startet in 1 Minute neu",
     "th3config-error": "Th3Config konnte nicht geldaden werden: {0}",

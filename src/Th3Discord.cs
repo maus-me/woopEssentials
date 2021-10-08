@@ -74,6 +74,7 @@ namespace Th3Essentials.Discordbot
       {
         _client.MessageReceived += MessageReceivedAsync;
         _client.InteractionCreated += InteractionCreated;
+        _client.ButtonExecuted += ButtonExecuted;
 
         //add vs api events
         _api.Event.PlayerChat += PlayerChatAsync;
@@ -135,10 +136,17 @@ namespace Th3Essentials.Discordbot
             Th3SlashCommands.HandleSlashCommand(this, commandInteraction);
             break;
           }
-
         default:
           break;
       }
+      return Task.CompletedTask;
+    }
+
+
+
+    private Task ButtonExecuted(SocketMessageComponent component)
+    {
+      Th3SlashCommands.HandleButtonExecuted(this, component);
       return Task.CompletedTask;
     }
 

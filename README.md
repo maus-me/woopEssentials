@@ -18,6 +18,7 @@
 - /msg playername - to send private messages ingame (customizable color) [on/off]
 
 ![](preview/discord-chat2.png)
+![](preview/discord-chat.png)
 ![](preview/ingame-chat2.png)
 
 ## Discord Command usage
@@ -53,11 +54,12 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
   - /players - Get a list of online players
   - /date - Get the current ingame date and time
-  - /restart - Show time until next restart
+  - /restarttime - Show time until next restart
   - /setchannel - Set the channel to send to/from ingame chat [Admin]
   - /modifypermissions - add/remove/clear additional roles to use moderation commands [Admin]
   - /whitelist - Change the whitelist status of a player (also the time duration is customizable, default 50 years as with the ingame command) [Admin or Configured Role]
   - /allowcharselonce - Allows the player to re-select their class after doing so already [Admin or Configured Role]
+  - /shutdown - Will shutdown the server (if configured server will restart see scripts at Shutdownsystem) [Admin or Configured Role]
 
 - Shutdownsystem
 
