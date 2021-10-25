@@ -15,7 +15,8 @@
 - /spawn command to teleport to spawn also respecting cooldown [on/off]
 - /back command to teleport back to previous position (/home or death) [on/off]
 - Announcements messages (a list of messages that are send in an configurable interval) [on/off]
-- /msg playername - to send private messages ingame (customizable color) [on/off]
+- /msg playername message - to send private messages ingame (customizable color) [on/off]
+- /r message - to send private messages ingame to last messaging player (enabled if /msg is on)
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
