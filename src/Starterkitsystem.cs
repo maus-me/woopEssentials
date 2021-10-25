@@ -4,6 +4,7 @@ using Th3Essentials.Config;
 using Th3Essentials.PlayerData;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.Common;
@@ -51,7 +52,8 @@ namespace Th3Essentials.Starterkit
             EnumItemClass enumItemClass = inventory[i].Itemstack.Class;
             int stackSize = inventory[i].Itemstack.StackSize;
             AssetLocation code = inventory[i].Itemstack.Collectible.Code;
-            _config.Items.Add(new StarterkitItem(enumItemClass, code, stackSize));
+            ITreeAttribute attributes = inventory[i].Itemstack.Attributes;
+            _config.Items.Add(new StarterkitItem(enumItemClass, code, stackSize, attributes));
           }
         }
         player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-setup"), EnumChatType.CommandSuccess);
@@ -176,9 +178,14 @@ namespace Th3Essentials.Starterkit
                 case EnumItemClass.Item:
                   {
                     Item item = api.World.GetItem(asset);
+
                     if (item != null)
                     {
-                      recived = player.Entity.TryGiveItemStack(new ItemStack(item, _config.Items[i].Stacksize));
+                      ItemStack itemStack = new ItemStack(item, _config.Items[i].Stacksize)
+                      {
+                        Attributes = _config.Items[i].Attributes
+                      };
+                      recived = player.Entity.TryGiveItemStack(itemStack);
                     }
                     break;
                   }
@@ -187,7 +194,11 @@ namespace Th3Essentials.Starterkit
                     Block block = api.World.GetBlock(asset);
                     if (block != null)
                     {
-                      recived = player.Entity.TryGiveItemStack(new ItemStack(block, _config.Items[i].Stacksize));
+                      ItemStack itemStack = new ItemStack(block, _config.Items[i].Stacksize)
+                      {
+                        Attributes = _config.Items[i].Attributes
+                      };
+                      recived = player.Entity.TryGiveItemStack(itemStack);
                     }
                     break;
                   }

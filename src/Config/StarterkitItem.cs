@@ -1,4 +1,5 @@
 using Vintagestory.API.Common;
+using Vintagestory.API.Datastructures;
 
 namespace Th3Essentials.Starterkit
 {
@@ -10,11 +11,14 @@ namespace Th3Essentials.Starterkit
 
     public int Stacksize;
 
-    public StarterkitItem(EnumItemClass itemclass, AssetLocation code, int stacksize)
+    public ITreeAttribute Attributes;
+
+    public StarterkitItem(EnumItemClass itemclass, AssetLocation code, int stacksize, ITreeAttribute attributes = null)
     {
       Itemclass = itemclass;
       Code = code;
       Stacksize = stacksize;
+      Attributes = attributes;
     }
 
     public override string ToString()
