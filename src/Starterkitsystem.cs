@@ -52,7 +52,7 @@ namespace Th3Essentials.Starterkit
             EnumItemClass enumItemClass = inventory[i].Itemstack.Class;
             int stackSize = inventory[i].Itemstack.StackSize;
             AssetLocation code = inventory[i].Itemstack.Collectible.Code;
-            ITreeAttribute attributes = inventory[i].Itemstack.Attributes;
+            TreeAttribute attributes = inventory[i].Itemstack.Attributes as TreeAttribute;
             _config.Items.Add(new StarterkitItem(enumItemClass, code, stackSize, attributes));
           }
         }
@@ -183,8 +183,9 @@ namespace Th3Essentials.Starterkit
                     {
                       ItemStack itemStack = new ItemStack(item, _config.Items[i].Stacksize)
                       {
-                        Attributes = _config.Items[i].Attributes
+                        Attributes = TreeAttribute.CreateFromBytes(_config.Items[i].Attributes)
                       };
+
                       recived = player.Entity.TryGiveItemStack(itemStack);
                     }
                     break;
@@ -196,8 +197,9 @@ namespace Th3Essentials.Starterkit
                     {
                       ItemStack itemStack = new ItemStack(block, _config.Items[i].Stacksize)
                       {
-                        Attributes = _config.Items[i].Attributes
+                        Attributes = TreeAttribute.CreateFromBytes(_config.Items[i].Attributes)
                       };
+
                       recived = player.Entity.TryGiveItemStack(itemStack);
                     }
                     break;

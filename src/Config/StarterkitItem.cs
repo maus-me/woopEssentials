@@ -11,14 +11,16 @@ namespace Th3Essentials.Starterkit
 
     public int Stacksize;
 
-    public ITreeAttribute Attributes;
+    public byte[] Attributes;
 
-    public StarterkitItem(EnumItemClass itemclass, AssetLocation code, int stacksize, ITreeAttribute attributes = null)
+    public StarterkitItem() { }
+
+    public StarterkitItem(EnumItemClass itemclass, AssetLocation code, int stacksize, TreeAttribute attributes = null)
     {
       Itemclass = itemclass;
       Code = code;
       Stacksize = stacksize;
-      Attributes = attributes;
+      Attributes = attributes.ToBytes();
     }
 
     public override string ToString()
