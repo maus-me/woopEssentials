@@ -151,7 +151,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
   // Discord Bot Token
   // to turn it off - "Token": null,
   // else set it to the token of your discord bot surrounded by "
-  // example value: "your_bot_token"
+  // example value: "your_bot_token" (including ")
   "Token": null,
   // Discord ChannelID to send messages from and to ingame chat
   "ChannelId": 0,
