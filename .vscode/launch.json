@@ -6,10 +6,10 @@
       "type": "mono",
       "request": "launch",
       "preLaunchTask": "package (Debug)",
-      "program": "${env:VINTAGE_STORY_SERVER_DEV}/VintagestoryServer.exe",
+      "program": "${env:VINTAGE_STORY_SERVER}/VintagestoryServer.exe",
       "args": [
         "--dataPath",
-        "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
+        "${env:VINTAGE_STORY_SERVER_DATA_MODDING}",
         "--addModPath",
         "${workspaceFolder}/bin/packages/mods"
       ],
@@ -26,7 +26,7 @@
         "-o",
         "modding test world",
         "--dataPath",
-        "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
+        "${env:VINTAGE_STORY_SERVER_DATA_MODDING}",
         "--addModPath",
         "${workspaceFolder}/bin/packages/mods"
       ]
@@ -39,7 +39,7 @@
       "program": "${env:VINTAGE_STORY}/Vintagestory.exe",
       "args": [
         "--dataPath",
-        "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
+        "${env:VINTAGE_STORY_SERVER_DATA_MODDING}",
         "--addModPath",
         "${workspaceFolder}/bin/packages/mods"
       ]
@@ -51,7 +51,7 @@
       "program": "${env:VINTAGE_STORY}/Vintagestory.exe",
       "args": [
         "--dataPath",
-        "${env:VINTAGE_STORY_SERVER_DEV_DATA}",
+        "${env:VINTAGE_STORY_SERVER_DATA_MODDING}",
         "--addModPath",
         "${workspaceFolder}/bin/packages/mods"
       ]

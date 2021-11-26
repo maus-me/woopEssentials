@@ -53,6 +53,9 @@ namespace Th3Essentials.Starterkit
             int stackSize = inventory[i].Itemstack.StackSize;
             AssetLocation code = inventory[i].Itemstack.Collectible.Code;
             TreeAttribute attributes = inventory[i].Itemstack.Attributes as TreeAttribute;
+            // remove food persih data
+            attributes.RemoveAttribute("transitionstate");
+
             _config.Items.Add(new StarterkitItem(enumItemClass, code, stackSize, attributes));
           }
         }
