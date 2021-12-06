@@ -6,19 +6,19 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="VintagestoryAPI">
-			<HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
+			<HintPath>$(VINTAGE_STORY_MODDDING)/VintagestoryAPI.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="VintagestoryLib">
-			<HintPath>$(VINTAGE_STORY)/VintagestoryLib.dll</HintPath>
+			<HintPath>$(VINTAGE_STORY_MODDDING)/VintagestoryLib.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="protobuf-net">
-			<HintPath>$(VINTAGE_STORY)\Lib\protobuf-net.dll</HintPath>
+			<HintPath>$(VINTAGE_STORY_MODDDING)\Lib\protobuf-net.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="Newtonsoft.Json">
-			<HintPath>$(VINTAGE_STORY)\Lib\Newtonsoft.Json.dll</HintPath>
+			<HintPath>$(VINTAGE_STORY_MODDDING)\Lib\Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
