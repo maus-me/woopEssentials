@@ -563,7 +563,7 @@ namespace Th3Essentials.Discordbot
       _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: discord._config.UseEphermalCmdResponse, component: components);
     }
 
-    private static void GetPlayerUID(Th3Discord discord, string targetPlayer, Vintagestory.API.Common.Action<string> OnHavePlayerUid)
+    private static void GetPlayerUID(Th3Discord discord, string targetPlayer, Action<string> OnHavePlayerUid)
     {
       IServerPlayerData player = discord._api.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
       if (player == null)
