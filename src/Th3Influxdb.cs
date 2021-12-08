@@ -147,7 +147,7 @@ namespace Th3Essentials.Influxdb
             for (int i = 0; i < Math.Min(myList.Count, 8); i++)
             {
               KeyValuePair<string, long> val = myList[i];
-              Instance.WriteRecord($"logticks,system=\"{val.Key}\" value={decimal.Round((decimal)val.Value / Stopwatch.Frequency * 1000, 2)}", WritePrecision.Ms);
+              Instance.WriteRecord($"logticks,system={val.Key} value={decimal.Round((decimal)val.Value / Stopwatch.Frequency * 1000, 2)}", WritePrecision.Ms);
             }
           }
         }
