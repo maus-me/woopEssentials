@@ -5,6 +5,7 @@ using Th3Essentials.Commands;
 using Th3Essentials.Config;
 using Th3Essentials.Discordbot;
 using Th3Essentials.Homepoints;
+using Th3Essentials.Influxdb;
 using Th3Essentials.PlayerData;
 using Th3Essentials.Starterkit;
 using Vintagestory.API.Common;
@@ -31,6 +32,8 @@ namespace Th3Essentials
     private ICoreServerAPI _api;
 
     private Th3Discord _th3Discord;
+
+    private Th3Influxdb _th3Influx;
 
     private readonly string[] TemporalStorm;
 
@@ -92,6 +95,7 @@ namespace Th3Essentials
       new Starterkitsystem().Init(_api);
       new Announcementsystem().Init(_api);
       _th3Discord = new Th3Discord();
+      _th3Influx = new Th3Influxdb();
 
       if (Config.IsDiscordConfigured())
       {
@@ -100,6 +104,12 @@ namespace Th3Essentials
       else
       {
         _api.Logger.Debug("Discordbot needs to be configured, functionality disabled!!!");
+      }
+
+      if (Config.IsInlfuxDBConfigured())
+      {
+        _api.Logger.Debug("InlfuxDB is ready");
+        _th3Influx.Init(_api);
       }
 
       _api.RegisterCommand("reloadth3config", Lang.Get("th3essentials:cd-reloadConfig"), string.Empty,

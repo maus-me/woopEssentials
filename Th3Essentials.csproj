@@ -21,8 +21,13 @@
 			<HintPath>$(VINTAGE_STORY_MODDDING)\Lib\Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="0Harmony">
+			<HintPath>$(VINTAGE_STORY_MODDDING)\Lib\0Harmony.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Discord.Net.Labs" Version="3.1.1" />
+		<PackageReference Include="InfluxDB.Client" Version="3.2.0" />
 	</ItemGroup>
 </Project>

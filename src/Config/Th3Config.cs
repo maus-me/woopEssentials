@@ -9,6 +9,16 @@ namespace Th3Essentials.Config
   {
     public string Token = null;
 
+    public string InlfuxDBURL = null;
+
+    public string InlfuxDBToken = null;
+
+    public string InlfuxDBBucket = null;
+
+    public string InlfuxDBOrg = null;
+
+    public bool InlfuxDBOverwriteLogTicks = false;
+
     public ulong ChannelId = 0;
 
     public ulong GuildId = 0;
@@ -76,6 +86,11 @@ namespace Th3Essentials.Config
       return Token != null && Token != string.Empty;
     }
 
+    internal bool IsInlfuxDBConfigured()
+    {
+      return InlfuxDBURL != string.Empty && InlfuxDBToken != string.Empty && InlfuxDBBucket != string.Empty && InlfuxDBOrg != string.Empty;
+    }
+
     internal void Reload(Th3Config configTemp)
     {
       AnnouncementInterval = configTemp.AnnouncementInterval;
@@ -94,6 +109,11 @@ namespace Th3Essentials.Config
       MessageEnabled = configTemp.MessageEnabled;
       UseEphermalCmdResponse = configTemp.UseEphermalCmdResponse;
       ModerationRoles = configTemp.ModerationRoles;
+      InlfuxDBURL = configTemp.InlfuxDBURL;
+      InlfuxDBToken = configTemp.InlfuxDBToken;
+      InlfuxDBBucket = configTemp.InlfuxDBBucket;
+      InlfuxDBOrg = configTemp.InlfuxDBOrg;
+      InlfuxDBOverwriteLogTicks = configTemp.InlfuxDBOverwriteLogTicks;
     }
   }
 }
