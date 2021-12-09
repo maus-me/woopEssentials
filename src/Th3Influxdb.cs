@@ -9,6 +9,7 @@ using InfluxDB.Client.Api.Domain;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
+using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.Server;
 
@@ -107,12 +108,14 @@ namespace Th3Essentials.Influxdb
       }
       WriteRecord($"entitiesActive value={activeEntities}");
 
-      // StatsCollection statsCollection = server.StatsCollector[GameMath.Mod(server.StatsCollectorIndex - 1, server.StatsCollector.Length)];
-      // WriteRecord($"l2avgticktime value={decimal.Round((decimal)statsCollection.tickTimeTotal / (decimal)statsCollection.ticksTotal, 2)}");
-      // WriteRecord($"l2stickspersec value={decimal.Round(statsCollection.ticksTotal / 2.0)}");
-      // WriteRecord($"packetspresec value={decimal.Round(statsCollection.statTotalPackets / 2.0, 2)}");
-      // WriteRecord($"kilobytespersec value={decimal.Round((decimal)statsCollection.statTotalPacketsLength / 2048.0, 2, MidpointRounding.AwayFromZero)}");
-
+      StatsCollection statsCollection = server.StatsCollector[GameMath.Mod(server.StatsCollectorIndex - 1, server.StatsCollector.Length)];
+      if (statsCollection.ticksTotal > 0)
+      {
+        WriteRecord($"l2avgticktime value={statsCollection.tickTimeTotal / statsCollection.ticksTotal}");
+        WriteRecord($"l2stickspersec value={statsCollection.ticksTotal / 2.0}");
+      }
+      WriteRecord($"packetspresec value={statsCollection.statTotalPackets / 2.0}");
+      WriteRecord($"kilobytespersec value={decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2, MidpointRounding.AwayFromZero)}");
 
       VSProcess.Refresh();
       long memory = VSProcess.PrivateMemorySize64 / 1048576;
@@ -134,12 +137,17 @@ namespace Th3Essentials.Influxdb
 
     private void PlayerDisconnect(IServerPlayer byPlayer)
     {
-      writeApi.WriteRecord(_config.InlfuxDBBucket, _config.InlfuxDBOrg, WritePrecision.S, $"online isOn=false,player=\"{byPlayer.PlayerName}\"");
+      WriteRecord($"online,player=\"{byPlayer.PlayerName}\" isOn=false");
+    }
+
+    internal void PlayerDied(IServerPlayer byPlayer, string msg)
+    {
+      WriteRecord($"deaths value=\"{msg}\"");
     }
 
     private void PlayerNowPlaying(IServerPlayer byPlayer)
     {
-      writeApi.WriteRecord(_config.InlfuxDBBucket, _config.InlfuxDBOrg, WritePrecision.S, $"online isOn=true,player=\"{byPlayer.PlayerName}\"");
+      WriteRecord($"online,player=\"{byPlayer.PlayerName}\" isOn=true");
     }
 
     private void Shutdown()
@@ -185,7 +193,10 @@ namespace Th3Essentials.Influxdb
             for (int i = 0; i < Math.Min(myList.Count, 8); i++)
             {
               KeyValuePair<string, long> val = myList[i];
-              Instance.WriteRecord($"logticks,system={val.Key} value={decimal.Round((decimal)val.Value / Stopwatch.Frequency * 1000, 2)}", WritePrecision.Ms);
+              if (val.Value > Instance._config.InlfuxDBLogtickThreshold)
+              {
+                Instance.WriteRecord($"logticks,system={val.Key} value={(double)val.Value / Stopwatch.Frequency * 1000.0}", WritePrecision.Ms);
+              }
             }
           }
         }

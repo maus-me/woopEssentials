@@ -19,6 +19,8 @@ namespace Th3Essentials.Config
 
     public bool InlfuxDBOverwriteLogTicks = false;
 
+    public int InlfuxDBLogtickThreshold = 20;
+
     public ulong ChannelId = 0;
 
     public ulong GuildId = 0;
@@ -114,6 +116,7 @@ namespace Th3Essentials.Config
       InlfuxDBBucket = configTemp.InlfuxDBBucket;
       InlfuxDBOrg = configTemp.InlfuxDBOrg;
       InlfuxDBOverwriteLogTicks = configTemp.InlfuxDBOverwriteLogTicks;
+      InlfuxDBLogtickThreshold = configTemp.InlfuxDBLogtickThreshold;
     }
   }
 }
