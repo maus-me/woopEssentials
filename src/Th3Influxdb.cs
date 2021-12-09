@@ -49,9 +49,47 @@ namespace Th3Essentials.Influxdb
       _api.Event.PlayerNowPlaying += PlayerNowPlaying;
       _api.Event.PlayerDisconnect += PlayerDisconnect;
       _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
+      _api.Logger.EntryAdded += LogEntryAdded;
 
       _api.Event.RegisterGameTickListener(WriteData, 10000);
       Instance = this;
+    }
+
+    private void LogEntryAdded(EnumLogType logType, string message, object[] args)
+    {
+      switch (logType)
+      {
+        case EnumLogType.Chat:
+          break;
+        case EnumLogType.Event:
+          break;
+        case EnumLogType.StoryEvent:
+          break;
+        case EnumLogType.Build:
+          break;
+        case EnumLogType.VerboseDebug:
+          break;
+        case EnumLogType.Debug:
+          break;
+        case EnumLogType.Notification:
+          break;
+        case EnumLogType.Warning:
+          {
+            string msg = string.Format(message, args);
+            WriteRecord($"warnings value=\"{msg}\"");
+            break;
+          }
+        case EnumLogType.Error:
+          {
+            string msg = string.Format(message, args);
+            WriteRecord($"errors value=\"{msg}\"");
+            break;
+          }
+        case EnumLogType.Fatal:
+          break;
+        case EnumLogType.Audit:
+          break;
+      }
     }
 
     private void WriteData(float t1)
