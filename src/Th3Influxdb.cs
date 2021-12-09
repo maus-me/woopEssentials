@@ -132,7 +132,10 @@ namespace Th3Essentials.Influxdb
 
     private void WriteRecord(string data, WritePrecision precision = WritePrecision.S)
     {
-      writeApi.WriteRecord(_config.InlfuxDBBucket, _config.InlfuxDBOrg, precision, data);
+      if (writeApi != null)
+      {
+        writeApi.WriteRecord(_config.InlfuxDBBucket, _config.InlfuxDBOrg, precision, data);
+      }
     }
 
     private void PlayerDisconnect(IServerPlayer byPlayer)
