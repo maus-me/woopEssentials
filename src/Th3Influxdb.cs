@@ -71,9 +71,6 @@ namespace Th3Essentials.Influxdb
         Trace.Listeners.Add(new Th3TraceListener(_api));
       }
 
-      string msg = "test message";
-      WriteRecord($"test value=\"{msg}\"");
-
       _api.Event.PlayerNowPlaying += PlayerNowPlaying;
       _api.Event.PlayerDisconnect += PlayerDisconnect;
       _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
