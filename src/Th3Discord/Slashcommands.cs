@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Vintagestory.API.Common;
@@ -32,7 +33,7 @@ namespace Th3Essentials.Discordbot
                     new ApplicationCommandOptionChoiceProperties(){Name = "remove", Value = "remove"},
                     new ApplicationCommandOptionChoiceProperties(){Name = "clear", Value = "clear"}
                 },
-                Required = true
+                IsRequired = true,
             },
             new SlashCommandOptionBuilder()
             {
@@ -77,7 +78,7 @@ namespace Th3Essentials.Discordbot
               Name = "channel",
               Description = Lang.Get("th3essentials:slc-setchannel"),
               Type = ApplicationCommandOptionType.Channel,
-              Required = true
+              IsRequired = true
             }
           };
       SlashCommandBuilder setchannel = new SlashCommandBuilder
@@ -95,14 +96,14 @@ namespace Th3Essentials.Discordbot
                         Name = "playername",
                         Description = Lang.Get("th3essentials:slc-whitelist-playername"),
                         Type = ApplicationCommandOptionType.String,
-                        Required = true
+                        IsRequired = true
                     } ,
                     new SlashCommandOptionBuilder()
                     {
                         Name = "mode",
                         Description = Lang.Get("th3essentials:slc-whitelist-mode"),
                         Type = ApplicationCommandOptionType.Boolean,
-                        Required = true
+                        IsRequired = true
                     },
                     new SlashCommandOptionBuilder()
                     {
@@ -144,7 +145,7 @@ namespace Th3Essentials.Discordbot
             Name = "playername",
             Description = Lang.Get("th3essentials:slc-allowcharselonce-playername"),
             Type = ApplicationCommandOptionType.String,
-            Required = true
+            IsRequired = true
           }
         };
       SlashCommandBuilder allowcharselonce = new SlashCommandBuilder
@@ -174,7 +175,10 @@ namespace Th3Essentials.Discordbot
             {
               if (HasPermission(guildUser, discord._config.ModerationRoles))
               {
-                discord._api.Server.ShutDown();
+                Task.Run(() =>
+                {
+                  discord._api.Server.ShutDown();
+                });
                 response = "Server is going to shutdown now.";
               }
               else
