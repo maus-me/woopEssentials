@@ -6,6 +6,7 @@ using System.Linq;
 using HarmonyLib;
 using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
+using InfluxDB.Client.Core;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -17,6 +18,24 @@ namespace Th3Essentials.Influxdb
 {
   internal class Th3Influxdb
   {
+    internal class Th3TraceListener : TraceListener
+    {
+      private ICoreServerAPI _api;
+
+      public Th3TraceListener(ICoreServerAPI api)
+      {
+        _api = api;
+      }
+      public override void Write(string message)
+      {
+        WriteLine(message);
+      }
+
+      public override void WriteLine(string message)
+      {
+        _api.Logger.VerboseDebug($"[Influx] {message}");
+      }
+    }
     private Harmony harmony;
 
     public static Th3Influxdb Instance;
@@ -44,8 +63,14 @@ namespace Th3Essentials.Influxdb
       server = (ServerMain)_api.World;
       VSProcess = Process.GetCurrentProcess();
 
-      client = InfluxDBClientFactory.Create(_config.InlfuxDBURL, _config.InlfuxDBToken);
+      client = InfluxDBClientFactory.Create(_config.InfluxConfig.InlfuxDBURL, _config.InfluxConfig.InlfuxDBToken);
       writeApi = client.GetWriteApi();
+      if (_config.InfluxConfig.Debug)
+      {
+        client.SetLogLevel(LogLevel.Basic);
+        Trace.Listeners.Add(new Th3TraceListener(_api));
+      }
+
 
       _api.Event.PlayerNowPlaying += PlayerNowPlaying;
       _api.Event.PlayerDisconnect += PlayerDisconnect;
@@ -134,7 +159,7 @@ namespace Th3Essentials.Influxdb
     {
       if (writeApi != null)
       {
-        writeApi.WriteRecord(_config.InlfuxDBBucket, _config.InlfuxDBOrg, precision, data);
+        writeApi.WriteRecord(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, precision, data);
       }
     }
 
@@ -155,10 +180,8 @@ namespace Th3Essentials.Influxdb
 
     private void Shutdown()
     {
-      if (client != null)
-      {
-        client.Dispose();
-      }
+      writeApi.Dispose();
+      client.Dispose();
     }
 
     public void Dispose()
@@ -196,7 +219,7 @@ namespace Th3Essentials.Influxdb
             for (int i = 0; i < Math.Min(myList.Count, 8); i++)
             {
               KeyValuePair<string, long> val = myList[i];
-              if (val.Value > Instance._config.InlfuxDBLogtickThreshold)
+              if (val.Value > Instance._config.InfluxConfig.InlfuxDBLogtickThreshold)
               {
                 Instance.WriteRecord($"logticks,system={val.Key} value={(double)val.Value / Stopwatch.Frequency * 1000.0}", WritePrecision.Ms);
               }
@@ -206,7 +229,7 @@ namespace Th3Essentials.Influxdb
         long ticks = ___stopwatch.ElapsedTicks;
         ___elems["PrefixEnd"] = ticks - ___start;
         ___start = ticks;
-        if (Instance._config.InlfuxDBOverwriteLogTicks)
+        if (Instance._config.InfluxConfig.InlfuxDBOverwriteLogTicks)
         {
           ___elems = new Dictionary<string, long>();
           return false;

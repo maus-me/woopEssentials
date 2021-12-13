@@ -9,21 +9,11 @@ namespace Th3Essentials.Config
   {
     public string Token = null;
 
-    public string InlfuxDBURL = null;
-
-    public string InlfuxDBToken = null;
-
-    public string InlfuxDBBucket = null;
-
-    public string InlfuxDBOrg = null;
-
-    public bool InlfuxDBOverwriteLogTicks = false;
-
-    public int InlfuxDBLogtickThreshold = 20;
-
     public ulong ChannelId = 0;
 
     public ulong GuildId = 0;
+
+    public Th3InfluxConfig InfluxConfig = null;
 
     public List<ulong> ModerationRoles = null;
 
@@ -90,7 +80,7 @@ namespace Th3Essentials.Config
 
     internal bool IsInlfuxDBConfigured()
     {
-      return InlfuxDBURL != string.Empty && InlfuxDBToken != string.Empty && InlfuxDBBucket != string.Empty && InlfuxDBOrg != string.Empty;
+      return InfluxConfig != null && InfluxConfig.InlfuxDBURL != string.Empty && InfluxConfig.InlfuxDBToken != string.Empty && InfluxConfig.InlfuxDBBucket != string.Empty && InfluxConfig.InlfuxDBOrg != string.Empty;
     }
 
     internal void Reload(Th3Config configTemp)
@@ -111,12 +101,12 @@ namespace Th3Essentials.Config
       MessageEnabled = configTemp.MessageEnabled;
       UseEphermalCmdResponse = configTemp.UseEphermalCmdResponse;
       ModerationRoles = configTemp.ModerationRoles;
-      InlfuxDBURL = configTemp.InlfuxDBURL;
-      InlfuxDBToken = configTemp.InlfuxDBToken;
-      InlfuxDBBucket = configTemp.InlfuxDBBucket;
-      InlfuxDBOrg = configTemp.InlfuxDBOrg;
-      InlfuxDBOverwriteLogTicks = configTemp.InlfuxDBOverwriteLogTicks;
-      InlfuxDBLogtickThreshold = configTemp.InlfuxDBLogtickThreshold;
+      InfluxConfig.InlfuxDBURL = configTemp.InfluxConfig.InlfuxDBURL;
+      InfluxConfig.InlfuxDBToken = configTemp.InfluxConfig.InlfuxDBToken;
+      InfluxConfig.InlfuxDBBucket = configTemp.InfluxConfig.InlfuxDBBucket;
+      InfluxConfig.InlfuxDBOrg = configTemp.InfluxConfig.InlfuxDBOrg;
+      InfluxConfig.InlfuxDBOverwriteLogTicks = configTemp.InfluxConfig.InlfuxDBOverwriteLogTicks;
+      InfluxConfig.InlfuxDBLogtickThreshold = configTemp.InfluxConfig.InlfuxDBLogtickThreshold;
     }
   }
 }
