@@ -112,6 +112,11 @@ namespace Th3Essentials
         _th3Influx.Init(_api);
       }
 
+      if (Config.IsInlfuxDBConfigured() || Config.IsDiscordConfigured())
+      {
+        _api.Event.PlayerDeath += PlayerDeathAsync;
+      }
+
       _api.RegisterCommand("reloadth3config", Lang.Get("th3essentials:cd-reloadConfig"), string.Empty,
           (IServerPlayer player, int groupId, CmdArgs args) =>
           {
@@ -174,6 +179,89 @@ namespace Th3Essentials
           }
         }
       }
+    }
+
+    private void PlayerDeathAsync(IServerPlayer byPlayer, DamageSource damageSource)
+    {
+      string msg;
+      if (damageSource != null)
+      {
+        string key = null;
+        int numMax = 1;
+        if (damageSource.SourceEntity != null)
+        {
+          key = damageSource.SourceEntity.Code.Path.Replace("-", "");
+          if (key.Contains("wolf"))
+          {
+            numMax = 4;
+          }
+          else if (key.Contains("pig"))
+          {
+            numMax = 1;
+          }
+          else if (key.Contains("drifter"))
+          {
+            numMax = 3;
+          }
+          else if (key.Contains("sheep"))
+          {
+            if (key.Contains("female"))
+            {
+              key = "sheepbighornmale";
+            }
+            numMax = 3;
+          }
+          else if (key.Contains("locust"))
+          {
+            numMax = 2;
+          }
+        }
+        else
+        {
+          if (damageSource.Source == EnumDamageSource.Explosion)
+          {
+            key = "explosion";
+            numMax = 4;
+          }
+          else if (damageSource.Type == EnumDamageType.Hunger)
+          {
+            key = "hunger";
+            numMax = 3;
+          }
+          else if (damageSource.Type == EnumDamageType.Fire)
+          {
+            key = "fire-block";
+            numMax = 3;
+          }
+          else if (damageSource.Source == EnumDamageSource.Fall)
+          {
+            key = "fall";
+            numMax = 4;
+          }
+        }
+
+        if (key != null)
+        {
+          Random rnd = new Random();
+
+          msg = Lang.Get("deathmsg-" + key + "-" + rnd.Next(1, numMax), byPlayer.PlayerName);
+          if (msg.Contains("deathmsg"))
+          {
+            string str = Lang.Get("prefixandcreature-" + key);
+            msg = Lang.Get("th3essentials:playerdeathby", byPlayer.PlayerName, str);
+          }
+        }
+        else
+        {
+          msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
+        }
+      }
+      else
+      {
+        msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
+      }
+      Th3Influxdb.Instance.PlayerDied(byPlayer, msg);
+      _th3Discord.SendServerMessage(msg);
     }
 
     private void GameWorldSave()

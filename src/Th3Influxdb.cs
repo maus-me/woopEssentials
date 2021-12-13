@@ -20,7 +20,7 @@ namespace Th3Essentials.Influxdb
   {
     internal class Th3TraceListener : TraceListener
     {
-      private ICoreServerAPI _api;
+      private readonly ICoreServerAPI _api;
 
       public Th3TraceListener(ICoreServerAPI api)
       {
@@ -71,6 +71,8 @@ namespace Th3Essentials.Influxdb
         Trace.Listeners.Add(new Th3TraceListener(_api));
       }
 
+      string msg = "test message";
+      WriteRecord($"test value=\"{msg}\"");
 
       _api.Event.PlayerNowPlaying += PlayerNowPlaying;
       _api.Event.PlayerDisconnect += PlayerDisconnect;

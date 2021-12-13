@@ -81,7 +81,6 @@ namespace Th3Essentials.Discordbot
         _api.Event.PlayerChat += PlayerChatAsync;
         _api.Event.PlayerDisconnect += PlayerDisconnectAsync;
         _api.Event.PlayerNowPlaying += PlayerNowPlayingAsync;
-        _api.Event.PlayerDeath += PlayerDeathAsync;
         _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
         _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
 
@@ -158,93 +157,6 @@ namespace Th3Essentials.Discordbot
         _ = _discordChannel.SendMessageAsync(ServerMsg(msg));
       }
     }
-
-    private void PlayerDeathAsync(IServerPlayer byPlayer, DamageSource damageSource)
-    {
-      if (_discordChannel != null)
-      {
-        string msg;
-        if (damageSource != null)
-        {
-          string key = null;
-          int numMax = 1;
-          if (damageSource.SourceEntity != null)
-          {
-            key = damageSource.SourceEntity.Code.Path.Replace("-", "");
-            if (key.Contains("wolf"))
-            {
-              numMax = 4;
-            }
-            else if (key.Contains("pig"))
-            {
-              numMax = 1;
-            }
-            else if (key.Contains("drifter"))
-            {
-              numMax = 3;
-            }
-            else if (key.Contains("sheep"))
-            {
-              if (key.Contains("female"))
-              {
-                key = "sheepbighornmale";
-              }
-              numMax = 3;
-            }
-            else if (key.Contains("locust"))
-            {
-              numMax = 2;
-            }
-          }
-          else
-          {
-            if (damageSource.Source == EnumDamageSource.Explosion)
-            {
-              key = "explosion";
-              numMax = 4;
-            }
-            else if (damageSource.Type == EnumDamageType.Hunger)
-            {
-              key = "hunger";
-              numMax = 3;
-            }
-            else if (damageSource.Type == EnumDamageType.Fire)
-            {
-              key = "fire-block";
-              numMax = 3;
-            }
-            else if (damageSource.Source == EnumDamageSource.Fall)
-            {
-              key = "fall";
-              numMax = 4;
-            }
-          }
-
-          if (key != null)
-          {
-            Random rnd = new Random();
-
-            msg = Lang.Get("deathmsg-" + key + "-" + rnd.Next(1, numMax), byPlayer.PlayerName);
-            if (msg.Contains("deathmsg"))
-            {
-              string str = Lang.Get("prefixandcreature-" + key);
-              msg = Lang.Get("th3essentials:playerdeathby", byPlayer.PlayerName, str);
-            }
-          }
-          else
-          {
-            msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
-          }
-        }
-        else
-        {
-          msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
-        }
-        Th3Influxdb.Instance.PlayerDied(byPlayer, msg);
-        SendServerMessage(msg);
-      }
-    }
-
     private Task MessageReceivedAsync(SocketMessage messageParam)
     {
       if (messageParam.Author.IsBot)
