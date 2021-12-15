@@ -156,10 +156,7 @@ namespace Th3Essentials.Influxdb
 
     private void WriteRecord(string data, WritePrecision precision = WritePrecision.S)
     {
-      if (writeApi != null)
-      {
-        writeApi.WriteRecord(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, precision, data);
-      }
+      writeApi.WriteRecord(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, precision, data);
     }
 
     private void PlayerDisconnect(IServerPlayer byPlayer)
@@ -169,7 +166,7 @@ namespace Th3Essentials.Influxdb
 
     internal void PlayerDied(IServerPlayer byPlayer, string msg)
     {
-      WriteRecord($"deaths value=\"{msg}\"");
+      WriteRecord($"deaths,player=\"{byPlayer.PlayerName}\" value=\"{msg}\"");
     }
 
     private void PlayerNowPlaying(IServerPlayer byPlayer)

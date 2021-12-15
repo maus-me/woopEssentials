@@ -250,17 +250,19 @@ namespace Th3Essentials
             string str = Lang.Get("prefixandcreature-" + key);
             msg = Lang.Get("th3essentials:playerdeathby", byPlayer.PlayerName, str);
           }
+          Th3Influxdb.Instance.PlayerDied(byPlayer, key);
         }
         else
         {
           msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
+          Th3Influxdb.Instance.PlayerDied(byPlayer, "unknown");
         }
       }
       else
       {
         msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
+        Th3Influxdb.Instance.PlayerDied(byPlayer, "unknown");
       }
-      Th3Influxdb.Instance.PlayerDied(byPlayer, msg);
       _th3Discord.SendServerMessage(msg);
     }
 
