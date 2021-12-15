@@ -1,5 +1,7 @@
 # Th3Essentials
 
+- [Installation](#installation)
+
 ## Features:
 
 - Discord integration (send messages from game to discord and back, Ingame-GenralChat to one specific Discord-channel, customizable color) [on/off]
@@ -17,6 +19,7 @@
 - Announcements messages (a list of messages that are send in an configurable interval) [on/off]
 - /msg playername message - to send private messages ingame (customizable color) [on/off]
 - /r message - to send private messages ingame to last messaging player (enabled if /msg is on)
+- Serer Metrics, logs metrics (/stats and more) to InfluxDB and visualize it with influxDB or **grafana**
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -26,6 +29,19 @@
 
 ![](preview/setchannel-cmds.png)
 ![](preview/setchannel-cmd.png)
+
+## InfluxDB / Grafana Dashboard
+
+![](preview/grafana1.png)
+
+<details>
+  <summary>More pictures</summary>
+
+![](preview/grafana2.png)
+![](preview/grafana3-logticks.png)
+![](preview/grafana4-logtick4.png)
+
+</details>
 
 ## Installation
 
@@ -144,23 +160,64 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
     yay your should have your bot now on your discord server :)
 
+## InfluxDB / Grafana
+
+For an exmple install using docker you can use the docker-compose.yaml.
+
+- [Docker Engine Install](https://docs.docker.com/engine/install/)
+- [Docker-Compose Install](https://docs.docker.com/compose/install/)
+- [docker-compose.yaml](https://gitlab.com/th3dilli_vintagestory/th3essentials/-/tree/main/influx_grafana)
+  change the path to the volumes if you wish so
+
+if you wanna use docker and run the vs server in pterodactyl they need to be on the same network see [docker-compose.yaml](https://gitlab.com/th3dilli_vintagestory/th3essentials/-/tree/main/influx_grafana)
+
+Both InfluxDB and Grafana allow you to configure it thorugh the Webinterface when not initilized yet.
+
+If you need help or want to manually here are some useful links.\
+Make sure to persist your influxdb data with docker volumes/mounts.
+
+- [InflusDB Docs](https://docs.influxdata.com/influxdb/v2.1/)
+- [Grafana Docs](https://grafana.com/docs/grafana/latest/installation/?pg=docs)
+
 ## This sample config shows all default settings:
 
 ```json
 {
-  // Discord Bot Token
-  // to turn it off - "Token": null,
-  // else set it to the token of your discord bot surrounded by "
-  // example value: "your_bot_token" (including ")
-  "Token": null,
-  // Discord ChannelID to send messages from and to ingame chat
-  "ChannelId": 0,
-  // Discord GuildID to link all discord features to
-  "GuildId": 0,
-  // Roles that are allowd to use whitelist/allowcharselonce - use the /modifypermissions slashcommand to add/remove roles
-  "ModerationRoles": null,
-  // if true only the user that uses a discord slashcommand will see the response from the bot
-  "UseEphermalCmdResponse": true,
+  "DiscordConfig": {
+    // Discord Bot Token
+    // to turn it off - "Token": null,
+    // else set it to the token of your discord bot surrounded by "
+    // example value: "Token": "your_bot_token",
+    "Token": null,
+    // Discord ChannelID to send messages from and to ingame chat
+    "ChannelId": 0,
+    // Discord GuildID to link all discord features to
+    "GuildId": 0,
+    // Roles that are allowd to use whitelist/allowcharselonce - use the /modifypermissions slashcommand to add/remove roles
+    "ModerationRoles": null,
+    // if true only the user that uses a discord slashcommand will see the response from the bot
+    "UseEphermalCmdResponse": true,
+    // color to use for messages send from discord to ingame [hex color value] https://colorpicker.me/
+    "DiscordChatColor": "7289DA"
+  },
+
+  "InfluxConfig": {
+    // URL to the database including port
+    // example value: "InlfuxDBURL": "http://localhost:8086",
+    "InlfuxDBURL": null,
+    // influx api token, https://docs.influxdata.com/influxdb/v2.1/security/tokens/
+    "InlfuxDBToken": null,
+    // the name of the bucket you setup where you wanna store your data
+    "InlfuxDBBucket": null,
+    // the name of the org you setup
+    "InlfuxDBOrg": null,
+    // if logticks is enabled (/debug logitcks 200) it will not log to the server-main.txt if set to true
+    "InlfuxDBOverwriteLogTicks": true,
+    // only systems from logticks with that threshold will be loged to influx
+    "InlfuxDBLogtickThreshold": 20,
+    // enable some debug output for influx connection (mybeusefull if you have issues setting it up connection/token)
+    "Debug": false
+  },
 
   // text displayed when using /serverinfo
   // example value: "This is a Info message"
@@ -197,8 +254,6 @@ Download the mod and put it into your mods folder. Start your server once to gen
   "ShutdownAnnounce": null,
 
   // color to use for the name of the sender for the /msg command [hex color value] https://colorpicker.me/
-  "MessageCmdColor": "ff9102",
-  // color to use for messages send from discord to ingame [hex color value] https://colorpicker.me/
-  "DiscordChatColor": "7289DA"
+  "MessageCmdColor": "ff9102"
 }
 ```

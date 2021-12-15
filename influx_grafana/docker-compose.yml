@@ -1,0 +1,21 @@
+version: '3.3'
+services:
+  influxdb:
+    container_name: influxdb
+    image: 'influxdb:2.1.1'
+    ports:
+        - '8086:8086'
+    volumes:
+        - '/srv/docker/influxdb/data:/var/lib/influxdb2'
+        - '/srv/docker/influxdb/config:/etc/influxdb2'
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:8.3.2
+    ports:
+      - 3000:3000
+
+# if you wanna use it with pterodactyl uncomment to connect it to the pterodactyl network (so it can push data to influx from the vs server)
+# networks:
+#   default:
+#     external: true
+#     name: pterodactyl_nw
