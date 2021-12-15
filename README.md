@@ -162,6 +162,8 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
 ## InfluxDB / Grafana
 
+The InfluxDB logger logs every 10 seconds to influxDB except player deaths, login/logout and warning/erros those are logged as they are encountered. Since the general server metrics are only logged every 10 seconds it might miss some spikes or dips in the metrics, keep that in mind.
+
 For an exmple install using docker you can use the docker-compose.yaml.
 
 - [Docker Engine Install](https://docs.docker.com/engine/install/)
