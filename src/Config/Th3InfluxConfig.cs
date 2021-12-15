@@ -10,7 +10,7 @@ namespace Th3Essentials.Config
 
     public string InlfuxDBOrg = null;
 
-    public bool InlfuxDBOverwriteLogTicks = false;
+    public bool InlfuxDBOverwriteLogTicks = true;
 
     public int InlfuxDBLogtickThreshold = 20;
 

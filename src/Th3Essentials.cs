@@ -85,7 +85,7 @@ namespace Th3Essentials
       _api.Event.PlayerNowPlaying += PlayerNowPlaying;
       _api.Logger.EntryAdded += LogEntryAdded;
 
-      if ((Config.ShutdownAnnounce != null && Config.ShutdownAnnounce.Length > 0) || (Config.ShutdownTime != null && Config.ShutdownEnabled))
+      if (Config.IsShutdownConfigured())
       {
         _api.Event.RegisterGameTickListener(CheckRestart, 60000);
       }

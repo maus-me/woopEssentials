@@ -25,10 +25,9 @@ namespace Th3Essentials.Discordbot
 
     internal ICoreServerAPI _api;
 
-    internal Th3Config _config;
+    internal Th3DiscordConfig _config;
 
     private bool initialized;
-
 
     public Th3Discord()
     {
@@ -37,7 +36,7 @@ namespace Th3Essentials.Discordbot
 
     public void Init(ICoreServerAPI api)
     {
-      _config = Th3Essentials.Config;
+      _config = Th3Essentials.Config.DiscordConfig;
       _api = api;
 
       // create Discord client and set event methodes

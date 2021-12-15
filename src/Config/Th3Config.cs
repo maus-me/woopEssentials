@@ -7,17 +7,9 @@ namespace Th3Essentials.Config
 {
   public class Th3Config
   {
-    public string Token = null;
-
-    public ulong ChannelId = 0;
-
-    public ulong GuildId = 0;
+    public Th3DiscordConfig DiscordConfig = null;
 
     public Th3InfluxConfig InfluxConfig = null;
-
-    public List<ulong> ModerationRoles = null;
-
-    public bool UseEphermalCmdResponse = true;
 
     public string InfoMessage = null;
 
@@ -45,8 +37,6 @@ namespace Th3Essentials.Config
 
     public string MessageCmdColor = "ff9102";
 
-    public string DiscordChatColor = "7289DA";
-
     public void Init()
     {
       StringBuilder sb = new StringBuilder();
@@ -66,6 +56,9 @@ namespace Th3Essentials.Config
       sb.AppendLine("/serverinfo | Show this information");
       sb.AppendLine("--------------------");
       InfoMessage = sb.ToString();
+
+      DiscordConfig = new Th3DiscordConfig();
+      InfluxConfig = new Th3InfluxConfig();
     }
 
     internal double GetAnnouncementInterval()
@@ -75,12 +68,22 @@ namespace Th3Essentials.Config
 
     internal bool IsDiscordConfigured()
     {
-      return Token != null && Token != string.Empty;
+      return DiscordConfig != null &&
+              DiscordConfig.Token?.Length > 0;
     }
 
     internal bool IsInlfuxDBConfigured()
     {
-      return InfluxConfig != null && InfluxConfig.InlfuxDBURL != string.Empty && InfluxConfig.InlfuxDBToken != string.Empty && InfluxConfig.InlfuxDBBucket != string.Empty && InfluxConfig.InlfuxDBOrg != string.Empty;
+      return InfluxConfig != null &&
+              InfluxConfig.InlfuxDBURL?.Length > 0 &&
+              InfluxConfig.InlfuxDBToken?.Length > 0 &&
+              InfluxConfig.InlfuxDBBucket?.Length > 0 &&
+              InfluxConfig.InlfuxDBOrg?.Length > 0;
+    }
+
+    internal bool IsShutdownConfigured()
+    {
+      return (ShutdownAnnounce?.Length > 0) || (ShutdownTime != null && ShutdownEnabled);
     }
 
     internal void Reload(Th3Config configTemp)
@@ -89,24 +92,41 @@ namespace Th3Essentials.Config
       AnnouncementMessages = configTemp.AnnouncementMessages;
       InfoMessage = configTemp.InfoMessage;
       Items = configTemp.Items;
+
       HomeCooldown = configTemp.HomeCooldown;
       HomeLimit = configTemp.HomeLimit;
+
+      SpawnEnabled = configTemp.SpawnEnabled;
+      BackEnabled = configTemp.BackEnabled;
+
       ShutdownEnabled = configTemp.ShutdownEnabled;
       ShutdownAnnounce = configTemp.ShutdownAnnounce;
       ShutdownTime = configTemp.ShutdownTime;
-      SpawnEnabled = configTemp.SpawnEnabled;
-      BackEnabled = configTemp.BackEnabled;
+
       MessageCmdColor = configTemp.MessageCmdColor;
-      DiscordChatColor = configTemp.DiscordChatColor;
       MessageEnabled = configTemp.MessageEnabled;
-      UseEphermalCmdResponse = configTemp.UseEphermalCmdResponse;
-      ModerationRoles = configTemp.ModerationRoles;
-      InfluxConfig.InlfuxDBURL = configTemp.InfluxConfig.InlfuxDBURL;
-      InfluxConfig.InlfuxDBToken = configTemp.InfluxConfig.InlfuxDBToken;
-      InfluxConfig.InlfuxDBBucket = configTemp.InfluxConfig.InlfuxDBBucket;
-      InfluxConfig.InlfuxDBOrg = configTemp.InfluxConfig.InlfuxDBOrg;
-      InfluxConfig.InlfuxDBOverwriteLogTicks = configTemp.InfluxConfig.InlfuxDBOverwriteLogTicks;
-      InfluxConfig.InlfuxDBLogtickThreshold = configTemp.InfluxConfig.InlfuxDBLogtickThreshold;
+
+      if (configTemp.DiscordConfig != null)
+      {
+        if (DiscordConfig == null) DiscordConfig = new Th3DiscordConfig();
+        DiscordConfig.DiscordChatColor = configTemp.DiscordConfig.DiscordChatColor;
+        DiscordConfig.UseEphermalCmdResponse = configTemp.DiscordConfig.UseEphermalCmdResponse;
+        DiscordConfig.Token = configTemp.DiscordConfig.Token;
+        DiscordConfig.ChannelId = configTemp.DiscordConfig.ChannelId;
+        DiscordConfig.GuildId = configTemp.DiscordConfig.GuildId;
+        DiscordConfig.ModerationRoles = configTemp.DiscordConfig.ModerationRoles;
+      }
+
+      if (configTemp.InfluxConfig != null)
+      {
+        if (InfluxConfig == null) InfluxConfig = new Th3InfluxConfig();
+        InfluxConfig.InlfuxDBURL = configTemp.InfluxConfig.InlfuxDBURL;
+        InfluxConfig.InlfuxDBToken = configTemp.InfluxConfig.InlfuxDBToken;
+        InfluxConfig.InlfuxDBBucket = configTemp.InfluxConfig.InlfuxDBBucket;
+        InfluxConfig.InlfuxDBOrg = configTemp.InfluxConfig.InlfuxDBOrg;
+        InfluxConfig.InlfuxDBOverwriteLogTicks = configTemp.InfluxConfig.InlfuxDBOverwriteLogTicks;
+        InfluxConfig.InlfuxDBLogtickThreshold = configTemp.InfluxConfig.InlfuxDBLogtickThreshold;
+      }
     }
   }
 }

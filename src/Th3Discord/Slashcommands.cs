@@ -48,28 +48,28 @@ namespace Th3Essentials.Discordbot
         Description = Lang.Get("th3essentials:slc-modifypermissions"),
         Options = modifypermissionsOptions
       };
-      _ = _client.Rest.CreateGuildCommand(modifypermissions.Build(), Th3Essentials.Config.GuildId);
+      _ = _client.Rest.CreateGuildCommand(modifypermissions.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
 
       SlashCommandBuilder players = new SlashCommandBuilder
       {
         Name = SlashCommands.Players.ToString().ToLower(),
         Description = Lang.Get("th3essentials:slc-players")
       };
-      _ = _client.Rest.CreateGuildCommand(players.Build(), Th3Essentials.Config.GuildId);
+      _ = _client.Rest.CreateGuildCommand(players.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
 
       SlashCommandBuilder date = new SlashCommandBuilder
       {
         Name = SlashCommands.Date.ToString().ToLower(),
         Description = Lang.Get("th3essentials:slc-date")
       };
-      _ = _client.Rest.CreateGuildCommand(date.Build(), Th3Essentials.Config.GuildId);
+      _ = _client.Rest.CreateGuildCommand(date.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
 
       SlashCommandBuilder restart = new SlashCommandBuilder
       {
         Name = SlashCommands.RestartTime.ToString().ToLower(),
         Description = Lang.Get("th3essentials:slc-restart")
       };
-      _ = _client.Rest.CreateGuildCommand(restart.Build(), Th3Essentials.Config.GuildId);
+      _ = _client.Rest.CreateGuildCommand(restart.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
 
       List<SlashCommandOptionBuilder> channelOptions = new List<SlashCommandOptionBuilder>()
           {
@@ -87,7 +87,7 @@ namespace Th3Essentials.Discordbot
         Description = Lang.Get("th3essentials:slc-setchannel"),
         Options = channelOptions
       };
-      _ = _client.Rest.CreateGuildCommand(setchannel.Build(), Th3Essentials.Config.GuildId);
+      _ = _client.Rest.CreateGuildCommand(setchannel.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
 
       List<SlashCommandOptionBuilder> whitelistOptions = new List<SlashCommandOptionBuilder>()
                 {
@@ -136,7 +136,7 @@ namespace Th3Essentials.Discordbot
         Description = Lang.Get("th3essentials:slc-whitelist"),
         Options = whitelistOptions
       };
-      _ = _client.Rest.CreateGuildCommand(whitelist.Build(), Th3Essentials.Config.GuildId);
+      _ = _client.Rest.CreateGuildCommand(whitelist.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
 
       List<SlashCommandOptionBuilder> charSelectOptions = new List<SlashCommandOptionBuilder>()
         {
@@ -154,14 +154,14 @@ namespace Th3Essentials.Discordbot
         Description = Lang.Get("th3essentials:slc-allowcharselonce"),
         Options = charSelectOptions
       };
-      _ = _client.Rest.CreateGuildCommand(allowcharselonce.Build(), Th3Essentials.Config.GuildId);
+      _ = _client.Rest.CreateGuildCommand(allowcharselonce.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
 
       SlashCommandBuilder shutdown = new SlashCommandBuilder
       {
         Name = SlashCommands.Shutdown.ToString().ToLower(),
         Description = Lang.Get("th3essentials:slc-shutdown")
       };
-      _ = _client.Rest.CreateGuildCommand(shutdown.Build(), Th3Essentials.Config.GuildId);
+      _ = _client.Rest.CreateGuildCommand(shutdown.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
     }
 
     internal static void HandleButtonExecuted(Th3Discord discord, SocketMessageComponent component)
@@ -226,7 +226,7 @@ namespace Th3Essentials.Discordbot
             }
           case SlashCommands.RestartTime:
             {
-              if (discord._config.ShutdownTime != null)
+              if (Th3Essentials.Config.ShutdownTime != null)
               {
                 TimeSpan restart = Th3Util.GetTimeTillRestart();
                 response = Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"), restart.Minutes.ToString("D2"));
@@ -462,7 +462,7 @@ namespace Th3Essentials.Discordbot
                       {
                         if (role != null)
                         {
-                          if (discord._config.ModerationRoles == null)
+                          if (discord._config == null)
                           {
                             discord._config.ModerationRoles = new List<ulong>();
                           }
