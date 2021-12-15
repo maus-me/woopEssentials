@@ -39,7 +39,7 @@
 
 ![](preview/grafana2.png)
 ![](preview/grafana3-logticks.png)
-![](preview/grafana4-logtick4.png)
+![](preview/grafana4-logticks.png)
 
 </details>
 
