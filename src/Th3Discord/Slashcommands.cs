@@ -564,7 +564,7 @@ namespace Th3Essentials.Discordbot
       {
         response = "Unknown SlashCommand";
       }
-      _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: discord._config.UseEphermalCmdResponse, component: components);
+      _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: discord._config.UseEphermalCmdResponse, components: components);
     }
 
     private static void GetPlayerUID(Th3Discord discord, string targetPlayer, Action<string> OnHavePlayerUid)

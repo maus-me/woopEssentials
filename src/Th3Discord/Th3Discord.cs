@@ -8,7 +8,6 @@ using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 using Th3Essentials.Config;
-using Th3Essentials.Influxdb;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
