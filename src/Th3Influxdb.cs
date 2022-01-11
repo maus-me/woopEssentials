@@ -36,7 +36,10 @@ namespace Th3Essentials.Influxdb
         _api.Logger.VerboseDebug($"[Influx] {message}");
       }
     }
+
     private Harmony harmony;
+
+    public long WriteDataListenerID;
 
     public static Th3Influxdb Instance;
 
@@ -68,7 +71,7 @@ namespace Th3Essentials.Influxdb
       if (_config.InfluxConfig.Debug)
       {
         client.SetLogLevel(LogLevel.Basic);
-        Trace.Listeners.Add(new Th3TraceListener(_api));
+        _ = Trace.Listeners.Add(new Th3TraceListener(_api));
       }
 
       _api.Event.PlayerNowPlaying += PlayerNowPlaying;
@@ -76,7 +79,7 @@ namespace Th3Essentials.Influxdb
       _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
       _api.Logger.EntryAdded += LogEntryAdded;
 
-      _api.Event.RegisterGameTickListener(WriteData, 10000);
+      WriteDataListenerID = _api.Event.RegisterGameTickListener(WriteData, 10000);
       Instance = this;
     }
 
@@ -113,6 +116,8 @@ namespace Th3Essentials.Influxdb
         case EnumLogType.Fatal:
           break;
         case EnumLogType.Audit:
+          break;
+        default:
           break;
       }
     }
@@ -156,7 +161,10 @@ namespace Th3Essentials.Influxdb
 
     private void WriteRecord(string data, WritePrecision precision = WritePrecision.S)
     {
-      writeApi.WriteRecord(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, precision, data);
+      if (!writeApi.Disposed)
+      {
+        writeApi.WriteRecord(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, precision, data);
+      }
     }
 
     private void PlayerDisconnect(IServerPlayer byPlayer)
@@ -176,12 +184,20 @@ namespace Th3Essentials.Influxdb
 
     private void Shutdown()
     {
-      writeApi.Dispose();
-      client.Dispose();
+      Dispose();
     }
 
     public void Dispose()
     {
+      _api.Event.PlayerNowPlaying -= PlayerNowPlaying;
+      _api.Event.PlayerDisconnect -= PlayerDisconnect;
+      _api.Logger.EntryAdded -= LogEntryAdded;
+
+      _api.Event.UnregisterGameTickListener(WriteDataListenerID);
+
+      writeApi.Dispose();
+      client.Dispose();
+
       if (harmony != null)
       {
         harmony.UnpatchAll(harmonyPatchkey);

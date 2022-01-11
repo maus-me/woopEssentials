@@ -302,6 +302,13 @@ namespace Th3Essentials
       return true;
     }
 
+    public override void Dispose()
+    {
+      _th3Influx.Dispose();
+      _th3Discord.Dispose();
+      base.Dispose();
+    }
+
     public static String ToHex(Color c)
     {
       return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");

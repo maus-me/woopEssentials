@@ -345,8 +345,28 @@ namespace Th3Essentials.Discordbot
         {
           _ = await _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:shutdown")));
         }
-        _client.Dispose();
+        Dispose();
       }
+    }
+
+    public void Dispose()
+    {
+      _client.Ready -= ReadyAsync;
+      _client.Log -= LogAsync;
+
+      if (initialized)
+      {
+        _client.MessageReceived -= MessageReceivedAsync;
+        _client.InteractionCreated -= InteractionCreated;
+        _client.ButtonExecuted -= ButtonExecuted;
+
+        _api.Event.PlayerChat -= PlayerChatAsync;
+        _api.Event.PlayerDisconnect -= PlayerDisconnectAsync;
+        _api.Event.PlayerNowPlaying -= PlayerNowPlayingAsync;
+        initialized = false;
+      }
+
+      _client.Dispose();
     }
 
     internal string ServerMsg(string msg)
