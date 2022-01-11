@@ -179,7 +179,7 @@ Both InfluxDB and Grafana allow you to configure it thorugh the Webinterface whe
 If you need help or want to manually here are some useful links.\
 Make sure to persist your influxdb data with docker volumes/mounts.
 
-- [InflusDB Docs](https://docs.influxdata.com/influxdb/v2.1/)
+- [InfluxDB Docs](https://docs.influxdata.com/influxdb/v2.1/)
 - [Grafana Docs](https://grafana.com/docs/grafana/latest/installation/?pg=docs)
 
 ## This sample config shows all default settings:
@@ -271,5 +271,3 @@ Make sure to persist your influxdb data with docker volumes/mounts.
   "ShowRole": false
 }
 ```
-
-/player Th3Dilli role sumod
