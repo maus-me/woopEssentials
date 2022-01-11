@@ -15,5 +15,7 @@ namespace Th3Essentials.Config
     public string DiscordChatColor = "7289DA";
 
     public List<ulong> ModerationRoles = null;
+
+    public ulong HelpRoleID = 0;
   }
 }

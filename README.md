@@ -20,6 +20,7 @@
 - /msg playername message - to send private messages ingame (customizable color) [on/off]
 - /r message - to send private messages ingame to last messaging player (enabled if /msg is on)
 - Serer Metrics, logs metrics (/stats and more) to InfluxDB and visualize it with influxDB or **grafana**
+- /requesthelp [message] , pings the `HelpRoleID` in Discord with the message
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -69,7 +70,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
   ### Currently supported Slashcommands
 
-  - /players - Get a list of online players
+  - /players - Get a list of online players (optional show the ping)
   - /date - Get the current ingame date and time
   - /restarttime - Show time until next restart
   - /setchannel - Set the channel to send to/from ingame chat [Admin]
@@ -144,7 +145,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
   `"Token": "your_bot_token",`
 
-4.  Click on the OAuth2 menu entry on the left. Here you can setup the permission and invite your bot to your discord server. Scroll down to the "SCOPES" section and tick the box for
+4.  Click on the OAuth2 menu entry on the left and URL Generator. Here you can setup the permission and invite your bot to your discord server. Scroll down to the "SCOPES" section and tick the box for
 
     - bot
     - applications.commands
@@ -200,7 +201,9 @@ Make sure to persist your influxdb data with docker volumes/mounts.
     // if true only the user that uses a discord slashcommand will see the response from the bot
     "UseEphermalCmdResponse": true,
     // color to use for messages send from discord to ingame [hex color value] https://colorpicker.me/
-    "DiscordChatColor": "7289DA"
+    "DiscordChatColor": "7289DA",
+    // ID of the role the gets pinged when some one uses /requesthelp ingame - 0 to turn it off
+    "HelpRoleID": 0
   },
 
   "InfluxConfig": {
@@ -248,14 +251,25 @@ Make sure to persist your influxdb data with docker volumes/mounts.
 
   // if the server should shutdown after the timer reaches 0 min till restart time [false, true]
   "ShutdownEnabled": false,
+
   // time on the server when the server should restart, also used for the ShutdownAnnounce messages - do not set this to null - if ShutdownEnabled is false and ShutdownAnnounce is null it wont do anything
   "ShutdownTime": "00:00:00",
+
   // time in minutes to announce the restart before it happens
   // example value: [1,2,3,4,5,10,20,30]
   // [1,2,3,4,5,10,20,30] for every entry a message will appear like: "Server restart in x minutes"
   "ShutdownAnnounce": null,
 
   // color to use for the name of the sender for the /msg command [hex color value] https://colorpicker.me/
-  "MessageCmdColor": "ff9102"
+  "MessageCmdColor": "ff9102",
+
+  // shows the players role ingame and in discord like: [Admin] Th3Dilli: hello
+  // this uses the the roles provided by the game itself see serverconfig.json -> Roles
+  // each role has a Name which is used to display and a Color that the role name will be colored in
+  // it wont print roles with PrivilegeLevel less then 1
+  // color names for serverconfig.json [hex color value] https://colorpicker.me/ or https://docs.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0#properties
+  "ShowRole": false
 }
 ```
+
+/player Th3Dilli role sumod

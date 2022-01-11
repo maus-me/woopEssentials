@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using Th3Essentials.Announcements;
 using Th3Essentials.Commands;
@@ -10,6 +11,7 @@ using Th3Essentials.PlayerData;
 using Th3Essentials.Starterkit;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 
@@ -103,12 +105,16 @@ namespace Th3Essentials
       }
       else
       {
+        // enable show role here when discord is not active - else it is enabled in the Th3Discord
+        if (Config.ShowRole)
+        {
+          _api.Event.PlayerChat += PlayerChatAsync;
+        }
         _api.Logger.Debug("Discordbot needs to be configured, functionality disabled!!!");
       }
 
       if (Config.IsInlfuxDBConfigured())
       {
-        _api.Logger.Debug("InlfuxDB is ready");
         _th3Influx.Init(_api);
       }
 
@@ -129,6 +135,11 @@ namespace Th3Essentials
               player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-reloadconfig-fail"), EnumChatType.CommandError);
             }
           }, Privilege.controlserver);
+    }
+
+    private void PlayerChatAsync(IServerPlayer byPlayer, int channelId, ref string message, ref string data, BoolRef consumed)
+    {
+      message = string.Format("<font color=\"{0}\"><strong>[{1}]</strong></font> {2}", ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
     }
 
     private void CheckRestart(float t1)
@@ -289,6 +300,11 @@ namespace Th3Essentials
         return false;
       }
       return true;
+    }
+
+    public static String ToHex(Color c)
+    {
+      return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
     }
   }
 }

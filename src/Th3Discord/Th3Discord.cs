@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -82,6 +83,11 @@ namespace Th3Essentials.Discordbot
         _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
         _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
 
+        if (_config.HelpRoleID != 0)
+        {
+          _api.RegisterCommand("requesthelp", Lang.Get("th3essentials:cd-help"), Lang.Get("th3essentials:cd-reply-param"), ReqestingHelp);
+        }
+
         initialized = true;
       }
 
@@ -140,8 +146,6 @@ namespace Th3Essentials.Discordbot
       return Task.CompletedTask;
     }
 
-
-
     private Task ButtonExecuted(SocketMessageComponent component)
     {
       Th3SlashCommands.HandleButtonExecuted(this, component);
@@ -155,6 +159,7 @@ namespace Th3Essentials.Discordbot
         _ = _discordChannel.SendMessageAsync(ServerMsg(msg));
       }
     }
+
     private Task MessageReceivedAsync(SocketMessage messageParam)
     {
       if (messageParam.Author.IsBot)
@@ -271,6 +276,12 @@ namespace Th3Essentials.Discordbot
       return msg.Replace("<", "&lt;").Replace(">", "&gt;");
     }
 
+    public void ReqestingHelp(IServerPlayer player, int groupId, CmdArgs args)
+    {
+      SendServerMessage($"<@&{_config.HelpRoleID}> **{player.PlayerName}**: {args.PopAll()}");
+      player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-help-response"), EnumChatType.CommandSuccess);
+    }
+
     private void PlayerChatAsync(IServerPlayer byPlayer, int channelId, ref string message, ref string data, BoolRef consumed)
     {
       if (_discordChannel != null && channelId == GlobalConstants.GeneralChatGroup)
@@ -278,8 +289,21 @@ namespace Th3Essentials.Discordbot
         Match playerMsg = Regex.Match(message, "> (.+)");
         string msg = playerMsg.Groups[1].Value;
         msg = msg.Replace("&lt;", "<").Replace("&gt;", ">");
-        msg = string.Format("**{0}:** {1}", byPlayer.PlayerName, msg);
+
+        if (Th3Essentials.Config.ShowRole && byPlayer.Role.PrivilegeLevel > 0)
+        {
+          msg = string.Format("**[{0}] {1}:** {2}", byPlayer.Role.Name, byPlayer.PlayerName, msg);
+        }
+        else
+        {
+          msg = string.Format("**{0}:** {1}", byPlayer.PlayerName, msg);
+        }
         _ = _discordChannel.SendMessageAsync(msg);
+      }
+
+      if (Th3Essentials.Config.ShowRole && byPlayer.Role.PrivilegeLevel > 0)
+      {
+        message = string.Format("<font color=\"{0}\"><strong>[{1}]</strong></font> {2}", Th3Essentials.ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
       }
     }
 

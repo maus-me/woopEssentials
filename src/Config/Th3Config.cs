@@ -37,6 +37,8 @@ namespace Th3Essentials.Config
 
     public string MessageCmdColor = "ff9102";
 
+    public bool ShowRole = false;
+
     public void Init()
     {
       StringBuilder sb = new StringBuilder();
@@ -105,6 +107,8 @@ namespace Th3Essentials.Config
 
       MessageCmdColor = configTemp.MessageCmdColor;
       MessageEnabled = configTemp.MessageEnabled;
+
+      ShowRole = configTemp.ShowRole;
 
       if (configTemp.DiscordConfig != null)
       {
