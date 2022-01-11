@@ -217,7 +217,7 @@ namespace Th3Essentials.Influxdb
               KeyValuePair<string, long> val = myList[i];
               if (val.Value > Instance._config.InfluxConfig.InlfuxDBLogtickThreshold)
               {
-                Instance.WriteRecord($"logticks,system={val.Key} value={(double)val.Value / Stopwatch.Frequency * 1000.0}", WritePrecision.Ms);
+                Instance.WriteRecord($"logticks,system=\"{val.Key}\" value={(double)val.Value / Stopwatch.Frequency * 1000.0}", WritePrecision.Ms);
               }
             }
           }
