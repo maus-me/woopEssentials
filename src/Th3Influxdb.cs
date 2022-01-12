@@ -204,7 +204,7 @@ namespace Th3Essentials.Influxdb
       }
     }
 
-    [HarmonyPatch(typeof(FrameProfilerUtil), "End")]
+    [HarmonyPatch(typeof(FrameProfilerUtil), nameof(FrameProfilerUtil.End))]
     public class PatchFrameProfilerUtil
     {
       static bool Prefix(FrameProfilerUtil __instance, Stopwatch ___stopwatch, ref Dictionary<string, long> ___elems, long ___start)
@@ -249,6 +249,18 @@ namespace Th3Essentials.Influxdb
         else
         {
           return true;
+        }
+      }
+    }
+
+    [HarmonyPatch(typeof(Vintagestory.API.Common.Block), nameof(Vintagestory.API.Common.Block.OnBlockInteractStart))]
+    public class PatchBlock
+    {
+      public static void Postfix(ref bool __result, IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
+      {
+        if (!__result)
+        {
+          (world.Api as IServerAPI).LogVerboseDebug($"{byPlayer.PlayerName} {blockSel.Position}");
         }
       }
     }
