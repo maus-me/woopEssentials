@@ -7,6 +7,7 @@ using HarmonyLib;
 using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Core;
+using InfluxDB.Client.Writes;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -54,7 +55,10 @@ namespace Th3Essentials.Influxdb
     private Th3Config _config;
 
     private ServerMain server;
+
     private Process VSProcess;
+
+    private List<PointData> data;
 
     internal void Init(ICoreServerAPI api)
     {
@@ -65,6 +69,7 @@ namespace Th3Essentials.Influxdb
       _config = Th3Essentials.Config;
       server = (ServerMain)_api.World;
       VSProcess = Process.GetCurrentProcess();
+      data = new List<PointData>();
 
       client = InfluxDBClientFactory.Create(_config.InfluxConfig.InlfuxDBURL, _config.InfluxConfig.InlfuxDBToken);
       writeApi = client.GetWriteApi();
@@ -103,14 +108,12 @@ namespace Th3Essentials.Influxdb
           break;
         case EnumLogType.Warning:
           {
-            string msg = string.Format(message, args);
-            WriteRecord($"warnings value=\"{msg}\"");
+            WritePoint(PointData.Measurement("warnings").Field("value", string.Format(message, args)));
             break;
           }
         case EnumLogType.Error:
           {
-            string msg = string.Format(message, args);
-            WriteRecord($"errors value=\"{msg}\"");
+            WritePoint(PointData.Measurement("errors").Field("value", string.Format(message, args)));
             break;
           }
         case EnumLogType.Fatal:
@@ -124,8 +127,7 @@ namespace Th3Essentials.Influxdb
 
     private void WriteData(float t1)
     {
-
-      WriteRecord($"clients value={server.Clients.Count}");
+      data.Add(PointData.Measurement("clients").Field("value", server.Clients.Count));
 
       int activeEntities = 0;
       foreach (KeyValuePair<long, Entity> loadedEntity in _api.World.LoadedEntities)
@@ -135,51 +137,62 @@ namespace Th3Essentials.Influxdb
           activeEntities++;
         }
       }
-      WriteRecord($"entitiesActive value={activeEntities}");
+      data.Add(PointData.Measurement("entitiesActive").Field("value", activeEntities));
+
 
       StatsCollection statsCollection = server.StatsCollector[GameMath.Mod(server.StatsCollectorIndex - 1, server.StatsCollector.Length)];
       if (statsCollection.ticksTotal > 0)
       {
-        WriteRecord($"l2avgticktime value={statsCollection.tickTimeTotal / statsCollection.ticksTotal}");
-        WriteRecord($"l2stickspersec value={statsCollection.ticksTotal / 2.0}");
+        data.Add(PointData.Measurement("l2avgticktime").Field("value", (double)statsCollection.tickTimeTotal / statsCollection.ticksTotal));
+        data.Add(PointData.Measurement("l2stickspersec").Field("value", statsCollection.ticksTotal / 2.0));
       }
-      WriteRecord($"packetspresec value={statsCollection.statTotalPackets / 2.0}");
-      WriteRecord($"kilobytespersec value={decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2, MidpointRounding.AwayFromZero)}");
+      data.Add(PointData.Measurement("packetspresec").Field("value", statsCollection.statTotalPackets / 2.0));
+      data.Add(PointData.Measurement("kilobytespersec").Field("value", decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2, MidpointRounding.AwayFromZero)));
 
       VSProcess.Refresh();
       long memory = VSProcess.PrivateMemorySize64 / 1048576;
-      WriteRecord($"memory value={memory}");
+      data.Add(PointData.Measurement("memory").Field("value", memory));
 
-      WriteRecord($"threads value={server.Serverthreads.Count}");
+      data.Add(PointData.Measurement("threads").Field("value", server.Serverthreads.Count));
 
-      WriteRecord($"chunks value={_api.World.LoadedChunkIndices.Count()}");
+      data.Add(PointData.Measurement("chunks").Field("value", _api.World.LoadedChunkIndices.Count()));
 
-      WriteRecord($"entities value={_api.World.LoadedEntities.Count()}");
+      data.Add(PointData.Measurement("entities").Field("value", _api.World.LoadedEntities.Count()));
 
-      WriteRecord($"generatingChunks value={_api.WorldManager.CurrentGeneratingChunkCount}");
+      data.Add(PointData.Measurement("generatingChunks").Field("value", _api.WorldManager.CurrentGeneratingChunkCount));
+      WritePoints(data);
+      data.Clear();
     }
 
-    private void WriteRecord(string data, WritePrecision precision = WritePrecision.S)
+    private void WritePoints(List<PointData> data)
     {
       if (!writeApi.Disposed)
       {
-        writeApi.WriteRecord(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, precision, data);
+        writeApi.WritePoints(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, data);
+      }
+    }
+
+    private void WritePoint(PointData data)
+    {
+      if (!writeApi.Disposed)
+      {
+        writeApi.WritePoint(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, data);
       }
     }
 
     private void PlayerDisconnect(IServerPlayer byPlayer)
     {
-      WriteRecord($"online,player=\"{byPlayer.PlayerName}\" isOn=false");
+      WritePoint(PointData.Measurement("online").Tag("player", byPlayer.PlayerName).Field("isOn", false));
     }
 
     internal void PlayerDied(IServerPlayer byPlayer, string msg)
     {
-      WriteRecord($"deaths,player=\"{byPlayer.PlayerName}\" value=\"{msg}\"");
+      WritePoint(PointData.Measurement("deaths").Tag("player", byPlayer.PlayerName).Field("value", msg));
     }
 
     private void PlayerNowPlaying(IServerPlayer byPlayer)
     {
-      WriteRecord($"online,player=\"{byPlayer.PlayerName}\" isOn=true");
+      WritePoint(PointData.Measurement("online").Tag("player", byPlayer.PlayerName).Field("isOn", true));
     }
 
     private void Shutdown()
@@ -233,7 +246,7 @@ namespace Th3Essentials.Influxdb
               KeyValuePair<string, long> val = myList[i];
               if (val.Value > Instance._config.InfluxConfig.InlfuxDBLogtickThreshold)
               {
-                Instance.WriteRecord($"logticks,system=\"{val.Key}\" value={(double)val.Value / Stopwatch.Frequency * 1000.0}", WritePrecision.Ms);
+                Instance.WritePoint(PointData.Measurement("logticks").Tag("system", val.Key).Field("value", (double)val.Value / Stopwatch.Frequency * 1000.0));
               }
             }
           }
