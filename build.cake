@@ -82,6 +82,7 @@ Task("DeployRemmina")
   if (DirectoryExists("/home/dilli/remmina-share"))
   {
     CopyFile(zipfile, $"/home/dilli/remmina-share/{zipFileName}");
+    CopyFile(zipfile, $"/home/dilli/vmshare/{zipFileName}");
   }
   else
   {

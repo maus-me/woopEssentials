@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using HarmonyLib;
 using InfluxDB.Client;
-using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Core;
 using InfluxDB.Client.Writes;
 using Th3Essentials.Config;
