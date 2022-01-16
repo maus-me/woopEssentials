@@ -63,7 +63,6 @@ namespace Th3Essentials.Influxdb
         {
             harmony = new Harmony(harmonyPatchkey);
             harmony.PatchAll();
-
             _api = api;
             _config = Th3Essentials.Config;
             server = (ServerMain)_api.World;
@@ -72,6 +71,7 @@ namespace Th3Essentials.Influxdb
 
             client = InfluxDBClientFactory.Create(_config.InfluxConfig.InlfuxDBURL, _config.InfluxConfig.InlfuxDBToken);
             writeApi = client.GetWriteApi();
+
             if (_config.InfluxConfig.Debug)
             {
                 client.SetLogLevel(LogLevel.Basic);
@@ -107,7 +107,15 @@ namespace Th3Essentials.Influxdb
                     break;
                 case EnumLogType.Warning:
                     {
-                        WritePoint(PointData.Measurement("warnings").Field("value", string.Format(message, args)));
+                        string msg = string.Format(message, args);
+                        if (msg.Contains("Server overloaded"))
+                        {
+                            WritePoint(PointData.Measurement("overloadwarnings").Field("value", msg));
+                        }
+                        else
+                        {
+                            WritePoint(PointData.Measurement("warnings").Field("value", msg));
+                        }
                         break;
                     }
                 case EnumLogType.Error:
@@ -219,7 +227,7 @@ namespace Th3Essentials.Influxdb
         [HarmonyPatch(typeof(FrameProfilerUtil), nameof(FrameProfilerUtil.End))]
         public class PatchFrameProfilerUtil
         {
-            static bool Prefix(FrameProfilerUtil __instance, Stopwatch ___stopwatch, ref Dictionary<string, long> ___elems, long ___start)
+            public static bool Prefix(FrameProfilerUtil __instance, Stopwatch ___stopwatch, ref Dictionary<string, long> ___elems, long ___start)
             {
                 if (!__instance.Enabled && !__instance.PrintSlowTicks)
                 {
@@ -265,16 +273,16 @@ namespace Th3Essentials.Influxdb
             }
         }
 
-        [HarmonyPatch(typeof(Vintagestory.API.Common.Block), nameof(Vintagestory.API.Common.Block.OnBlockInteractStart))]
-        public class PatchBlock
-        {
-            public static void Postfix(ref bool __result, IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
-            {
-                if (!__result)
-                {
-                    (world.Api as IServerAPI).LogVerboseDebug($"{byPlayer.PlayerName} {blockSel.Position}");
-                }
-            }
-        }
+        // [HarmonyPatch(typeof(Block), nameof(Block.OnBlockInteractStart))]
+        // public class PatchBlock
+        // {
+        //     public static void Postfix(ref bool __result, IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
+        //     {
+        //         if (!__result)
+        //         {
+        //             (world.Api as IServerAPI).LogVerboseDebug($"{byPlayer.PlayerName} {blockSel.Position}");
+        //         }
+        //     }
+        // }
     }
 }
