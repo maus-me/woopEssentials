@@ -19,7 +19,7 @@
 - Announcements messages (a list of messages that are send in an configurable interval) [on/off]
 - /msg playername message - to send private messages ingame (customizable color) [on/off]
 - /r message - to send private messages ingame to last messaging player (enabled if /msg is on)
-- Serer Metrics, logs metrics (/stats and more) to InfluxDB and visualize it with influxDB or **grafana**
+- Server Metrics, logs metrics (/stats and more) to InfluxDB and visualize it with influxDB or **grafana**
 - /requesthelp [message] , pings the `HelpRoleID` in Discord with the message
 
 ![](preview/discord-chat2.png)

@@ -29,6 +29,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Reference Include="VSSurvivalMod">
+			<HintPath>$(VINTAGE_STORY_MODDDING)/Mods/VSSurvivalMod.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Discord.Net.Labs" Version="3.6.1" />
 		<PackageReference Include="InfluxDB.Client" Version="3.2.0" />
 	</ItemGroup>
