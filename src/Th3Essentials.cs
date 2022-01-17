@@ -60,6 +60,7 @@ namespace Th3Essentials
         public override void StartServerSide(ICoreServerAPI api)
         {
             _api = api;
+
             try
             {
                 Config = _api.LoadModConfig<Th3Config>(_configFile);
@@ -85,7 +86,7 @@ namespace Th3Essentials
 
             _api.Event.GameWorldSave += GameWorldSave;
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
-            _api.Logger.EntryAdded += LogEntryAdded;
+            // _api.Logger.EntryAdded += LogEntryAdded;
 
             if (Config.IsShutdownConfigured())
             {

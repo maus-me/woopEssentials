@@ -9,6 +9,7 @@
     "version": "1.1.2",
     "side": "server",
     "dependencies": {
-        "game": "1.16.0-pre.7"
+        "game": "1.16.0-pre.7",
+        "survival": "1.16.0"
     }
 }
