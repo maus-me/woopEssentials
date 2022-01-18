@@ -1,5 +1,7 @@
 # Th3Essentials
 
+For help, discussion, suggestions and polls on new fetures join the [Discord Server](https://discord.gg/GX65XawGWX)
+
 - [Installation](#installation)
 
 ## Features:
