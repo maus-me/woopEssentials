@@ -205,6 +205,7 @@ Make sure to persist your influxdb data with docker volumes/mounts.
     // color to use for messages send from discord to ingame [hex color value] https://colorpicker.me/
     "DiscordChatColor": "7289DA",
     // ID of the role the gets pinged when some one uses /requesthelp ingame - 0 to turn it off
+    // to get a role id you have to be in developer mode in the discord app (Advanced -> Developer mode) and then you can righclick on roles to copy the id
     "HelpRoleID": 0
   },
 
