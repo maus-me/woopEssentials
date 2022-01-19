@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
@@ -63,7 +60,11 @@ namespace Th3Essentials.Discordbot
             _api = api;
 
             // create Discord client and set event methodes
-            _client = new DiscordSocketClient();
+            DiscordSocketConfig config = new DiscordSocketConfig()
+            {
+                GatewayIntents = GatewayIntents.AllUnprivileged
+            };
+            _client = new DiscordSocketClient(config);
 
             _client.Ready += ReadyAsync;
 
