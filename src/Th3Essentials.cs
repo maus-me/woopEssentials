@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using Th3Essentials.Announcements;
@@ -37,19 +37,8 @@ namespace Th3Essentials
 
         private Th3Influxdb _th3Influx;
 
-        private readonly string[] TemporalStorm;
-
         public Th3Essentials()
         {
-            TemporalStorm = new string[7]{
-                Lang.Get("A light temporal storm is approaching"),
-                Lang.Get("A light temporal storm is imminent"),
-                Lang.Get("A medium temporal storm is approaching"),
-                Lang.Get("A medium temporal storm is imminent"),
-                Lang.Get("A heavy temporal storm is approaching"),
-                Lang.Get("A heavy temporal storm is imminent"),
-                Lang.Get("The temporal storm seems to be waning")
-            };
         }
 
         public override bool ShouldLoad(EnumAppSide forSide)
@@ -174,21 +163,6 @@ namespace Th3Essentials
                 {
                     Th3PlayerData playerData = SerializerUtil.Deserialize<Th3PlayerData>(data);
                     PlayerConfig.Add(byPlayer.PlayerUID, playerData);
-                }
-            }
-        }
-
-        private void LogEntryAdded(EnumLogType logType, string message, object[] args)
-        {
-            if (logType == EnumLogType.Notification && args?.Length > 0 && args[0] is string msg)
-            {
-                foreach (string tmpMsg in TemporalStorm)
-                {
-                    if (msg.Equals(tmpMsg))
-                    {
-                        _th3Discord.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + msg);
-                        return;
-                    }
                 }
             }
         }
