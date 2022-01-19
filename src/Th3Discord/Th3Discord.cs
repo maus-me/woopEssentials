@@ -85,7 +85,7 @@ namespace Th3Essentials.Discordbot
 
         private Task ReadyAsync()
         {
-            _api.Server.LogVerboseDebug($"{_client.CurrentUser} is connected!");
+            _api.Server.LogVerboseDebug($"{_client.CurrentUser.Username} is connected!");
 
             if (!GetDiscordChannel())
             {
