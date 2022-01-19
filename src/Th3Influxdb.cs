@@ -209,14 +209,16 @@ namespace Th3Essentials.Influxdb
 
         public void Dispose()
         {
-            _api.Event.PlayerNowPlaying -= PlayerNowPlaying;
-            _api.Event.PlayerDisconnect -= PlayerDisconnect;
-            _api.Logger.EntryAdded -= LogEntryAdded;
+            if (client != null)
+            {
+                _api.Event.PlayerNowPlaying -= PlayerNowPlaying;
+                _api.Event.PlayerDisconnect -= PlayerDisconnect;
+                _api.Logger.EntryAdded -= LogEntryAdded;
 
-            _api.Event.UnregisterGameTickListener(WriteDataListenerID);
+                _api.Event.UnregisterGameTickListener(WriteDataListenerID);
 
-            writeApi.Dispose();
-            client.Dispose();
+                client.Dispose();
+            }
 
             if (harmony != null)
             {
