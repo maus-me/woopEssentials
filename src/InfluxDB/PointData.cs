@@ -29,17 +29,11 @@ namespace InfluxDB
 
         public string ToLineProtocol()
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             EscapeKey(sb, measurementName, false);
             AppendTags(sb);
             bool appendedFields = AppendFields(sb);
-            if (!appendedFields)
-            {
-                return "";
-            }
-
-            return sb.ToString();
-
+            return !appendedFields ? "" : sb.ToString();
         }
 
         internal PointData Field(string key, object value)
@@ -56,32 +50,34 @@ namespace InfluxDB
 
         private void EscapeKey(StringBuilder sb, string key, bool escapeEqual = true)
         {
-            foreach (var c in key)
+            foreach (char c in key)
             {
                 switch (c)
                 {
                     case '\n':
-                        sb.Append("\\n");
+                        _ = sb.Append("\\n");
                         continue;
                     case '\r':
-                        sb.Append("\\r");
+                        _ = sb.Append("\\r");
                         continue;
                     case '\t':
-                        sb.Append("\\t");
+                        _ = sb.Append("\\t");
                         continue;
                     case ' ':
                     case ',':
-                        sb.Append("\\");
+                        _ = sb.Append("\\");
                         break;
                     case '=':
                         if (escapeEqual)
                         {
-                            sb.Append("\\");
+                            _ = sb.Append("\\");
                         }
+                        break;
+                    default:
                         break;
                 }
 
-                sb.Append(c);
+                _ = sb.Append(c);
             }
         }
 
@@ -89,33 +85,33 @@ namespace InfluxDB
         {
 
 
-            foreach (var keyValue in Tags)
+            foreach (KeyValuePair<string, string> keyValue in Tags)
             {
-                var key = keyValue.Key;
-                var value = keyValue.Value;
+                string key = keyValue.Key;
+                string value = keyValue.Value;
 
                 if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(value))
                 {
                     continue;
                 }
 
-                writer.Append(',');
+                _ = writer.Append(',');
                 EscapeKey(writer, key);
-                writer.Append('=');
+                _ = writer.Append('=');
                 EscapeKey(writer, value);
             }
 
-            writer.Append(' ');
+            _ = writer.Append(' ');
         }
 
         private bool AppendFields(StringBuilder sb)
         {
-            var appended = false;
+            bool appended = false;
 
-            foreach (var keyValue in Fields)
+            foreach (KeyValuePair<string, object> keyValue in Fields)
             {
-                var key = keyValue.Key;
-                var value = keyValue.Value;
+                string key = keyValue.Key;
+                object value = keyValue.Value;
 
                 if (IsNotDefined(value))
                 {
@@ -123,48 +119,48 @@ namespace InfluxDB
                 }
 
                 EscapeKey(sb, key);
-                sb.Append('=');
+                _ = sb.Append('=');
 
                 if (value is double || value is float)
                 {
-                    sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
+                    _ = sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
                 }
                 else if (value is uint || value is ulong || value is ushort)
                 {
-                    sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
-                    sb.Append('u');
+                    _ = sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
+                    _ = sb.Append('u');
                 }
                 else if (value is byte || value is int || value is long || value is sbyte || value is short)
                 {
-                    sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
-                    sb.Append('i');
+                    _ = sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
+                    _ = sb.Append('i');
                 }
                 else if (value is bool b)
                 {
-                    sb.Append(b ? "true" : "false");
+                    _ = sb.Append(b ? "true" : "false");
                 }
                 else if (value is string s)
                 {
-                    sb.Append('"');
+                    _ = sb.Append('"');
                     EscapeValue(sb, s);
-                    sb.Append('"');
+                    _ = sb.Append('"');
                 }
                 else if (value is IConvertible c)
                 {
-                    sb.Append(c.ToString(CultureInfo.InvariantCulture));
+                    _ = sb.Append(c.ToString(CultureInfo.InvariantCulture));
                 }
                 else
                 {
-                    sb.Append(value);
+                    _ = sb.Append(value);
                 }
 
-                sb.Append(',');
+                _ = sb.Append(',');
                 appended = true;
             }
 
             if (appended)
             {
-                sb.Remove(sb.Length - 1, 1);
+                _ = sb.Remove(sb.Length - 1, 1);
             }
 
             return appended;
@@ -172,17 +168,19 @@ namespace InfluxDB
 
         private void EscapeValue(StringBuilder sb, string value)
         {
-            foreach (var c in value)
+            foreach (char c in value)
             {
                 switch (c)
                 {
                     case '\\':
                     case '\"':
-                        sb.Append("\\");
+                        _ = sb.Append("\\");
+                        break;
+                    default:
                         break;
                 }
 
-                sb.Append(c);
+                _ = sb.Append(c);
             }
         }
         private bool IsNotDefined(object value)

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using Th3Essentials.Announcements;
@@ -79,7 +79,7 @@ namespace Th3Essentials
 
             if (Config.IsShutdownConfigured())
             {
-                _api.Event.RegisterGameTickListener(CheckRestart, 60000);
+                _ = _api.Event.RegisterGameTickListener(CheckRestart, 60000);
             }
 
             CommandsLoader.Init(_api);
@@ -113,7 +113,7 @@ namespace Th3Essentials
                 _api.Event.PlayerDeath += PlayerDeathAsync;
             }
 
-            _api.RegisterCommand("reloadth3config", Lang.Get("th3essentials:cd-reloadConfig"), string.Empty,
+            _ = _api.RegisterCommand("reloadth3config", Lang.Get("th3essentials:cd-reloadConfig"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     if (ReloadConfig())

@@ -8,13 +8,12 @@ namespace InfluxDB
 {
     public class InfluxDBClient
     {
-        private string inlfuxDBURL;
+        private readonly string inlfuxDBURL;
 
-        private string inlfuxDBToken;
+        private readonly string inlfuxDBToken;
 
         public bool Disposed;
-
-        ICoreServerAPI api;
+        private readonly ICoreServerAPI api;
 
         public InfluxDBClient(string inlfuxDBURL, string inlfuxDBToken, ICoreServerAPI api)
         {
@@ -43,7 +42,7 @@ namespace InfluxDB
             }
             try
             {
-                var response = (HttpWebResponse)req.GetResponse();
+                HttpWebResponse response = (HttpWebResponse)req.GetResponse();
             }
             catch (Exception e)
             {
@@ -53,7 +52,7 @@ namespace InfluxDB
 
         internal void WritePoints(string inlfuxDBBucket, string inlfuxDBOrg, List<PointData> points)
         {
-            foreach (var point in points)
+            foreach (PointData point in points)
             {
                 WritePoint(inlfuxDBBucket, inlfuxDBOrg, point);
             }

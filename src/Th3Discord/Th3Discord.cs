@@ -116,13 +116,13 @@ namespace Th3Essentials.Discordbot
 
                 if (_config.HelpRoleID != 0)
                 {
-                    _api.RegisterCommand("requesthelp", Lang.Get("th3essentials:cd-help"), Lang.Get("th3essentials:cd-reply-param"), ReqestingHelp);
+                    _ = _api.RegisterCommand("requesthelp", Lang.Get("th3essentials:cd-help"), Lang.Get("th3essentials:cd-reply-param"), ReqestingHelp);
                 }
 
                 initialized = true;
             }
 
-            UpdatePlayers();
+            _ = UpdatePlayers();
             return Task.CompletedTask;
         }
 
@@ -321,14 +321,9 @@ namespace Th3Essentials.Discordbot
                 string msg = playerMsg.Groups[1].Value;
                 msg = msg.Replace("&lt;", "<").Replace("&gt;", ">");
 
-                if (Th3Essentials.Config.ShowRole && byPlayer.Role.PrivilegeLevel > 0)
-                {
-                    msg = string.Format("**[{0}] {1}:** {2}", byPlayer.Role.Name, byPlayer.PlayerName, msg);
-                }
-                else
-                {
-                    msg = string.Format("**{0}:** {1}", byPlayer.PlayerName, msg);
-                }
+                msg = Th3Essentials.Config.ShowRole && byPlayer.Role.PrivilegeLevel > 0
+                    ? string.Format("**[{0}] {1}:** {2}", byPlayer.Role.Name, byPlayer.PlayerName, msg)
+                    : string.Format("**{0}:** {1}", byPlayer.PlayerName, msg);
                 _ = _discordChannel.SendMessageAsync(msg);
             }
 
@@ -412,13 +407,11 @@ namespace Th3Essentials.Discordbot
         [HarmonyPatch(typeof(SystemTemporalStability), "onTempStormTick")]
         public class PatchSystemTemporalStability
         {
-            static TemporalStormRunTimeData data;
+            private static TemporalStormRunTimeData data;
+            private static ICoreAPI api;
+            private static int StormState = 0;
 
-            static ICoreAPI api;
-
-            static int StormState = 0;
-
-            static void GetFields(SystemTemporalStability __instance)
+            private static void GetFields(SystemTemporalStability __instance)
             {
                 if (data == null)
                 {
@@ -453,6 +446,8 @@ namespace Th3Essentials.Discordbot
                         case EnumTempStormStrength.Heavy:
                             i = 4;
                             break;
+                        default:
+                            break;
                     }
                     Instance.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + TemporalStorm[i]);
                 }
@@ -471,6 +466,8 @@ namespace Th3Essentials.Discordbot
                             break;
                         case EnumTempStormStrength.Heavy:
                             i = 5;
+                            break;
+                        default:
                             break;
                     }
                     Instance.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + TemporalStorm[i]);
