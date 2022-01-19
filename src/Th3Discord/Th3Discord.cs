@@ -67,12 +67,19 @@ namespace Th3Essentials.Discordbot
             _client = new DiscordSocketClient(config);
 
             _client.Ready += ReadyAsync;
+            _client.Log += DiscordLog;
 
             _api.Server.LogVerboseDebug("Discord started");
 
             // start discord bot
             BotMainAsync();
             Instance = this;
+        }
+
+        private Task DiscordLog(LogMessage arg)
+        {
+            _api.Logger.VerboseDebug($"[Discord] {arg.Message}");
+            return Task.CompletedTask;
         }
 
         public async void BotMainAsync()
