@@ -1,12 +1,9 @@
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using HarmonyLib;
-using InfluxDB.Client;
-using InfluxDB.Client.Core;
-using InfluxDB.Client.Writes;
+using InfluxDB;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -18,25 +15,6 @@ namespace Th3Essentials.Influxdb
 {
     internal class Th3Influxdb
     {
-        internal class Th3TraceListener : TraceListener
-        {
-            private readonly ICoreServerAPI _api;
-
-            public Th3TraceListener(ICoreServerAPI api)
-            {
-                _api = api;
-            }
-            public override void Write(string message)
-            {
-                WriteLine(message);
-            }
-
-            public override void WriteLine(string message)
-            {
-                _api.Logger.VerboseDebug($"[Influx] {message}");
-            }
-        }
-
         private Harmony harmony;
 
         public long WriteDataListenerID;
@@ -46,8 +24,6 @@ namespace Th3Essentials.Influxdb
         private readonly string harmonyPatchkey = "Th3Essentials.InfluxDB.Patch";
 
         private InfluxDBClient client;
-
-        private WriteApi writeApi;
 
         private ICoreServerAPI _api;
 
@@ -69,14 +45,7 @@ namespace Th3Essentials.Influxdb
             VSProcess = Process.GetCurrentProcess();
             data = new List<PointData>();
 
-            client = InfluxDBClientFactory.Create(_config.InfluxConfig.InlfuxDBURL, _config.InfluxConfig.InlfuxDBToken);
-            writeApi = client.GetWriteApi();
-
-            if (_config.InfluxConfig.Debug)
-            {
-                client.SetLogLevel(LogLevel.Basic);
-                _ = Trace.Listeners.Add(new Th3TraceListener(_api));
-            }
+            client = new InfluxDBClient(_config.InfluxConfig.InlfuxDBURL, _config.InfluxConfig.InlfuxDBToken, api);
 
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
             _api.Event.PlayerDisconnect += PlayerDisconnect;
@@ -173,17 +142,17 @@ namespace Th3Essentials.Influxdb
 
         private void WritePoints(List<PointData> data)
         {
-            if (!writeApi.Disposed)
+            if (!client.Disposed)
             {
-                writeApi.WritePoints(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, data);
+                client.WritePoints(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, data);
             }
         }
 
         private void WritePoint(PointData data)
         {
-            if (!writeApi.Disposed)
+            if (!client.Disposed)
             {
-                writeApi.WritePoint(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, data);
+                client.WritePoint(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, data);
             }
         }
 
