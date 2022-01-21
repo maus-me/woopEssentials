@@ -27,7 +27,7 @@ namespace Th3Essentials.Influxdb
 
         private ICoreServerAPI _api;
 
-        private Th3Config _config;
+        private Th3InfluxConfig _config;
 
         private ServerMain server;
 
@@ -40,12 +40,12 @@ namespace Th3Essentials.Influxdb
             harmony = new Harmony(harmonyPatchkey);
             harmony.PatchAll();
             _api = api;
-            _config = Th3Essentials.Config;
+            _config = Th3Essentials.Config.InfluxConfig;
             server = (ServerMain)_api.World;
             VSProcess = Process.GetCurrentProcess();
             data = new List<PointData>();
 
-            client = new InfluxDBClient(_config.InfluxConfig.InlfuxDBURL, _config.InfluxConfig.InlfuxDBToken, api);
+            client = new InfluxDBClient(_config.InlfuxDBURL, _config.InlfuxDBToken, _config.InlfuxDBOrg, _config.InlfuxDBBucket, api);
 
             _api.Event.PlayerNowPlaying += PlayerNowPlaying;
             _api.Event.PlayerDisconnect += PlayerDisconnect;
@@ -144,7 +144,7 @@ namespace Th3Essentials.Influxdb
         {
             if (!client.Disposed)
             {
-                client.WritePoints(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, data);
+                client.WritePoints(data);
             }
         }
 
@@ -152,7 +152,7 @@ namespace Th3Essentials.Influxdb
         {
             if (!client.Disposed)
             {
-                client.WritePoint(_config.InfluxConfig.InlfuxDBBucket, _config.InfluxConfig.InlfuxDBOrg, data);
+                client.WritePoint(data);
             }
         }
 
@@ -222,7 +222,7 @@ namespace Th3Essentials.Influxdb
                         for (int i = 0; i < Math.Min(myList.Count, 8); i++)
                         {
                             KeyValuePair<string, long> val = myList[i];
-                            if (val.Value > Instance._config.InfluxConfig.InlfuxDBLogtickThreshold)
+                            if (val.Value > Instance._config.InlfuxDBLogtickThreshold)
                             {
                                 Instance.WritePoint(PointData.Measurement("logticks").Tag("system", val.Key).Field("value", (double)val.Value / Stopwatch.Frequency * 1000.0));
                             }
@@ -232,7 +232,7 @@ namespace Th3Essentials.Influxdb
                 long ticks = ___stopwatch.ElapsedTicks;
                 ___elems["PrefixEnd"] = ticks - ___start;
                 ___start = ticks;
-                if (Instance._config.InfluxConfig.InlfuxDBOverwriteLogTicks)
+                if (Instance._config.InlfuxDBOverwriteLogTicks)
                 {
                     ___elems = new Dictionary<string, long>();
                     return false;
