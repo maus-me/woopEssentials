@@ -38,6 +38,8 @@ namespace Th3Essentials.Discordbot
 
         public static string[] TemporalStorm;
 
+        private bool IsShuttingdown;
+
         public Th3Discord()
         {
             initialized = false;
@@ -74,6 +76,7 @@ namespace Th3Essentials.Discordbot
             // start discord bot
             BotMainAsync();
             Instance = this;
+            IsShuttingdown = false;
         }
 
         private Task DiscordLog(LogMessage arg)
@@ -365,6 +368,7 @@ namespace Th3Essentials.Discordbot
 
         private async void Shutdown()
         {
+            IsShuttingdown = true;
             if (_client != null)
             {
                 if (_discordChannel != null)
@@ -377,6 +381,9 @@ namespace Th3Essentials.Discordbot
 
         public void Dispose()
         {
+            if (IsShuttingdown)
+                return;
+
             _client.Ready -= ReadyAsync;
 
             if (initialized)
