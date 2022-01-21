@@ -103,6 +103,7 @@ namespace Th3Essentials.Influxdb
 
         private void WriteData(float t1)
         {
+            data = new List<PointData>();
             data.Add(PointData.Measurement("clients").Field("value", server.Clients.Count));
 
             int activeEntities = 0;
@@ -137,7 +138,6 @@ namespace Th3Essentials.Influxdb
 
             data.Add(PointData.Measurement("generatingChunks").Field("value", _api.WorldManager.CurrentGeneratingChunkCount));
             WritePoints(data);
-            data.Clear();
         }
 
         private void WritePoints(List<PointData> data)
