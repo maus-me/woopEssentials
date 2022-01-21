@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Server;
@@ -9,43 +10,38 @@ namespace InfluxDB
 {
     public class InfluxDBClient
     {
-        private readonly string inlfuxDBURL;
-
-        private readonly string inlfuxDBToken;
-
         public bool Disposed;
+
         private readonly ICoreServerAPI api;
 
-        public InfluxDBClient(string inlfuxDBURL, string inlfuxDBToken, ICoreServerAPI api)
+        private readonly HttpClient HttpClient;
+
+        private readonly string WriteEndpoint;
+
+        public InfluxDBClient(string inlfuxDBURL, string inlfuxDBToken, string inlfuxDBOrg, string inlfuxDBBucket, ICoreServerAPI api)
         {
             this.api = api;
-            this.inlfuxDBURL = inlfuxDBURL;
-            this.inlfuxDBToken = inlfuxDBToken;
+            WriteEndpoint = $"write?org={inlfuxDBOrg}&bucket={inlfuxDBBucket}&precision=ms";
+            HttpClient = new HttpClient
+            {
+                BaseAddress = new Uri($"{inlfuxDBURL}/api/v2/")
+            };
+
+            HttpClient.DefaultRequestHeaders.Add("Authorization", $"Token {inlfuxDBToken}");
         }
 
         internal void Dispose()
         {
-
+            HttpClient.Dispose();
         }
 
-        internal void WritePoint(string inlfuxDBBucket, string inlfuxDBOrg, PointData point)
+        internal void WritePoint(PointData point)
         {
             try
             {
                 Task.Factory.StartNew(async () =>
                 {
-                    HttpWebRequest req = (HttpWebRequest)WebRequest.Create($"{inlfuxDBURL}/api/v2/write?org={inlfuxDBOrg}&bucket={inlfuxDBBucket}&precision=ms");
-                    req.Headers.Add(HttpRequestHeader.Authorization, $"Token {inlfuxDBToken}");
-                    req.ContentType = "text/plain; charset=utf-8";
-                    req.Method = "POST";
-                    req.Accept = "application/json";
-
-                    byte[] data = Encoding.UTF8.GetBytes(point.ToLineProtocol());
-                    using (System.IO.Stream stream = req.GetRequestStream())
-                    {
-                        stream.Write(data, 0, data.Length);
-                    }
-                    await req.GetResponseAsync();
+                    await HttpClient.PostAsync(WriteEndpoint, new StringContent(point.ToLineProtocol(), Encoding.UTF8, "application/json"));
                 });
             }
             catch (Exception e)
@@ -54,18 +50,12 @@ namespace InfluxDB
             }
         }
 
-        internal void WritePoints(string inlfuxDBBucket, string inlfuxDBOrg, List<PointData> points)
+        internal void WritePoints(List<PointData> points)
         {
             try
             {
                 Task.Factory.StartNew(async () =>
                 {
-                    HttpWebRequest req = (HttpWebRequest)WebRequest.Create($"{inlfuxDBURL}/api/v2/write?org={inlfuxDBOrg}&bucket={inlfuxDBBucket}&precision=ns");
-                    req.Headers.Add(HttpRequestHeader.Authorization, $"Token {inlfuxDBToken}");
-                    req.ContentType = "text/plain; charset=utf-8";
-                    req.Method = "POST";
-                    req.Accept = "application/json";
-
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < points.Count; i++)
                     {
@@ -77,12 +67,7 @@ namespace InfluxDB
                         }
                     }
 
-                    byte[] data = Encoding.UTF8.GetBytes(sb.ToString());
-                    using (System.IO.Stream stream = req.GetRequestStream())
-                    {
-                        stream.Write(data, 0, data.Length);
-                    }
-                    await req.GetResponseAsync();
+                    await HttpClient.PostAsync(WriteEndpoint, new StringContent(sb.ToString(), Encoding.UTF8, "application/json"));
                 });
             }
             catch (Exception e)
