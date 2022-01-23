@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Th3Essentials.Starterkit;
 
 namespace Th3Essentials.Config
 {

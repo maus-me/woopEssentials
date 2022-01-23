@@ -1,7 +1,7 @@
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 
-namespace Th3Essentials.Starterkit
+namespace Th3Essentials.Config
 {
     public class StarterkitItem
     {

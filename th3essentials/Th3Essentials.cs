@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using Th3Essentials.Announcements;
 using Th3Essentials.Commands;
 using Th3Essentials.Config;
-using Th3Essentials.Discordbot;
-using Th3Essentials.Homepoints;
+using Th3Essentials.Discord;
 using Th3Essentials.Influxdb;
-using Th3Essentials.PlayerData;
-using Th3Essentials.Starterkit;
+using Th3Essentials.Systems;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;

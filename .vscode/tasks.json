@@ -2,6 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "options": { "cwd": "th3essentials/" },
       "label": "build (Debug)",
       "problemMatcher": "$msCompile",
       "type": "shell",
@@ -17,6 +18,7 @@
       }
     },
     {
+      "options": { "cwd": "th3essentials/" },
       "label": "build (Release)",
       "problemMatcher": "$msCompile",
       "type": "shell",
@@ -32,6 +34,7 @@
       }
     },
     {
+      "options": { "cwd": "th3essentials/" },
       "label": "clean",
       "type": "shell",
       "command": "dotnet",
@@ -46,6 +49,7 @@
       }
     },
     {
+      "options": { "cwd": "th3essentials/" },
       "label": "clean (Package)",
       "type": "shell",
       "command": "dotnet",
@@ -60,6 +64,7 @@
       }
     },
     {
+      "options": { "cwd": "th3essentials/" },
       "label": "package (Debug)",
       "type": "shell",
       "command": "dotnet",
@@ -74,6 +79,7 @@
       }
     },
     {
+      "options": { "cwd": "th3essentials/" },
       "label": "package (Release)",
       "type": "shell",
       "command": "dotnet",
@@ -88,6 +94,7 @@
       }
     },
     {
+      "options": { "cwd": "th3essentials/" },
       "label": "deploy (Debug)",
       "type": "shell",
       "command": "dotnet",
@@ -102,6 +109,7 @@
       }
     },
     {
+      "options": { "cwd": "th3essentials/" },
       "label": "deploy (Release)",
       "type": "shell",
       "command": "dotnet",
@@ -116,6 +124,7 @@
       }
     },
     {
+      "options": { "cwd": "th3essentials/" },
       "label": "deploy (Remmina,Debug)",
       "type": "shell",
       "command": "dotnet",
@@ -130,6 +139,7 @@
       }
     },
     {
+      "options": { "cwd": "th3essentials/" },
       "label": "deploy (Remmina,Release)",
       "type": "shell",
       "command": "dotnet",
@@ -144,6 +154,7 @@
       }
     },
     {
+      "options": { "cwd": "th3essentials/" },
       "label": "run server",
       "type": "shell",
       "group": {

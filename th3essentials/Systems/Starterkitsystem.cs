@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Th3Essentials.Config;
-using Th3Essentials.PlayerData;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
@@ -10,7 +9,7 @@ using Vintagestory.API.Util;
 using Vintagestory.Common;
 using Vintagestory.Server;
 
-namespace Th3Essentials.Starterkit
+namespace Th3Essentials.Systems
 {
     internal class Starterkitsystem
     {
@@ -28,13 +27,13 @@ namespace Th3Essentials.Starterkit
         private void RegisterCommands(ICoreServerAPI sapi)
         {
             _ = sapi.RegisterCommand("starterkit", Lang.Get("th3essentials:cd-starterkit"), string.Empty,
-                (IServerPlayer player, int groupId, CmdArgs args) =>
+                (player, groupId, args) =>
                 {
                     TryGiveItemStack(sapi, player);
                 }, Privilege.chat);
 
             _ = sapi.RegisterCommand("setstarterkit", Lang.Get("th3essentials:cd-setstarterkit"), string.Empty,
-            (IServerPlayer player, int groupId, CmdArgs args) =>
+            (player, groupId, args) =>
             {
                 if (_config.Items == null)
                 {
@@ -63,7 +62,7 @@ namespace Th3Essentials.Starterkit
             }, Privilege.controlserver);
 
             _ = sapi.RegisterCommand("resetstarterkitusageall", Lang.Get("th3essentials:cd-rstall"), string.Empty,
-            (IServerPlayer player, int groupId, CmdArgs args) =>
+            (player, groupId, args) =>
             {
                 string ok = args.PopWord();
                 if (ok != null && ok == "confirm")
@@ -108,7 +107,7 @@ namespace Th3Essentials.Starterkit
             }, Privilege.controlserver);
 
             _ = sapi.RegisterCommand("resetstarterkitusage", Lang.Get("th3essentials:cd-rstp"), "[Name]",
-            (IServerPlayer player, int groupId, CmdArgs args) =>
+            (player, groupId, args) =>
             {
                 string name = args.PopWord();
                 if (name != null)

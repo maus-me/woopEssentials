@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Server;
 
-namespace InfluxDB
+namespace Th3Essentials.InfluxDB
 {
     public class InfluxDBClient
     {

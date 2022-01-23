@@ -16,7 +16,7 @@ using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 
-namespace Th3Essentials.Discordbot
+namespace Th3Essentials.Discord
 {
     public class Th3Discord
     {

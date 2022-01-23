@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace InfluxDB
+namespace Th3Essentials.InfluxDB
 {
     public class PointData
     {
@@ -186,8 +186,8 @@ namespace InfluxDB
         private bool IsNotDefined(object value)
         {
             return value == null
-                   || (value is double d && (double.IsInfinity(d) || double.IsNaN(d)))
-                   || (value is float f && (float.IsInfinity(f) || float.IsNaN(f)));
+                   || value is double d && (double.IsInfinity(d) || double.IsNaN(d))
+                   || value is float f && (float.IsInfinity(f) || float.IsNaN(f));
         }
     }
 }

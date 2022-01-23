@@ -10,7 +10,7 @@ using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.Server;
 
-namespace Th3Essentials.Discordbot
+namespace Th3Essentials.Discord
 {
     public enum SlashCommands
     {
@@ -425,7 +425,7 @@ namespace Th3Essentials.Discordbot
                                         if (player != null)
                                         {
                                             IPlayer playerWoldData = discord.Sapi.World.PlayerByUid(player.PlayerUID);
-                                            if (playerWoldData != null && SerializerUtil.Deserialize<bool>(playerWoldData.WorldData.GetModdata("createCharacter"), false))
+                                            if (playerWoldData != null && SerializerUtil.Deserialize(playerWoldData.WorldData.GetModdata("createCharacter"), false))
                                             {
                                                 playerWoldData.WorldData.SetModdata("createCharacter", SerializerUtil.Serialize(false));
                                                 response = Lang.Get("Ok, player can now run .charsel (or rejoin the world) to change skin and character class once");

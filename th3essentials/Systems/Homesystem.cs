@@ -1,12 +1,11 @@
 using System;
 using Th3Essentials.Config;
-using Th3Essentials.PlayerData;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 
-namespace Th3Essentials.Homepoints
+namespace Th3Essentials.Systems
 {
     internal class Homesystem
     {
@@ -24,19 +23,19 @@ namespace Th3Essentials.Homepoints
             if (_config.HomeLimit > 0)
             {
                 _ = _sapi.RegisterCommand("sethome", Lang.Get("th3essentials:cd-sethome"), "[Name]",
-                    (IServerPlayer player, int groupId, CmdArgs args) =>
+                    (player, groupId, args) =>
                     {
                         SetHome(player, args.PopAll());
                     }, Privilege.chat);
 
                 _ = _sapi.RegisterCommand("home", Lang.Get("th3essentials:cd-home"), "[Name]",
-                    (IServerPlayer player, int groupId, CmdArgs args) =>
+                    (player, groupId, args) =>
                     {
                         Home(player, args.PopAll());
                     }, Privilege.chat);
 
                 _ = _sapi.RegisterCommand("delhome", Lang.Get("th3essentials:cd-delhome"), "[Name]",
-                    (IServerPlayer player, int groupId, CmdArgs args) =>
+                    (player, groupId, args) =>
                     {
                         DeleteHome(player, args.PopAll());
                     }, Privilege.chat);
@@ -44,7 +43,7 @@ namespace Th3Essentials.Homepoints
             if (_config.SpawnEnabled)
             {
                 _ = _sapi.RegisterCommand("spawn", Lang.Get("th3essentials:cd-spawn"), string.Empty,
-                    (IServerPlayer player, int groupId, CmdArgs args) =>
+                    (player, groupId, args) =>
                     {
                         ToSpawn(player);
                     }, Privilege.chat);
@@ -53,7 +52,7 @@ namespace Th3Essentials.Homepoints
             {
                 _sapi.Event.PlayerDeath += PlayerDied;
                 _ = _sapi.RegisterCommand("back", Lang.Get("th3essentials:cd-back"), string.Empty,
-                (IServerPlayer player, int groupId, CmdArgs args) =>
+                (player, groupId, args) =>
                 {
                     TeleportBack(player);
                 }, Privilege.chat);

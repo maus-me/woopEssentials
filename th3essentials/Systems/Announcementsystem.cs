@@ -3,7 +3,7 @@ using Th3Essentials.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 
-namespace Th3Essentials.Announcements
+namespace Th3Essentials.Systems
 {
     internal class Announcementsystem
     {

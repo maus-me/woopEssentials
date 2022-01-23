@@ -1,7 +1,7 @@
 using ProtoBuf;
 using Vintagestory.API.MathTools;
 
-namespace Th3Essentials.Homepoints
+namespace Th3Essentials.Config
 {
     [ProtoContract]
     public class HomePoint

@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using ProtoBuf;
-using Th3Essentials.Homepoints;
 using Vintagestory.API.MathTools;
 
-namespace Th3Essentials.PlayerData
+namespace Th3Essentials.Config
 {
     [ProtoContract]
     public class Th3PlayerData

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Th3Essentials.PlayerData;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
