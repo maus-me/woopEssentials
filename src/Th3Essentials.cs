@@ -75,7 +75,6 @@ namespace Th3Essentials
 
             _sapi.Event.GameWorldSave += GameWorldSave;
             _sapi.Event.PlayerNowPlaying += PlayerNowPlaying;
-            // _api.Logger.EntryAdded += LogEntryAdded;
 
             if (Config.IsShutdownConfigured())
             {
