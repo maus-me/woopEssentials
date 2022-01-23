@@ -23,6 +23,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - /r message - to send private messages ingame to last messaging player (enabled if /msg is on)
 - Server Metrics, logs metrics (/stats and more) to InfluxDB and visualize it with influxDB or **grafana**
 - /requesthelp [message] , pings the `HelpRoleID` in Discord with the message
+- show role information infront of ingame chatname [on/off]
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -271,6 +272,15 @@ Make sure to persist your influxdb data with docker volumes/mounts.
   // each role has a Name which is used to display and a Color that the role name will be colored in
   // it wont print roles with PrivilegeLevel less then 1
   // color names for serverconfig.json [hex color value] https://colorpicker.me/ or https://docs.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0#properties
-  "ShowRole": false
+  "ShowRole": false,
+  // allows to format the ingame role information to your likeing
+  // {0} will be the color specified in the serverconfig.json
+  // {1} will be the role name specified in the serverconfig.json
+  // {2} will be the message including one space and : like | Th3Dilli: message|
+  // for format options check https://wiki.vintagestory.at/index.php?title=VTML
+  // sample will show for role Admin and the role will be colerd according to the value in serverconfig.json
+  // [Admin] Th3Dilli: message
+  // info since fonts are different on windows and linux this may look different depending on the operating system
+  "RoleFormat": "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}"
 }
 ```
