@@ -5,7 +5,9 @@
     }
   ],
   "settings": {
-    "cSpell.enableFiletypes": ["markdown"],
-    "cSpell.enabled": true
+    "files.exclude": {
+      "**/bin": true,
+      "**/obj": true
+    }
   }
 }
