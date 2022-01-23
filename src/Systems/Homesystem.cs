@@ -14,28 +14,28 @@ namespace Th3Essentials.Homepoints
 
         private Th3Config _config;
 
-        private ICoreServerAPI _api;
+        private ICoreServerAPI _sapi;
 
-        internal void Init(ICoreServerAPI api)
+        internal void Init(ICoreServerAPI sapi)
         {
-            _api = api;
+            _sapi = sapi;
             _playerConfig = Th3Essentials.PlayerConfig;
             _config = Th3Essentials.Config;
             if (_config.HomeLimit > 0)
             {
-                _ = _api.RegisterCommand("sethome", Lang.Get("th3essentials:cd-sethome"), "[Name]",
+                _ = _sapi.RegisterCommand("sethome", Lang.Get("th3essentials:cd-sethome"), "[Name]",
                     (IServerPlayer player, int groupId, CmdArgs args) =>
                     {
                         SetHome(player, args.PopAll());
                     }, Privilege.chat);
 
-                _ = _api.RegisterCommand("home", Lang.Get("th3essentials:cd-home"), "[Name]",
+                _ = _sapi.RegisterCommand("home", Lang.Get("th3essentials:cd-home"), "[Name]",
                     (IServerPlayer player, int groupId, CmdArgs args) =>
                     {
                         Home(player, args.PopAll());
                     }, Privilege.chat);
 
-                _ = _api.RegisterCommand("delhome", Lang.Get("th3essentials:cd-delhome"), "[Name]",
+                _ = _sapi.RegisterCommand("delhome", Lang.Get("th3essentials:cd-delhome"), "[Name]",
                     (IServerPlayer player, int groupId, CmdArgs args) =>
                     {
                         DeleteHome(player, args.PopAll());
@@ -43,7 +43,7 @@ namespace Th3Essentials.Homepoints
             }
             if (_config.SpawnEnabled)
             {
-                _ = _api.RegisterCommand("spawn", Lang.Get("th3essentials:cd-spawn"), string.Empty,
+                _ = _sapi.RegisterCommand("spawn", Lang.Get("th3essentials:cd-spawn"), string.Empty,
                     (IServerPlayer player, int groupId, CmdArgs args) =>
                     {
                         ToSpawn(player);
@@ -51,8 +51,8 @@ namespace Th3Essentials.Homepoints
             }
             if (_config.BackEnabled)
             {
-                _api.Event.PlayerDeath += PlayerDied;
-                _ = _api.RegisterCommand("back", Lang.Get("th3essentials:cd-back"), string.Empty,
+                _sapi.Event.PlayerDeath += PlayerDied;
+                _ = _sapi.RegisterCommand("back", Lang.Get("th3essentials:cd-back"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     TeleportBack(player);
@@ -99,7 +99,7 @@ namespace Th3Essentials.Homepoints
             if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
             {
                 playerData.LastPosition = player.Entity.Pos.AsBlockPos;
-                player.Entity.TeleportTo(_api.World.DefaultSpawnPosition);
+                player.Entity.TeleportTo(_sapi.World.DefaultSpawnPosition);
                 playerData.HomeLastuseage = DateTime.Now;
                 playerData.MarkDirty();
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-tp-spawn"), EnumChatType.CommandSuccess);

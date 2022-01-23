@@ -4,11 +4,11 @@ namespace Th3Essentials.Commands
 {
     public class CommandsLoader
     {
-        internal static void Init(ICoreServerAPI api)
+        internal static void Init(ICoreServerAPI sapi)
         {
-            new Serverinfo().Init(api);
-            new Message().Init(api);
-            new Restart().Init(api);
+            new Serverinfo().Init(sapi);
+            new Message().Init(sapi);
+            new Restart().Init(sapi);
         }
     }
 }

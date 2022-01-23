@@ -7,30 +7,30 @@ namespace InfluxDB
 {
     public class PointData
     {
-        private string measurementName;
+        private string _measurement;
 
-        private readonly Dictionary<string, object> Fields;
+        private readonly Dictionary<string, object> _fields;
 
-        private readonly Dictionary<string, string> Tags;
+        private readonly Dictionary<string, string> _tags;
 
         public PointData()
         {
-            Fields = new Dictionary<string, object>();
-            Tags = new Dictionary<string, string>();
+            _fields = new Dictionary<string, object>();
+            _tags = new Dictionary<string, string>();
         }
 
         internal static PointData Measurement(string measurement)
         {
             return new PointData
             {
-                measurementName = measurement
+                _measurement = measurement
             };
         }
 
         public string ToLineProtocol()
         {
             StringBuilder sb = new StringBuilder();
-            EscapeKey(sb, measurementName, false);
+            EscapeKey(sb, _measurement, false);
             AppendTags(sb);
             bool appendedFields = AppendFields(sb);
             return !appendedFields ? "" : sb.ToString();
@@ -38,13 +38,13 @@ namespace InfluxDB
 
         internal PointData Field(string key, object value)
         {
-            Fields.Add(key, value);
+            _fields.Add(key, value);
             return this;
         }
 
         internal PointData Tag(string key, string value)
         {
-            Tags.Add(key, value);
+            _tags.Add(key, value);
             return this;
         }
 
@@ -85,7 +85,7 @@ namespace InfluxDB
         {
 
 
-            foreach (KeyValuePair<string, string> keyValue in Tags)
+            foreach (KeyValuePair<string, string> keyValue in _tags)
             {
                 string key = keyValue.Key;
                 string value = keyValue.Value;
@@ -108,7 +108,7 @@ namespace InfluxDB
         {
             bool appended = false;
 
-            foreach (KeyValuePair<string, object> keyValue in Fields)
+            foreach (KeyValuePair<string, object> keyValue in _fields)
             {
                 string key = keyValue.Key;
                 object value = keyValue.Value;

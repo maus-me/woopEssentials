@@ -31,7 +31,7 @@ namespace Th3Essentials
 
         internal static string Th3EssentialsModDataKey = "Th3Essentials";
 
-        private ICoreServerAPI _api;
+        private ICoreServerAPI _sapi;
 
         private Th3Discord _th3Discord;
 
@@ -46,74 +46,74 @@ namespace Th3Essentials
             return forSide == EnumAppSide.Server;
         }
 
-        public override void StartServerSide(ICoreServerAPI api)
+        public override void StartServerSide(ICoreServerAPI sapi)
         {
-            _api = api;
+            _sapi = sapi;
 
             try
             {
-                Config = _api.LoadModConfig<Th3Config>(_configFile);
+                Config = _sapi.LoadModConfig<Th3Config>(_configFile);
 
                 if (Config == null)
                 {
                     Config = new Th3Config();
                     Config.Init();
-                    _api.StoreModConfig(Config, _configFile);
+                    _sapi.StoreModConfig(Config, _configFile);
 
-                    _api.Server.LogWarning(Lang.Get("th3essentials:config-init"));
-                    _api.Server.LogWarning(Lang.Get("th3essentials:config-file-info", Path.Combine(GamePaths.ModConfig, _configFile)));
+                    _sapi.Server.LogWarning(Lang.Get("th3essentials:config-init"));
+                    _sapi.Server.LogWarning(Lang.Get("th3essentials:config-file-info", Path.Combine(GamePaths.ModConfig, _configFile)));
                 }
             }
             catch (Exception e)
             {
-                _api.Logger.Error(Lang.Get("th3essentials:th3config-error", e));
-                _api.Logger.Error(Lang.Get("th3essentials:disabled"));
+                _sapi.Logger.Error(Lang.Get("th3essentials:th3config-error", e));
+                _sapi.Logger.Error(Lang.Get("th3essentials:disabled"));
                 return;
             }
 
             PlayerConfig = new Th3PlayerConfig();
 
-            _api.Event.GameWorldSave += GameWorldSave;
-            _api.Event.PlayerNowPlaying += PlayerNowPlaying;
+            _sapi.Event.GameWorldSave += GameWorldSave;
+            _sapi.Event.PlayerNowPlaying += PlayerNowPlaying;
             // _api.Logger.EntryAdded += LogEntryAdded;
 
             if (Config.IsShutdownConfigured())
             {
-                _ = _api.Event.RegisterGameTickListener(CheckRestart, 60000);
+                _ = _sapi.Event.RegisterGameTickListener(CheckRestart, 60000);
             }
 
-            CommandsLoader.Init(_api);
-            new Homesystem().Init(_api);
-            new Starterkitsystem().Init(_api);
-            new Announcementsystem().Init(_api);
+            CommandsLoader.Init(_sapi);
+            new Homesystem().Init(_sapi);
+            new Starterkitsystem().Init(_sapi);
+            new Announcementsystem().Init(_sapi);
             _th3Discord = new Th3Discord();
             _th3Influx = new Th3Influxdb();
 
             if (Config.IsDiscordConfigured())
             {
-                _th3Discord.Init(_api);
+                _th3Discord.Init(_sapi);
             }
             else
             {
                 // enable show role here when discord is not active - else it is enabled in the Th3Discord
                 if (Config.ShowRole)
                 {
-                    _api.Event.PlayerChat += PlayerChatAsync;
+                    _sapi.Event.PlayerChat += PlayerChatAsync;
                 }
-                _api.Logger.Debug("Discordbot needs to be configured, functionality disabled!!!");
+                _sapi.Logger.Debug("Discordbot needs to be configured, functionality disabled!!!");
             }
 
             if (Config.IsInlfuxDBConfigured())
             {
-                _th3Influx.Init(_api);
+                _th3Influx.Init(_sapi);
             }
 
             if (Config.IsInlfuxDBConfigured() || Config.IsDiscordConfigured())
             {
-                _api.Event.PlayerDeath += PlayerDeathAsync;
+                _sapi.Event.PlayerDeath += PlayerDeathAsync;
             }
 
-            _ = _api.RegisterCommand("reloadth3config", Lang.Get("th3essentials:cd-reloadConfig"), string.Empty,
+            _ = _sapi.RegisterCommand("reloadth3config", Lang.Get("th3essentials:cd-reloadConfig"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     if (ReloadConfig())
@@ -142,15 +142,15 @@ namespace Th3Essentials
                     if (time == TimeInMinutes)
                     {
                         string msg = TimeInMinutes == 1 ? Lang.Get("th3essentials:restart-in-min") : Lang.Get("th3essentials:restart-in-mins", TimeInMinutes);
-                        _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                        _sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
                         _th3Discord.SendServerMessage(msg);
-                        _api.Logger.Debug(msg);
+                        _sapi.Logger.Debug(msg);
                     }
                 }
             }
             if (Config.ShutdownEnabled && TimeInMinutes < 1)
             {
-                _api.Server.ShutDown();
+                _sapi.Server.ShutDown();
             }
         }
 
@@ -258,22 +258,22 @@ namespace Th3Essentials
         {
             if (Config != null)
             {
-                _api.StoreModConfig(Config, _configFile);
+                _sapi.StoreModConfig(Config, _configFile);
             }
 
-            PlayerConfig.GameWorldSave(_api);
+            PlayerConfig.GameWorldSave(_sapi);
         }
 
         private bool ReloadConfig()
         {
             try
             {
-                Th3Config configTemp = _api.LoadModConfig<Th3Config>(_configFile);
+                Th3Config configTemp = _sapi.LoadModConfig<Th3Config>(_configFile);
                 Config.Reload(configTemp);
             }
             catch (Exception e)
             {
-                _api.Logger.Error("Error reloading Th3Config: ", e.ToString());
+                _sapi.Logger.Error("Error reloading Th3Config: ", e.ToString());
                 return false;
             }
             return true;

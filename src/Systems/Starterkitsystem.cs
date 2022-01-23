@@ -18,22 +18,22 @@ namespace Th3Essentials.Starterkit
 
         private Th3PlayerConfig _playerConfig;
 
-        internal void Init(ICoreServerAPI api)
+        internal void Init(ICoreServerAPI sapi)
         {
             _config = Th3Essentials.Config;
             _playerConfig = Th3Essentials.PlayerConfig;
-            RegisterCommands(api);
+            RegisterCommands(sapi);
         }
 
-        private void RegisterCommands(ICoreServerAPI api)
+        private void RegisterCommands(ICoreServerAPI sapi)
         {
-            _ = api.RegisterCommand("starterkit", Lang.Get("th3essentials:cd-starterkit"), string.Empty,
+            _ = sapi.RegisterCommand("starterkit", Lang.Get("th3essentials:cd-starterkit"), string.Empty,
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
-                    TryGiveItemStack(api, player);
+                    TryGiveItemStack(sapi, player);
                 }, Privilege.chat);
 
-            _ = api.RegisterCommand("setstarterkit", Lang.Get("th3essentials:cd-setstarterkit"), string.Empty,
+            _ = sapi.RegisterCommand("setstarterkit", Lang.Get("th3essentials:cd-setstarterkit"), string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
                 if (_config.Items == null)
@@ -62,13 +62,13 @@ namespace Th3Essentials.Starterkit
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-setup"), EnumChatType.CommandSuccess);
             }, Privilege.controlserver);
 
-            _ = api.RegisterCommand("resetstarterkitusageall", Lang.Get("th3essentials:cd-rstall"), string.Empty,
+            _ = sapi.RegisterCommand("resetstarterkitusageall", Lang.Get("th3essentials:cd-rstall"), string.Empty,
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
                 string ok = args.PopWord();
                 if (ok != null && ok == "confirm")
                 {
-                    ServerMain server = (ServerMain)api.World;
+                    ServerMain server = (ServerMain)sapi.World;
                     GameDatabase gameDatabase = new GameDatabase(ServerMain.Logger);
                     _ = gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out int foundVersion, out string errorMessage, out bool isReadonly);
                     gameDatabase.UpgradeToWriteAccess();
@@ -80,7 +80,7 @@ namespace Th3Essentials.Starterkit
                         {
                             onwdata.StarterkitRecived = false;
                             onwdata.MarkDirty();
-                            api.Logger.Debug("Starterkit for {0} was reset", th3d.LastKnownPlayername);
+                            sapi.Logger.Debug("Starterkit for {0} was reset", th3d.LastKnownPlayername);
                         }
                         else
                         {
@@ -94,7 +94,7 @@ namespace Th3Essentials.Starterkit
                             }
                             else
                             {
-                                api.Logger.Debug("No Th3PlayerData for player {0} found", th3d.LastKnownPlayername);
+                                sapi.Logger.Debug("No Th3PlayerData for player {0} found", th3d.LastKnownPlayername);
                             }
                         }
                     }
@@ -107,13 +107,13 @@ namespace Th3Essentials.Starterkit
                 }
             }, Privilege.controlserver);
 
-            _ = api.RegisterCommand("resetstarterkitusage", Lang.Get("th3essentials:cd-rstp"), "[Name]",
+            _ = sapi.RegisterCommand("resetstarterkitusage", Lang.Get("th3essentials:cd-rstp"), "[Name]",
             (IServerPlayer player, int groupId, CmdArgs args) =>
             {
                 string name = args.PopWord();
                 if (name != null)
                 {
-                    IServerPlayerData foundPlayer = api.PlayerData.GetPlayerDataByLastKnownName(name);
+                    IServerPlayerData foundPlayer = sapi.PlayerData.GetPlayerDataByLastKnownName(name);
                     if (foundPlayer != null)
                     {
                         Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(foundPlayer.PlayerUID, false);

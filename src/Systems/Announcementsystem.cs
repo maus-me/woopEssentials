@@ -7,30 +7,30 @@ namespace Th3Essentials.Announcements
 {
     internal class Announcementsystem
     {
-        private ICoreServerAPI _api;
+        private ICoreServerAPI _sapi;
 
         private Th3Config _config;
 
         private int _currentMsg;
 
-        private Timer announcer;
+        private Timer _announcer;
 
         public Announcementsystem()
         {
             _currentMsg = 0;
         }
 
-        public void Init(ICoreServerAPI api)
+        public void Init(ICoreServerAPI sapi)
         {
-            _api = api;
+            _sapi = sapi;
             _config = Th3Essentials.Config;
 
             if (_config.AnnouncementMessages != null && _config.AnnouncementMessages.Count != 0 && _config.AnnouncementInterval > 0)
             {
-                announcer = new Timer(_config.GetAnnouncementInterval());
-                announcer.Elapsed += AnnounceMsg;
-                announcer.AutoReset = true;
-                announcer.Enabled = true;
+                _announcer = new Timer(_config.GetAnnouncementInterval());
+                _announcer.Elapsed += AnnounceMsg;
+                _announcer.AutoReset = true;
+                _announcer.Enabled = true;
             }
         }
 
@@ -38,14 +38,14 @@ namespace Th3Essentials.Announcements
         {
             if (_config.AnnouncementMessages == null)
             {
-                announcer.Elapsed -= AnnounceMsg;
+                _announcer.Elapsed -= AnnounceMsg;
                 return;
             }
             if (_currentMsg >= _config.AnnouncementMessages.Count)
             {
                 _currentMsg = 0;
             }
-            _api.BroadcastMessageToAllGroups($"<strong>[Info]</strong> {_config.AnnouncementMessages[_currentMsg]}", EnumChatType.Notification);
+            _sapi.BroadcastMessageToAllGroups($"<strong>[Info]</strong> {_config.AnnouncementMessages[_currentMsg]}", EnumChatType.Notification);
             _currentMsg++;
         }
     }

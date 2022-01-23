@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,27 +11,27 @@ namespace InfluxDB
     {
         public bool Disposed;
 
-        private readonly ICoreServerAPI api;
+        private readonly ICoreServerAPI _api;
 
-        private readonly HttpClient HttpClient;
+        private readonly HttpClient _httpClient;
 
-        private readonly string WriteEndpoint;
+        private readonly string _writeEndpoint;
 
         public InfluxDBClient(string inlfuxDBURL, string inlfuxDBToken, string inlfuxDBOrg, string inlfuxDBBucket, ICoreServerAPI api)
         {
-            this.api = api;
-            WriteEndpoint = $"write?org={inlfuxDBOrg}&bucket={inlfuxDBBucket}&precision=s";
-            HttpClient = new HttpClient
+            _api = api;
+            _writeEndpoint = $"write?org={inlfuxDBOrg}&bucket={inlfuxDBBucket}&precision=s";
+            _httpClient = new HttpClient
             {
                 BaseAddress = new Uri($"{inlfuxDBURL}/api/v2/")
             };
 
-            HttpClient.DefaultRequestHeaders.Add("Authorization", $"Token {inlfuxDBToken}");
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Token {inlfuxDBToken}");
         }
 
         internal void Dispose()
         {
-            HttpClient.Dispose();
+            _httpClient.Dispose();
         }
 
         internal void WritePoint(PointData point)
@@ -41,12 +40,12 @@ namespace InfluxDB
             {
                 Task.Factory.StartNew(async () =>
                 {
-                    await HttpClient.PostAsync(WriteEndpoint, new StringContent(point.ToLineProtocol(), Encoding.UTF8, "application/json"));
+                    await _httpClient.PostAsync(_writeEndpoint, new StringContent(point.ToLineProtocol(), Encoding.UTF8, "application/json"));
                 });
             }
             catch (Exception e)
             {
-                api.Logger.Warning($"[InfluxDB] {e.Message}");
+                _api.Logger.Warning($"[InfluxDB] {e.Message}");
             }
         }
 
@@ -67,12 +66,12 @@ namespace InfluxDB
                         }
                     }
 
-                    await HttpClient.PostAsync(WriteEndpoint, new StringContent(sb.ToString(), Encoding.UTF8, "application/json"));
+                    await _httpClient.PostAsync(_writeEndpoint, new StringContent(sb.ToString(), Encoding.UTF8, "application/json"));
                 });
             }
             catch (Exception e)
             {
-                api.Logger.Warning($"[InfluxDB] {e.Message}");
+                _api.Logger.Warning($"[InfluxDB] {e.Message}");
             }
         }
     }

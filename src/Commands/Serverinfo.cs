@@ -6,11 +6,11 @@ namespace Th3Essentials.Commands
 {
     internal class Serverinfo : Command
     {
-        internal override void Init(ICoreServerAPI api)
+        internal override void Init(ICoreServerAPI sapi)
         {
             if (Th3Essentials.Config.InfoMessage != null)
             {
-                _ = api.RegisterCommand("serverinfo", Lang.Get("th3essentials:cd-info"), string.Empty,
+                _ = sapi.RegisterCommand("serverinfo", Lang.Get("th3essentials:cd-info"), string.Empty,
                     (IServerPlayer player, int groupId, CmdArgs args) =>
                     {
                         player.SendMessage(GlobalConstants.GeneralChatGroup, Th3Essentials.Config.InfoMessage, EnumChatType.Notification);

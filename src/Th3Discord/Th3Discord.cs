@@ -20,29 +20,29 @@ namespace Th3Essentials.Discordbot
 {
     public class Th3Discord
     {
-        private Harmony harmony;
+        private Harmony _harmony;
 
-        private readonly string harmonyPatchkey = "Th3Essentials.Discord.Patch";
+        private readonly string _harmonyPatchkey = "Th3Essentials.Discord.Patch";
 
         public static Th3Discord Instance;
 
-        internal DiscordSocketClient _client;
+        private DiscordSocketClient _client;
 
-        internal IMessageChannel _discordChannel;
+        private IMessageChannel _discordChannel;
 
-        internal ICoreServerAPI _api;
+        internal ICoreServerAPI Sapi;
 
-        internal Th3DiscordConfig _config;
+        internal Th3DiscordConfig Config;
 
-        private bool initialized;
+        private bool _initialized;
 
         public static string[] TemporalStorm;
 
-        private bool IsShuttingdown;
+        private bool _isShuttingdown;
 
         public Th3Discord()
         {
-            initialized = false;
+            _initialized = false;
             TemporalStorm = new string[7]{
                 Lang.Get("A light temporal storm is approaching"),
                 Lang.Get("A light temporal storm is imminent"),
@@ -54,12 +54,12 @@ namespace Th3Essentials.Discordbot
             };
         }
 
-        public void Init(ICoreServerAPI api)
+        public void Init(ICoreServerAPI sapi)
         {
-            harmony = new Harmony(harmonyPatchkey);
-            harmony.PatchAll();
-            _config = Th3Essentials.Config.DiscordConfig;
-            _api = api;
+            _harmony = new Harmony(_harmonyPatchkey);
+            _harmony.PatchAll();
+            Config = Th3Essentials.Config.DiscordConfig;
+            Sapi = sapi;
 
             // create Discord client and set event methodes
             DiscordSocketConfig config = new DiscordSocketConfig()
@@ -71,23 +71,23 @@ namespace Th3Essentials.Discordbot
             _client.Ready += ReadyAsync;
             _client.Log += DiscordLog;
 
-            _api.Server.LogVerboseDebug("Discord started");
+            Sapi.Server.LogVerboseDebug("Discord started");
 
             // start discord bot
             BotMainAsync();
             Instance = this;
-            IsShuttingdown = false;
+            _isShuttingdown = false;
         }
 
         private Task DiscordLog(LogMessage arg)
         {
-            _api.Logger.VerboseDebug($"[Discord] {arg.Message}");
+            Sapi.Logger.VerboseDebug($"[Discord] {arg.Message}");
             return Task.CompletedTask;
         }
 
         public async void BotMainAsync()
         {
-            await _client.LoginAsync(TokenType.Bot, _config.Token);
+            await _client.LoginAsync(TokenType.Bot, Config.Token);
             await _client.StartAsync();
 
             // keep the discord bot thread running
@@ -96,33 +96,33 @@ namespace Th3Essentials.Discordbot
 
         private Task ReadyAsync()
         {
-            _api.Server.LogVerboseDebug($"{_client.CurrentUser.Username} is connected!");
+            Sapi.Server.LogVerboseDebug($"{_client.CurrentUser.Username} is connected!");
 
             if (!GetDiscordChannel())
             {
-                _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
+                Sapi.Server.LogError($"Could not find channel with id: {Config.ChannelId}");
             }
 
             // needed since discord might disconect from the gateway and reconnect emitting the ReadyAsync again
-            if (!initialized)
+            if (!_initialized)
             {
                 _client.MessageReceived += MessageReceivedAsync;
                 _client.InteractionCreated += InteractionCreated;
                 _client.ButtonExecuted += ButtonExecuted;
 
                 //add vs api events
-                _api.Event.PlayerChat += PlayerChatAsync;
-                _api.Event.PlayerDisconnect += PlayerDisconnectAsync;
-                _api.Event.PlayerNowPlaying += PlayerNowPlayingAsync;
-                _api.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
-                _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
+                Sapi.Event.PlayerChat += PlayerChatAsync;
+                Sapi.Event.PlayerDisconnect += PlayerDisconnectAsync;
+                Sapi.Event.PlayerNowPlaying += PlayerNowPlayingAsync;
+                Sapi.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
+                Sapi.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
 
-                if (_config.HelpRoleID != 0)
+                if (Config.HelpRoleID != 0)
                 {
-                    _ = _api.RegisterCommand("requesthelp", Lang.Get("th3essentials:cd-help"), Lang.Get("th3essentials:cd-reply-param"), ReqestingHelp);
+                    _ = Sapi.RegisterCommand("requesthelp", Lang.Get("th3essentials:cd-help"), Lang.Get("th3essentials:cd-reply-param"), ReqestingHelp);
                 }
 
-                initialized = true;
+                _initialized = true;
             }
 
             _ = UpdatePlayers();
@@ -138,8 +138,8 @@ namespace Th3Essentials.Discordbot
             }
             catch (Exception exception)
             {
-                _api.Logger.Error("Slashcommand create:" + exception.ToString());
-                _api.Logger.Error("Maybe you forgot to add the applications.commands for your bot");
+                Sapi.Logger.Error("Slashcommand create:" + exception.ToString());
+                Sapi.Logger.Error("Maybe you forgot to add the applications.commands for your bot");
             }
         }
 
@@ -147,7 +147,7 @@ namespace Th3Essentials.Discordbot
         {
             try
             {
-                IReadOnlyCollection<RestGuildCommand> commands = await _client.Rest.GetGuildApplicationCommands(_config.GuildId);
+                IReadOnlyCollection<RestGuildCommand> commands = await _client.Rest.GetGuildApplicationCommands(Config.GuildId);
                 foreach (RestGuildCommand cmd in commands)
                 {
                     string[] cmds = Enum.GetNames(typeof(SlashCommands)).Select(scmd => scmd.ToLower()).ToArray();
@@ -159,8 +159,8 @@ namespace Th3Essentials.Discordbot
             }
             catch (Exception exception)
             {
-                _api.Logger.Error("Slashcommand delete:" + exception.ToString());
-                _api.Logger.Error("Maybe you forgot to add the applications.commands for your bot");
+                Sapi.Logger.Error("Slashcommand delete:" + exception.ToString());
+                Sapi.Logger.Error("Maybe you forgot to add the applications.commands for your bot");
             }
         }
 
@@ -212,14 +212,14 @@ namespace Th3Essentials.Discordbot
                 {
                     if (guildUser.GuildPermissions.Administrator)
                     {
-                        _config.GuildId = guildUser.Guild.Id;
-                        _config.ChannelId = message.Channel.Id;
+                        Config.GuildId = guildUser.Guild.Id;
+                        Config.ChannelId = message.Channel.Id;
 
                         CreateSlashCommands();
                         if (!GetDiscordChannel())
                         {
-                            _api.Server.LogError($"Could not find channel with id: {_config.ChannelId}");
-                            _ = message.ReplyAsync($"Could not find channel with id: {_config.ChannelId}");
+                            Sapi.Server.LogError($"Could not find channel with id: {Config.ChannelId}");
+                            _ = message.ReplyAsync($"Could not find channel with id: {Config.ChannelId}");
                         }
                         else
                         {
@@ -230,7 +230,7 @@ namespace Th3Essentials.Discordbot
             }
             // only send messages from specific channel to vs server chat
             // ignore empty messages (message is empty when only picture/file is send)
-            else if (message.Channel.Id == _config.ChannelId && message.Content != "")
+            else if (message.Channel.Id == Config.ChannelId && message.Content != "")
             {
                 string msg = CleanDiscordMessage(message);
                 // use blue font ingame for discord messages
@@ -240,10 +240,10 @@ namespace Th3Essentials.Discordbot
                 {
                     string name = guildUser.Nickname ?? guildUser.Username;
                     msg = message.Attachments.Count > 0
-                        ? string.Format(format, _config.DiscordChatColor, name, $" [Attachments] {msg}")
-                        : string.Format(format, _config.DiscordChatColor, name, msg);
-                    _api.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
-                    _api.Logger.Chat(msg);
+                        ? string.Format(format, Config.DiscordChatColor, name, $" [Attachments] {msg}")
+                        : string.Format(format, Config.DiscordChatColor, name, msg);
+                    Sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                    Sapi.Logger.Chat(msg);
                 }
             }
             return Task.CompletedTask;
@@ -251,7 +251,7 @@ namespace Th3Essentials.Discordbot
 
         internal bool GetDiscordChannel()
         {
-            _discordChannel = _client.GetChannel(_config.ChannelId) as IMessageChannel;
+            _discordChannel = _client.GetChannel(Config.ChannelId) as IMessageChannel;
             return _discordChannel != null;
         }
 
@@ -273,7 +273,7 @@ namespace Th3Essentials.Discordbot
                         }
                         else if (mUser is SocketUnknownUser)
                         {
-                            RestGuildUser rgUser = _client.Rest.GetGuildUserAsync(_config.GuildId, mUser.Id).GetAwaiter().GetResult();
+                            RestGuildUser rgUser = _client.Rest.GetGuildUserAsync(Config.GuildId, mUser.Id).GetAwaiter().GetResult();
                             name = rgUser.Nickname ?? rgUser.Username;
                         }
                         msg = Regex.Replace(msg, $"<@!?{user.Groups[1].Value}>", $"@{name}");
@@ -312,7 +312,7 @@ namespace Th3Essentials.Discordbot
 
         public void ReqestingHelp(IServerPlayer player, int groupId, CmdArgs args)
         {
-            SendServerMessage($"<@&{_config.HelpRoleID}> **{player.PlayerName}**: {args.PopAll()}");
+            SendServerMessage($"<@&{Config.HelpRoleID}> **{player.PlayerName}**: {args.PopAll()}");
             player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-help-response"), EnumChatType.CommandSuccess);
         }
 
@@ -339,23 +339,23 @@ namespace Th3Essentials.Discordbot
         private void PlayerDisconnectAsync(IServerPlayer byPlayer)
         {
             // update player count with allplayer -1 since the disconnecting player is still online while this event fires
-            int players = UpdatePlayers(_api.World.AllOnlinePlayers.Length - 1);
+            int players = UpdatePlayers(Sapi.World.AllOnlinePlayers.Length - 1);
 
-            SendServerMessage(Lang.Get("th3essentials:disconnected", byPlayer.PlayerName, players, _api.Server.Config.MaxClients));
+            SendServerMessage(Lang.Get("th3essentials:disconnected", byPlayer.PlayerName, players, Sapi.Server.Config.MaxClients));
         }
 
         private void PlayerNowPlayingAsync(IServerPlayer byPlayer)
         {
             int players = UpdatePlayers();
 
-            SendServerMessage(Lang.Get("th3essentials:connected", byPlayer.PlayerName, players, _api.Server.Config.MaxClients));
+            SendServerMessage(Lang.Get("th3essentials:connected", byPlayer.PlayerName, players, Sapi.Server.Config.MaxClients));
         }
 
         private int UpdatePlayers(int players = -1)
         {
             if (players < 0)
             {
-                players = _api.World.AllOnlinePlayers.Length;
+                players = Sapi.World.AllOnlinePlayers.Length;
             }
             _ = _client.SetGameAsync($"players: {players}");
             return players;
@@ -368,7 +368,7 @@ namespace Th3Essentials.Discordbot
 
         private async void Shutdown()
         {
-            IsShuttingdown = true;
+            _isShuttingdown = true;
             if (_client != null)
             {
                 if (_discordChannel != null)
@@ -381,28 +381,28 @@ namespace Th3Essentials.Discordbot
 
         public void Dispose()
         {
-            if (IsShuttingdown)
+            if (_isShuttingdown)
                 return;
 
             _client.Ready -= ReadyAsync;
 
-            if (initialized)
+            if (_initialized)
             {
                 _client.MessageReceived -= MessageReceivedAsync;
                 _client.InteractionCreated -= InteractionCreated;
                 _client.ButtonExecuted -= ButtonExecuted;
 
-                _api.Event.PlayerChat -= PlayerChatAsync;
-                _api.Event.PlayerDisconnect -= PlayerDisconnectAsync;
-                _api.Event.PlayerNowPlaying -= PlayerNowPlayingAsync;
-                initialized = false;
+                Sapi.Event.PlayerChat -= PlayerChatAsync;
+                Sapi.Event.PlayerDisconnect -= PlayerDisconnectAsync;
+                Sapi.Event.PlayerNowPlaying -= PlayerNowPlayingAsync;
+                _initialized = false;
             }
 
             _client.Dispose();
 
-            if (harmony != null)
+            if (_harmony != null)
             {
-                harmony.UnpatchAll(harmonyPatchkey);
+                _harmony.UnpatchAll(_harmonyPatchkey);
             }
         }
 

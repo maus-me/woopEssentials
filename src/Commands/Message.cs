@@ -12,11 +12,11 @@ namespace Th3Essentials.Commands
 
         private readonly Dictionary<string, string> LastMsgFrom = new Dictionary<string, string>();
 
-        internal override void Init(ICoreServerAPI api)
+        internal override void Init(ICoreServerAPI sapi)
         {
             if (Th3Essentials.Config.MessageEnabled)
             {
-                _ = api.RegisterCommand("msg", Lang.Get("th3essentials:cd-msg"), Lang.Get("th3essentials:cd-msg-param"),
+                _ = sapi.RegisterCommand("msg", Lang.Get("th3essentials:cd-msg"), Lang.Get("th3essentials:cd-msg-param"),
                     (IServerPlayer player, int groupId, CmdArgs args) =>
                     {
                         string playername = args.PopWord();
@@ -26,7 +26,7 @@ namespace Th3Essentials.Commands
                             msgRaw = msgRaw.Replace("<", "&lt;").Replace(">", "&gt;");
                             string msg = $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>{player.PlayerName} whispers:</strong></font> {msgRaw}";
 
-                            IEnumerable<IServerPlayer> otherPlayers = api.Server.Players.Where((curPlayer) => curPlayer.ConnectionState == EnumClientState.Playing && curPlayer.PlayerName.Equals(playername, StringComparison.InvariantCultureIgnoreCase));
+                            IEnumerable<IServerPlayer> otherPlayers = sapi.Server.Players.Where((curPlayer) => curPlayer.ConnectionState == EnumClientState.Playing && curPlayer.PlayerName.Equals(playername, StringComparison.InvariantCultureIgnoreCase));
                             switch (otherPlayers.LongCount())
                             {
                                 case 0:
@@ -66,7 +66,7 @@ namespace Th3Essentials.Commands
                         }
                     }, Privilege.chat);
 
-                _ = api.RegisterCommand("r", Lang.Get("th3essentials:cd-reply"), Lang.Get("th3essentials:cd-reply-param"),
+                _ = sapi.RegisterCommand("r", Lang.Get("th3essentials:cd-reply"), Lang.Get("th3essentials:cd-reply-param"),
                 (IServerPlayer player, int groupId, CmdArgs args) =>
                 {
                     string msgRaw = args.PopAll();
@@ -76,7 +76,7 @@ namespace Th3Essentials.Commands
                         string msg = $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>{player.PlayerName} whispers:</strong></font> {msgRaw}";
                         if (LastMsgFrom.TryGetValue(player.PlayerUID, out string otherPlayerUID))
                         {
-                            IEnumerable<IServerPlayer> otherPlayers = api.Server.Players.Where((curPlayer) => curPlayer.ConnectionState == EnumClientState.Playing && curPlayer.PlayerUID.Equals(otherPlayerUID));
+                            IEnumerable<IServerPlayer> otherPlayers = sapi.Server.Players.Where((curPlayer) => curPlayer.ConnectionState == EnumClientState.Playing && curPlayer.PlayerUID.Equals(otherPlayerUID));
                             if (otherPlayers.Count() == 1)
                             {
                                 IServerPlayer otherPlayer = otherPlayers.First();

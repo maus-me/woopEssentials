@@ -7,11 +7,11 @@ namespace Th3Essentials.Commands
 {
     internal class Restart : Command
     {
-        internal override void Init(ICoreServerAPI api)
+        internal override void Init(ICoreServerAPI sapi)
         {
             if (Th3Essentials.Config.ShutdownTime != null)
             {
-                _ = api.RegisterCommand("restart", Lang.Get("th3essentials:cd-restart"), string.Empty,
+                _ = sapi.RegisterCommand("restart", Lang.Get("th3essentials:cd-restart"), string.Empty,
                     (IServerPlayer player, int groupId, CmdArgs args) =>
                     {
                         if (Th3Essentials.Config.ShutdownTime != null)

@@ -183,11 +183,11 @@ namespace Th3Essentials.Discordbot
                     {
                         if (component.User is SocketGuildUser guildUser)
                         {
-                            if (HasPermission(guildUser, discord._config.ModerationRoles))
+                            if (HasPermission(guildUser, discord.Config.ModerationRoles))
                             {
                                 Task.Run(() =>
                                 {
-                                    discord._api.Server.ShutDown();
+                                    discord.Sapi.Server.ShutDown();
                                 });
                                 response = "Server is going to shutdown now.";
                             }
@@ -208,7 +208,7 @@ namespace Th3Essentials.Discordbot
                         break;
                     }
             }
-            component.RespondAsync(response, ephemeral: discord._config.UseEphermalCmdResponse);
+            component.RespondAsync(response, ephemeral: discord.Config.UseEphermalCmdResponse);
         }
 
         internal static void HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
@@ -230,7 +230,7 @@ namespace Th3Essentials.Discordbot
                                 }
                             }
                             List<string> names = new List<string>();
-                            foreach (IServerPlayer player in discord._api.World.AllOnlinePlayers)
+                            foreach (IServerPlayer player in discord.Sapi.World.AllOnlinePlayers)
                             {
                                 if (ping == true)
                                 {
@@ -246,7 +246,7 @@ namespace Th3Essentials.Discordbot
                         }
                     case SlashCommands.Date:
                         {
-                            response = discord._api.World.Calendar.PrettyDate();
+                            response = discord.Sapi.World.Calendar.PrettyDate();
                             break;
                         }
                     case SlashCommands.RestartTime:
@@ -271,11 +271,11 @@ namespace Th3Essentials.Discordbot
                                     SocketSlashCommandDataOption option = commandInteraction.Data.Options.First();
                                     if (option.Value is SocketTextChannel channel)
                                     {
-                                        discord._config.ChannelId = channel.Id;
+                                        discord.Config.ChannelId = channel.Id;
                                         if (!discord.GetDiscordChannel())
                                         {
-                                            discord._api.Server.LogError($"Could not find channel with id: {discord._config.ChannelId}");
-                                            response = $"Could not find channel with id: {discord._config.ChannelId}";
+                                            discord.Sapi.Server.LogError($"Could not find channel with id: {discord.Config.ChannelId}");
+                                            response = $"Could not find channel with id: {discord.Config.ChannelId}";
                                         }
                                         else
                                         {
@@ -302,7 +302,7 @@ namespace Th3Essentials.Discordbot
                         {
                             if (commandInteraction.User is SocketGuildUser guildUser)
                             {
-                                if (HasPermission(guildUser, discord._config.ModerationRoles))
+                                if (HasPermission(guildUser, discord.Config.ModerationRoles))
                                 {
                                     string targetPlayer = null;
                                     bool? mode = null;
@@ -341,7 +341,7 @@ namespace Th3Essentials.Discordbot
                                                 }
                                             default:
                                                 {
-                                                    discord._api.Logger.VerboseDebug("Something went wrong getting slc-whitelist option");
+                                                    discord.Sapi.Logger.VerboseDebug("Something went wrong getting slc-whitelist option");
                                                     break;
                                                 }
                                         }
@@ -383,7 +383,7 @@ namespace Th3Essentials.Discordbot
 
                                             GetPlayerUID(discord, targetPlayer, (playerUID) =>
                                               {
-                                                  ((ServerMain)discord._api.World).PlayerDataManager.WhitelistPlayer(targetPlayer, playerUID, name, reason, datetime);
+                                                  ((ServerMain)discord.Sapi.World).PlayerDataManager.WhitelistPlayer(targetPlayer, playerUID, name, reason, datetime);
                                               });
                                             response = $"Player is now whitelisted until {datetime}";
                                         }
@@ -391,7 +391,7 @@ namespace Th3Essentials.Discordbot
                                         {
                                             GetPlayerUID(discord, targetPlayer, (playerUID) =>
                                               {
-                                                  _ = ((ServerMain)discord._api.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, playerUID);
+                                                  _ = ((ServerMain)discord.Sapi.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, playerUID);
                                               });
                                             response = "Player is now removed from whitelist";
                                         }
@@ -416,15 +416,15 @@ namespace Th3Essentials.Discordbot
                         {
                             if (commandInteraction.User is SocketGuildUser guildUser)
                             {
-                                if (HasPermission(guildUser, discord._config.ModerationRoles))
+                                if (HasPermission(guildUser, discord.Config.ModerationRoles))
                                 {
                                     SocketSlashCommandDataOption option = commandInteraction.Data.Options.First();
                                     if (option.Value is string playername)
                                     {
-                                        IServerPlayerData player = discord._api.PlayerData.GetPlayerDataByLastKnownName(playername);
+                                        IServerPlayerData player = discord.Sapi.PlayerData.GetPlayerDataByLastKnownName(playername);
                                         if (player != null)
                                         {
-                                            IPlayer playerWoldData = discord._api.World.PlayerByUid(player.PlayerUID);
+                                            IPlayer playerWoldData = discord.Sapi.World.PlayerByUid(player.PlayerUID);
                                             if (playerWoldData != null && SerializerUtil.Deserialize<bool>(playerWoldData.WorldData.GetModdata("createCharacter"), false))
                                             {
                                                 playerWoldData.WorldData.SetModdata("createCharacter", SerializerUtil.Serialize(false));
@@ -487,11 +487,11 @@ namespace Th3Essentials.Discordbot
                                             {
                                                 if (role != null)
                                                 {
-                                                    if (discord._config == null)
+                                                    if (discord.Config == null)
                                                     {
-                                                        discord._config.ModerationRoles = new List<ulong>();
+                                                        discord.Config.ModerationRoles = new List<ulong>();
                                                     }
-                                                    discord._config.ModerationRoles.Add(role.Id);
+                                                    discord.Config.ModerationRoles.Add(role.Id);
                                                     response = $"Added role: {role.Name}";
                                                 }
                                                 else
@@ -504,9 +504,9 @@ namespace Th3Essentials.Discordbot
                                             {
                                                 if (role != null)
                                                 {
-                                                    if (discord._config.ModerationRoles != null)
+                                                    if (discord.Config.ModerationRoles != null)
                                                     {
-                                                        if (discord._config.ModerationRoles.Remove(role.Id))
+                                                        if (discord.Config.ModerationRoles.Remove(role.Id))
                                                         {
                                                             response = $"Removed role: {role.Name}";
                                                         }
@@ -528,9 +528,9 @@ namespace Th3Essentials.Discordbot
                                             }
                                         case "clear":
                                             {
-                                                if (discord._config.ModerationRoles != null)
+                                                if (discord.Config.ModerationRoles != null)
                                                 {
-                                                    discord._config.ModerationRoles.Clear();
+                                                    discord.Config.ModerationRoles.Clear();
                                                     response = "All moderation roles removed";
                                                 }
                                                 else
@@ -561,7 +561,7 @@ namespace Th3Essentials.Discordbot
                         {
                             if (commandInteraction.User is SocketGuildUser guildUser)
                             {
-                                if (HasPermission(guildUser, discord._config.ModerationRoles))
+                                if (HasPermission(guildUser, discord.Config.ModerationRoles))
                                 {
                                     ComponentBuilder builder = new ComponentBuilder().WithButton("Confirm", "shutdown-confirm");
                                     components = builder.Build();
@@ -589,15 +589,15 @@ namespace Th3Essentials.Discordbot
             {
                 response = "Unknown SlashCommand";
             }
-            _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: discord._config.UseEphermalCmdResponse, components: components);
+            _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: discord.Config.UseEphermalCmdResponse, components: components);
         }
 
         private static void GetPlayerUID(Th3Discord discord, string targetPlayer, Action<string> OnHavePlayerUid)
         {
-            IServerPlayerData player = discord._api.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
+            IServerPlayerData player = discord.Sapi.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
             if (player == null)
             {
-                AuthServerComm.ResolvePlayerName(targetPlayer, (result, playeruid) => discord._api.Event.EnqueueMainThreadTask(() =>
+                AuthServerComm.ResolvePlayerName(targetPlayer, (result, playeruid) => discord.Sapi.Event.EnqueueMainThreadTask(() =>
                 {
                     if (result == EnumServerResponse.Good)
                     {

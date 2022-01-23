@@ -15,42 +15,42 @@ namespace Th3Essentials.Influxdb
 {
     internal class Th3Influxdb
     {
-        private Harmony harmony;
+        private Harmony _harmony;
 
-        public long WriteDataListenerID;
+        private long _writeDataListenerID;
 
         public static Th3Influxdb Instance;
 
-        private readonly string harmonyPatchkey = "Th3Essentials.InfluxDB.Patch";
+        private readonly string _harmonyPatchkey = "Th3Essentials.InfluxDB.Patch";
 
-        private InfluxDBClient client;
+        private InfluxDBClient _client;
 
-        private ICoreServerAPI _api;
+        private ICoreServerAPI _sapi;
 
         private Th3InfluxConfig _config;
 
-        private ServerMain server;
+        private ServerMain _server;
 
-        private Process VSProcess;
+        private Process _vsProcess;
 
-        private List<PointData> data;
+        private List<PointData> _data;
 
-        internal void Init(ICoreServerAPI api)
+        internal void Init(ICoreServerAPI sapi)
         {
-            harmony = new Harmony(harmonyPatchkey);
-            harmony.PatchAll();
-            _api = api;
+            _harmony = new Harmony(_harmonyPatchkey);
+            _harmony.PatchAll();
+            _sapi = sapi;
             _config = Th3Essentials.Config.InfluxConfig;
-            server = (ServerMain)_api.World;
-            VSProcess = Process.GetCurrentProcess();
-            data = new List<PointData>();
+            _server = (ServerMain)_sapi.World;
+            _vsProcess = Process.GetCurrentProcess();
+            _data = new List<PointData>();
 
-            client = new InfluxDBClient(_config.InlfuxDBURL, _config.InlfuxDBToken, _config.InlfuxDBOrg, _config.InlfuxDBBucket, api);
+            _client = new InfluxDBClient(_config.InlfuxDBURL, _config.InlfuxDBToken, _config.InlfuxDBOrg, _config.InlfuxDBBucket, sapi);
 
-            _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
-            _api.Logger.EntryAdded += LogEntryAdded;
+            _sapi.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
+            _sapi.Logger.EntryAdded += LogEntryAdded;
 
-            WriteDataListenerID = _api.Event.RegisterGameTickListener(WriteData, 10000);
+            _writeDataListenerID = _sapi.Event.RegisterGameTickListener(WriteData, 10000);
             Instance = this;
         }
 
@@ -101,66 +101,66 @@ namespace Th3Essentials.Influxdb
 
         private void WriteData(float t1)
         {
-            data = new List<PointData>();
+            _data = new List<PointData>();
 
-            foreach (IServerPlayer player in _api.World.AllOnlinePlayers)
+            foreach (IServerPlayer player in _sapi.World.AllOnlinePlayers)
             {
                 if (player.ConnectionState == EnumClientState.Playing)
                 {
-                    data.Add(PointData.Measurement("online").Tag("player", player.PlayerName).Field("value", player.Ping));
+                    _data.Add(PointData.Measurement("online").Tag("player", player.PlayerName).Field("value", player.Ping));
                 }
             }
 
-            data.Add(PointData.Measurement("clients").Field("value", server.Clients.Count));
+            _data.Add(PointData.Measurement("clients").Field("value", _server.Clients.Count));
 
 
             int activeEntities = 0;
-            foreach (KeyValuePair<long, Entity> loadedEntity in _api.World.LoadedEntities)
+            foreach (KeyValuePair<long, Entity> loadedEntity in _sapi.World.LoadedEntities)
             {
                 if (loadedEntity.Value.State != EnumEntityState.Inactive)
                 {
                     activeEntities++;
                 }
             }
-            data.Add(PointData.Measurement("entitiesActive").Field("value", activeEntities));
+            _data.Add(PointData.Measurement("entitiesActive").Field("value", activeEntities));
 
 
-            StatsCollection statsCollection = server.StatsCollector[GameMath.Mod(server.StatsCollectorIndex - 1, server.StatsCollector.Length)];
+            StatsCollection statsCollection = _server.StatsCollector[GameMath.Mod(_server.StatsCollectorIndex - 1, _server.StatsCollector.Length)];
             if (statsCollection.ticksTotal > 0)
             {
-                data.Add(PointData.Measurement("l2avgticktime").Field("value", (double)statsCollection.tickTimeTotal / statsCollection.ticksTotal));
-                data.Add(PointData.Measurement("l2stickspersec").Field("value", statsCollection.ticksTotal / 2.0));
+                _data.Add(PointData.Measurement("l2avgticktime").Field("value", (double)statsCollection.tickTimeTotal / statsCollection.ticksTotal));
+                _data.Add(PointData.Measurement("l2stickspersec").Field("value", statsCollection.ticksTotal / 2.0));
             }
-            data.Add(PointData.Measurement("packetspresec").Field("value", statsCollection.statTotalPackets / 2.0));
-            data.Add(PointData.Measurement("kilobytespersec").Field("value", decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2, MidpointRounding.AwayFromZero)));
+            _data.Add(PointData.Measurement("packetspresec").Field("value", statsCollection.statTotalPackets / 2.0));
+            _data.Add(PointData.Measurement("kilobytespersec").Field("value", decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2, MidpointRounding.AwayFromZero)));
 
-            VSProcess.Refresh();
-            long memory = VSProcess.PrivateMemorySize64 / 1048576;
-            data.Add(PointData.Measurement("memory").Field("value", memory));
+            _vsProcess.Refresh();
+            long memory = _vsProcess.PrivateMemorySize64 / 1048576;
+            _data.Add(PointData.Measurement("memory").Field("value", memory));
 
-            data.Add(PointData.Measurement("threads").Field("value", server.Serverthreads.Count));
+            _data.Add(PointData.Measurement("threads").Field("value", _server.Serverthreads.Count));
 
-            data.Add(PointData.Measurement("chunks").Field("value", _api.World.LoadedChunkIndices.Count()));
+            _data.Add(PointData.Measurement("chunks").Field("value", _sapi.World.LoadedChunkIndices.Count()));
 
-            data.Add(PointData.Measurement("entities").Field("value", _api.World.LoadedEntities.Count()));
+            _data.Add(PointData.Measurement("entities").Field("value", _sapi.World.LoadedEntities.Count()));
 
-            data.Add(PointData.Measurement("generatingChunks").Field("value", _api.WorldManager.CurrentGeneratingChunkCount));
-            WritePoints(data);
+            _data.Add(PointData.Measurement("generatingChunks").Field("value", _sapi.WorldManager.CurrentGeneratingChunkCount));
+            WritePoints(_data);
         }
 
         private void WritePoints(List<PointData> data)
         {
-            if (!client.Disposed)
+            if (!_client.Disposed)
             {
-                client.WritePoints(data);
+                _client.WritePoints(data);
             }
         }
 
         private void WritePoint(PointData data)
         {
-            if (!client.Disposed)
+            if (!_client.Disposed)
             {
-                client.WritePoint(data);
+                _client.WritePoint(data);
             }
         }
 
@@ -176,18 +176,18 @@ namespace Th3Essentials.Influxdb
 
         public void Dispose()
         {
-            if (client != null)
+            if (_client != null)
             {
-                _api.Logger.EntryAdded -= LogEntryAdded;
+                _sapi.Logger.EntryAdded -= LogEntryAdded;
 
-                _api.Event.UnregisterGameTickListener(WriteDataListenerID);
+                _sapi.Event.UnregisterGameTickListener(_writeDataListenerID);
 
-                client.Dispose();
+                _client.Dispose();
             }
 
-            if (harmony != null)
+            if (_harmony != null)
             {
-                harmony.UnpatchAll(harmonyPatchkey);
+                _harmony.UnpatchAll(_harmonyPatchkey);
             }
         }
 
@@ -239,17 +239,5 @@ namespace Th3Essentials.Influxdb
                 }
             }
         }
-
-        // [HarmonyPatch(typeof(Block), nameof(Block.OnBlockInteractStart))]
-        // public class PatchBlock
-        // {
-        //     public static void Postfix(ref bool __result, IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
-        //     {
-        //         if (!__result)
-        //         {
-        //             (world.Api as IServerAPI).LogVerboseDebug($"{byPlayer.PlayerName} {blockSel.Position}");
-        //         }
-        //     }
-        // }
     }
 }
