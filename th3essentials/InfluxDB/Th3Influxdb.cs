@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using Th3Essentials.Config;
 using Th3Essentials.InfluxDB;
@@ -38,7 +39,10 @@ namespace Th3Essentials.Influxdb
         internal void Init(ICoreServerAPI sapi)
         {
             _harmony = new Harmony(_harmonyPatchkey);
-            _harmony.PatchAll();
+            MethodInfo original = typeof(FrameProfilerUtil).GetMethod(nameof(FrameProfilerUtil.End));
+            HarmonyMethod prefix = new HarmonyMethod(typeof(PatchFrameProfilerUtil).GetMethod(nameof(PatchFrameProfilerUtil.Prefix)));
+            _harmony.Patch(original, prefix: prefix);
+
             _sapi = sapi;
             _config = Th3Essentials.Config.InfluxConfig;
             _server = (ServerMain)_sapi.World;
@@ -191,7 +195,6 @@ namespace Th3Essentials.Influxdb
             }
         }
 
-        [HarmonyPatch(typeof(FrameProfilerUtil), nameof(FrameProfilerUtil.End))]
         public class PatchFrameProfilerUtil
         {
             public static bool Prefix(FrameProfilerUtil __instance, Stopwatch ___stopwatch, ref Dictionary<string, long> ___elems, long ___start)

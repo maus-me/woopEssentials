@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,7 +58,10 @@ namespace Th3Essentials.Discord
         public void Init(ICoreServerAPI sapi)
         {
             _harmony = new Harmony(_harmonyPatchkey);
-            _harmony.PatchAll();
+            MethodInfo original = AccessTools.Method(typeof(SystemTemporalStability), "onTempStormTick");
+            HarmonyMethod postfix = new HarmonyMethod(typeof(PatchSystemTemporalStability).GetMethod(nameof(PatchSystemTemporalStability.Postfix)));
+            _harmony.Patch(original, postfix: postfix);
+
             Config = Th3Essentials.Config.DiscordConfig;
             Sapi = sapi;
 
@@ -411,7 +415,6 @@ namespace Th3Essentials.Discord
             return $"*{msg}*";
         }
 
-        [HarmonyPatch(typeof(SystemTemporalStability), "onTempStormTick")]
         public class PatchSystemTemporalStability
         {
             private static TemporalStormRunTimeData data;
