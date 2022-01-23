@@ -16,6 +16,19 @@
       "console": "integratedTerminal"
     },
     {
+      "name": "Launch Server (Mono) no build",
+      "type": "mono",
+      "request": "launch",
+      "program": "${env:VINTAGE_STORY_SERVER_MODDING}/VintagestoryServer.exe",
+      "args": [
+        "--dataPath",
+        "${env:VINTAGE_STORY_SERVER_DATA_MODDING}",
+        "--addModPath",
+        "${workspaceFolder}/th3essentials/bin/packages/mods"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
       "name": "Launch Client (Mono)",
       "type": "mono",
       "request": "launch",
