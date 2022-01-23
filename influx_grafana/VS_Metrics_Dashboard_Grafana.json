@@ -1131,84 +1131,12 @@
       "type": "logs"
     },
     {
-      "collapsed": false,
-      "datasource": null,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 62
-      },
-      "id": 42,
-      "panels": [],
-      "title": "Players",
-      "type": "row"
-    },
-    {
-      "datasource": null,
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "fillOpacity": 81,
-            "lineWidth": 0
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 63
-      },
-      "id": 38,
-      "options": {
-        "alignValue": "center",
-        "legend": {
-          "displayMode": "hidden",
-          "placement": "bottom"
-        },
-        "mergeValues": true,
-        "rowHeight": 0.19,
-        "showValue": "never",
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "pluginVersion": "8.2.3",
-      "targets": [
-        {
-          "query": "from(bucket: \"serverstats\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"online\")\n  |> filter(fn: (r) => r[\"_field\"] == \"isOn\")\n  |> yield(name: \"last\")",
-          "refId": "A"
-        }
-      ],
-      "title": "Player Log",
-      "type": "state-timeline"
-    },
-    {
       "datasource": null,
       "gridPos": {
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 63
+        "y": 62
       },
       "id": 40,
       "options": {
@@ -1237,7 +1165,154 @@
         "h": 1,
         "w": 24,
         "x": 0,
+        "y": 71
+      },
+      "id": 42,
+      "panels": [],
+      "title": "Players",
+      "type": "row"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 24,
+        "x": 0,
         "y": 72
+      },
+      "id": 45,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "limit": 10,
+          "values": true
+        },
+        "showUnfilled": false,
+        "text": {}
+      },
+      "pluginVersion": "8.2.3",
+      "targets": [
+        {
+          "query": "from(bucket: \"serverstats\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"online\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> count()\n  |> map(fn: (r) => ({ r with\n    _value: r._value * 10\n  }))\n  |> group()\n  |> keep(columns: [\"player\", \"_value\"])\n  |> sort(columns: [\"_value\"], desc: true)",
+          "refId": "A"
+        }
+      ],
+      "title": "Playtime",
+      "type": "bargauge"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 90
+      },
+      "id": 38,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.2.3",
+      "targets": [
+        {
+          "query": "from(bucket: \"serverstats\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"online\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Player Ping",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 99
       },
       "id": 25,
       "panels": [],
@@ -1301,7 +1376,7 @@
         "h": 28,
         "w": 24,
         "x": 0,
-        "y": 73
+        "y": 100
       },
       "id": 12,
       "options": {
@@ -1340,7 +1415,8 @@
               "viz": false
             }
           },
-          "mappings": []
+          "mappings": [],
+          "unit": "ms"
         },
         "overrides": []
       },
@@ -1348,7 +1424,7 @@
         "h": 21,
         "w": 11,
         "x": 0,
-        "y": 101
+        "y": 128
       },
       "id": 36,
       "options": {
@@ -1386,12 +1462,12 @@
     "list": []
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "VS_Metrics",
   "uid": "8VxOeA27k",
-  "version": 30
+  "version": 33
 }

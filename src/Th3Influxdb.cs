@@ -47,8 +47,6 @@ namespace Th3Essentials.Influxdb
 
             client = new InfluxDBClient(_config.InlfuxDBURL, _config.InlfuxDBToken, _config.InlfuxDBOrg, _config.InlfuxDBBucket, api);
 
-            _api.Event.PlayerNowPlaying += PlayerNowPlaying;
-            _api.Event.PlayerDisconnect += PlayerDisconnect;
             _api.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
             _api.Logger.EntryAdded += LogEntryAdded;
 
@@ -104,7 +102,17 @@ namespace Th3Essentials.Influxdb
         private void WriteData(float t1)
         {
             data = new List<PointData>();
+
+            foreach (IServerPlayer player in _api.World.AllOnlinePlayers)
+            {
+                if (player.ConnectionState == EnumClientState.Playing)
+                {
+                    data.Add(PointData.Measurement("online").Tag("player", player.PlayerName).Field("value", player.Ping));
+                }
+            }
+
             data.Add(PointData.Measurement("clients").Field("value", server.Clients.Count));
+
 
             int activeEntities = 0;
             foreach (KeyValuePair<long, Entity> loadedEntity in _api.World.LoadedEntities)
@@ -156,19 +164,9 @@ namespace Th3Essentials.Influxdb
             }
         }
 
-        private void PlayerDisconnect(IServerPlayer byPlayer)
-        {
-            WritePoint(PointData.Measurement("online").Tag("player", byPlayer.PlayerName).Field("isOn", false));
-        }
-
         internal void PlayerDied(IServerPlayer byPlayer, string msg)
         {
             WritePoint(PointData.Measurement("deaths").Tag("player", byPlayer.PlayerName).Field("value", msg));
-        }
-
-        private void PlayerNowPlaying(IServerPlayer byPlayer)
-        {
-            WritePoint(PointData.Measurement("online").Tag("player", byPlayer.PlayerName).Field("isOn", true));
         }
 
         private void Shutdown()
@@ -180,8 +178,6 @@ namespace Th3Essentials.Influxdb
         {
             if (client != null)
             {
-                _api.Event.PlayerNowPlaying -= PlayerNowPlaying;
-                _api.Event.PlayerDisconnect -= PlayerDisconnect;
                 _api.Logger.EntryAdded -= LogEntryAdded;
 
                 _api.Event.UnregisterGameTickListener(WriteDataListenerID);

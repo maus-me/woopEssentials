@@ -21,7 +21,7 @@ namespace InfluxDB
         public InfluxDBClient(string inlfuxDBURL, string inlfuxDBToken, string inlfuxDBOrg, string inlfuxDBBucket, ICoreServerAPI api)
         {
             this.api = api;
-            WriteEndpoint = $"write?org={inlfuxDBOrg}&bucket={inlfuxDBBucket}&precision=ms";
+            WriteEndpoint = $"write?org={inlfuxDBOrg}&bucket={inlfuxDBBucket}&precision=s";
             HttpClient = new HttpClient
             {
                 BaseAddress = new Uri($"{inlfuxDBURL}/api/v2/")
