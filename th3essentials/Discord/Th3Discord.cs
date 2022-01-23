@@ -438,7 +438,7 @@ namespace Th3Essentials.Discord
                 double activeDaysLeft = data.stormActiveTotalDays - api.World.Calendar.TotalDays;
 
                 // Approaching
-                if (nextStormDaysLeft > 0.03 && nextStormDaysLeft < 0.35 && StormState == 0)
+                if (nextStormDaysLeft > 0.03 && nextStormDaysLeft < 0.35 && StormState != 1)
                 {
                     StormState = 1;
                     int i = 0;
@@ -459,7 +459,7 @@ namespace Th3Essentials.Discord
                     Instance.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + TemporalStorm[i]);
                 }
                 // Imminent
-                else if (nextStormDaysLeft <= 0.02 && StormState == 1)
+                else if (nextStormDaysLeft > 0 && nextStormDaysLeft <= 0.02 && StormState != 2)
                 {
                     StormState = 2;
                     int i = 0;
@@ -480,9 +480,9 @@ namespace Th3Essentials.Discord
                     Instance.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + TemporalStorm[i]);
                 }
                 // Waning
-                else if (nextStormDaysLeft < 0 && activeDaysLeft < 0.02 && StormState == 2)
+                else if (nextStormDaysLeft < 0 && activeDaysLeft < 0.02 && StormState != 3)
                 {
-                    StormState = 0;
+                    StormState = 3;
                     Instance.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + TemporalStorm[6]);
                 }
             }
