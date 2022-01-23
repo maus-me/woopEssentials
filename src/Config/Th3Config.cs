@@ -39,6 +39,8 @@ namespace Th3Essentials.Config
 
         public bool ShowRole = false;
 
+        public string RoleFormat = "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}";
+
         public void Init()
         {
             StringBuilder sb = new StringBuilder();
@@ -109,6 +111,7 @@ namespace Th3Essentials.Config
             MessageEnabled = configTemp.MessageEnabled;
 
             ShowRole = configTemp.ShowRole;
+            RoleFormat = configTemp.RoleFormat;
 
             if (configTemp.DiscordConfig != null)
             {

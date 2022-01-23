@@ -332,7 +332,7 @@ namespace Th3Essentials.Discordbot
 
             if (Th3Essentials.Config.ShowRole && byPlayer.Role.PrivilegeLevel > 0)
             {
-                message = string.Format("<font color=\"{0}\"><strong>[{1}]</strong></font> {2}", Th3Essentials.ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
+                message = string.Format(Th3Essentials.Config.RoleFormat, Th3Essentials.ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
             }
         }
 

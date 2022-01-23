@@ -129,7 +129,7 @@ namespace Th3Essentials
 
         private void PlayerChatAsync(IServerPlayer byPlayer, int channelId, ref string message, ref string data, BoolRef consumed)
         {
-            message = string.Format("<font color=\"{0}\"><strong>[{1}]</strong></font> {2}", ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
+            message = string.Format(Config.RoleFormat, ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
         }
 
         private void CheckRestart(float t1)
