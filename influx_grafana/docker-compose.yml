@@ -1,18 +1,20 @@
 version: '3.3'
 services:
   influxdb:
-    container_name: influxdb
+    container_name: th3essentials-influxdb
     image: 'influxdb:2.1.1'
     ports:
-        - '8086:8086'
+        - ${INFLUXDB_PORT}:8086
     volumes:
-        - '/srv/docker/influxdb/data:/var/lib/influxdb2'
-        - '/srv/docker/influxdb/config:/etc/influxdb2'
+        - ${INFLUXDB_DATA}:/var/lib/influxdb2
+        - ${INFLUXDB_CONFIG}:/etc/influxdb2
   grafana:
-    container_name: grafana
+    container_name: th3essentials-grafana
     image: grafana/grafana:8.3.2
     ports:
-      - 3000:3000
+      - ${GRAFANA_PORT}:3000
+    volumes:
+      - ${GRAFANA_DATA}:/var/lib/grafana
 
 # if you wanna use it with pterodactyl uncomment to connect it to the pterodactyl network (so it can push data to influx from the vs server)
 # networks:
