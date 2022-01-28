@@ -487,7 +487,7 @@ namespace Th3Essentials.Discord
                                             {
                                                 if (role != null)
                                                 {
-                                                    if (discord.Config == null)
+                                                    if (discord.Config.ModerationRoles == null)
                                                     {
                                                         discord.Config.ModerationRoles = new List<ulong>();
                                                     }
