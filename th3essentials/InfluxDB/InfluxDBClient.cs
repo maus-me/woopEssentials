@@ -9,8 +9,6 @@ namespace Th3Essentials.InfluxDB
 {
     public class InfluxDBClient
     {
-        public bool Disposed;
-
         private readonly ICoreServerAPI _api;
 
         private readonly HttpClient _httpClient;
@@ -38,7 +36,7 @@ namespace Th3Essentials.InfluxDB
         {
             try
             {
-                Task.Factory.StartNew(async () =>
+                Task.Run(async () =>
                 {
                     await _httpClient.PostAsync(_writeEndpoint, new StringContent(point.ToLineProtocol(), Encoding.UTF8, "application/json"));
                 });
@@ -53,7 +51,7 @@ namespace Th3Essentials.InfluxDB
         {
             try
             {
-                Task.Factory.StartNew(async () =>
+                Task.Run(async () =>
                 {
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < points.Count; i++)
@@ -71,7 +69,7 @@ namespace Th3Essentials.InfluxDB
             }
             catch (Exception e)
             {
-                _api.Logger.Warning($"[InfluxDB] {e.Message}");
+                _api.Logger.Warning($"[InfluxDB] {e}");
             }
         }
     }

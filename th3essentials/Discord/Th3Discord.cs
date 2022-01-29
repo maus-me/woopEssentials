@@ -38,8 +38,6 @@ namespace Th3Essentials.Discord
 
         public static string[] TemporalStorm;
 
-        private bool _isShuttingdown;
-
         public Th3Discord()
         {
             _initialized = false;
@@ -79,7 +77,6 @@ namespace Th3Essentials.Discord
             // start discord bot
             BotMainAsync();
             Instance = this;
-            _isShuttingdown = false;
         }
 
         private Task DiscordLog(LogMessage log)
@@ -116,9 +113,6 @@ namespace Th3Essentials.Discord
         {
             await _client.LoginAsync(TokenType.Bot, Config.Token);
             await _client.StartAsync();
-
-            // keep the discord bot thread running
-            await Task.Delay(Timeout.Infinite);
         }
 
         private Task ReadyAsync()
@@ -166,7 +160,7 @@ namespace Th3Essentials.Discord
             catch (Exception exception)
             {
                 Sapi.Logger.Error("Slashcommand create:" + exception.ToString());
-                Sapi.Logger.Error("Maybe you forgot to add the applications.commands for your bot");
+                Sapi.Logger.Error("Maybe you forgot to add the applications.commands scope for your bot");
             }
         }
 
@@ -187,7 +181,7 @@ namespace Th3Essentials.Discord
             catch (Exception exception)
             {
                 Sapi.Logger.Error("Slashcommand delete:" + exception.ToString());
-                Sapi.Logger.Error("Maybe you forgot to add the applications.commands for your bot");
+                Sapi.Logger.Error("Maybe you forgot to add the applications.commands scope for your bot");
             }
         }
 
@@ -215,10 +209,7 @@ namespace Th3Essentials.Discord
 
         internal void SendServerMessage(string msg)
         {
-            if (_discordChannel != null)
-            {
-                _ = _discordChannel.SendMessageAsync(ServerMsg(msg));
-            }
+            _ = _discordChannel?.SendMessageAsync(ServerMsg(msg));
         }
 
         private Task MessageReceivedAsync(SocketMessage messageParam)
@@ -395,26 +386,20 @@ namespace Th3Essentials.Discord
 
         private async void Shutdown()
         {
-            _isShuttingdown = true;
             if (_client != null)
             {
-                if (_discordChannel != null)
-                {
-                    _ = await _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:shutdown")));
-                }
-                Dispose();
+                _ = await _discordChannel?.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:shutdown")));
             }
+
         }
 
         public void Dispose()
         {
-            if (_isShuttingdown)
-                return;
-
             _client.Ready -= ReadyAsync;
 
             if (_initialized)
             {
+                _initialized = false;
                 _client.MessageReceived -= MessageReceivedAsync;
                 _client.InteractionCreated -= InteractionCreated;
                 _client.ButtonExecuted -= ButtonExecuted;
@@ -422,15 +407,11 @@ namespace Th3Essentials.Discord
                 Sapi.Event.PlayerChat -= PlayerChatAsync;
                 Sapi.Event.PlayerDisconnect -= PlayerDisconnectAsync;
                 Sapi.Event.PlayerNowPlaying -= PlayerNowPlayingAsync;
-                _initialized = false;
             }
+            _client.StopAsync();
+            _client.LogoutAsync();
 
-            _client.Dispose();
-
-            if (_harmony != null)
-            {
-                _harmony.UnpatchAll(_harmonyPatchkey);
-            }
+            _harmony?.UnpatchAll(_harmonyPatchkey);
         }
 
         internal string ServerMsg(string msg)

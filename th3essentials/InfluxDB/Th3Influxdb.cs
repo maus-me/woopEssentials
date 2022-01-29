@@ -47,11 +47,9 @@ namespace Th3Essentials.Influxdb
             _config = Th3Essentials.Config.InfluxConfig;
             _server = (ServerMain)_sapi.World;
             _vsProcess = Process.GetCurrentProcess();
-            _data = new List<PointData>();
 
             _client = new InfluxDBClient(_config.InlfuxDBURL, _config.InlfuxDBToken, _config.InlfuxDBOrg, _config.InlfuxDBBucket, sapi);
 
-            _sapi.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
             _sapi.Logger.EntryAdded += LogEntryAdded;
 
             _writeDataListenerID = _sapi.Event.RegisterGameTickListener(WriteData, 10000);
@@ -154,28 +152,17 @@ namespace Th3Essentials.Influxdb
 
         private void WritePoints(List<PointData> data)
         {
-            if (!_client.Disposed)
-            {
-                _client.WritePoints(data);
-            }
+            _client?.WritePoints(data);
         }
 
         private void WritePoint(PointData data)
         {
-            if (!_client.Disposed)
-            {
-                _client.WritePoint(data);
-            }
+            _client?.WritePoint(data);
         }
 
         internal void PlayerDied(IServerPlayer byPlayer, string msg)
         {
             WritePoint(PointData.Measurement("deaths").Tag("player", byPlayer.PlayerName).Field("value", msg));
-        }
-
-        private void Shutdown()
-        {
-            Dispose();
         }
 
         public void Dispose()
@@ -189,10 +176,7 @@ namespace Th3Essentials.Influxdb
                 _client.Dispose();
             }
 
-            if (_harmony != null)
-            {
-                _harmony.UnpatchAll(_harmonyPatchkey);
-            }
+            _harmony?.UnpatchAll(_harmonyPatchkey);
         }
 
         public class PatchFrameProfilerUtil
@@ -221,9 +205,9 @@ namespace Th3Essentials.Influxdb
                         for (int i = 0; i < Math.Min(myList.Count, 8); i++)
                         {
                             KeyValuePair<string, long> val = myList[i];
-                            if (val.Value > Instance._config.InlfuxDBLogtickThreshold)
+                            if (val.Value > Instance?._config.InlfuxDBLogtickThreshold)
                             {
-                                Instance.WritePoint(PointData.Measurement("logticks").Tag("system", val.Key).Field("value", (double)val.Value / Stopwatch.Frequency * 1000.0));
+                                Instance?.WritePoint(PointData.Measurement("logticks").Tag("system", val.Key).Field("value", (double)val.Value / Stopwatch.Frequency * 1000.0));
                             }
                         }
                     }
@@ -231,7 +215,7 @@ namespace Th3Essentials.Influxdb
                 long ticks = ___stopwatch.ElapsedTicks;
                 ___elems["PrefixEnd"] = ticks - ___start;
                 ___start = ticks;
-                if (Instance._config.InlfuxDBOverwriteLogTicks)
+                if ((bool)(Instance?._config.InlfuxDBOverwriteLogTicks))
                 {
                     ___elems = new Dictionary<string, long>();
                     return false;

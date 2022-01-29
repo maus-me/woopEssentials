@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using Th3Essentials.Commands;
@@ -82,11 +82,10 @@ namespace Th3Essentials
             new Homesystem().Init(_sapi);
             new Starterkitsystem().Init(_sapi);
             new Announcementsystem().Init(_sapi);
-            _th3Discord = new Th3Discord();
-            _th3Influx = new Th3Influxdb();
 
             if (Config.IsDiscordConfigured())
             {
+                _th3Discord = new Th3Discord();
                 _th3Discord.Init(_sapi);
             }
             else
@@ -101,6 +100,7 @@ namespace Th3Essentials
 
             if (Config.IsInlfuxDBConfigured())
             {
+                _th3Influx = new Th3Influxdb();
                 _th3Influx.Init(_sapi);
             }
 
@@ -148,7 +148,7 @@ namespace Th3Essentials
                     {
                         string msg = TimeInMinutes == 1 ? Lang.Get("th3essentials:restart-in-min") : Lang.Get("th3essentials:restart-in-mins", TimeInMinutes);
                         _sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
-                        _th3Discord.SendServerMessage(msg);
+                        _th3Discord?.SendServerMessage(msg);
                         _sapi.Logger.Debug(msg);
                     }
                 }
@@ -252,11 +252,8 @@ namespace Th3Essentials
                 msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
             }
 
-            if (Th3Influxdb.Instance != null)
-            {
-                Th3Influxdb.Instance.PlayerDied(byPlayer, msg);
-            }
-            _th3Discord.SendServerMessage(msg);
+            Th3Influxdb.Instance?.PlayerDied(byPlayer, msg);
+            _th3Discord?.SendServerMessage(msg);
         }
 
         private void GameWorldSave()
@@ -286,8 +283,8 @@ namespace Th3Essentials
 
         public override void Dispose()
         {
-            _th3Influx.Dispose();
-            _th3Discord.Dispose();
+            _th3Influx?.Dispose();
+            _th3Discord?.Dispose();
             base.Dispose();
         }
 
