@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Rest;
@@ -83,9 +82,33 @@ namespace Th3Essentials.Discord
             _isShuttingdown = false;
         }
 
-        private Task DiscordLog(LogMessage arg)
+        private Task DiscordLog(LogMessage log)
         {
-            Sapi.Logger.VerboseDebug($"[Discord] {arg.Message}");
+            switch (log.Severity)
+            {
+                case LogSeverity.Critical:
+                    {
+                        Sapi.Logger.Fatal($"[Discord] {log.ToString(prependTimestamp: false)}");
+                        break;
+                    }
+                case LogSeverity.Error:
+                    {
+                        Sapi.Logger.Error($"[Discord] {log.ToString(prependTimestamp: false)}");
+                        break;
+                    }
+                case LogSeverity.Warning:
+                    {
+                        Sapi.Logger.Warning($"[Discord] {log.ToString(prependTimestamp: false)}");
+                        break;
+                    }
+                case LogSeverity.Info:
+                case LogSeverity.Verbose:
+                case LogSeverity.Debug:
+                    {
+                        Sapi.Logger.Debug($"[Discord] {log.ToString(prependTimestamp: false)}");
+                        break;
+                    }
+            }
             return Task.CompletedTask;
         }
 
