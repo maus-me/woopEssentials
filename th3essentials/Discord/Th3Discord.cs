@@ -65,7 +65,7 @@ namespace Th3Essentials.Discord
             // create Discord client and set event methodes
             DiscordSocketConfig config = new DiscordSocketConfig()
             {
-                GatewayIntents = GatewayIntents.AllUnprivileged
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildIntegrations | GatewayIntents.GuildMessages
             };
             _client = new DiscordSocketClient(config);
 
@@ -388,9 +388,13 @@ namespace Th3Essentials.Discord
         {
             if (_client != null)
             {
-                _ = await _discordChannel?.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:shutdown")));
+                if (_discordChannel != null)
+                {
+                    _ = await _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:shutdown")));
+                }
+                await _client.StopAsync();
+                await _client.LogoutAsync();
             }
-
         }
 
         public void Dispose()
@@ -408,8 +412,6 @@ namespace Th3Essentials.Discord
                 Sapi.Event.PlayerDisconnect -= PlayerDisconnectAsync;
                 Sapi.Event.PlayerNowPlaying -= PlayerNowPlayingAsync;
             }
-            _client.StopAsync();
-            _client.LogoutAsync();
 
             _harmony?.UnpatchAll(_harmonyPatchkey);
         }
