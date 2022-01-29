@@ -22,8 +22,9 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - /msg playername message - to send private messages ingame (customizable color) [on/off]
 - /r message - to send private messages ingame to last messaging player (enabled if /msg is on)
 - Server Metrics, logs metrics (/stats and more) to InfluxDB and visualize it with influxDB or **grafana**
-- /requesthelp [message] , pings the `HelpRoleID` in Discord with the message
+- /requesthelp [message] , pings the `HelpRoleID` in Discord with the message [on/off]
 - show role information infront of ingame chatname [on/off]
+- /admin ingame/discord command , lists all roles specified by "AdminRoles" [on/off]
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -81,6 +82,9 @@ Download the mod and put it into your mods folder. Start your server once to gen
   - /whitelist - Change the whitelist status of a player (also the time duration is customizable, default 50 years as with the ingame command) [Admin or Configured Role]
   - /allowcharselonce - Allows the player to re-select their class after doing so already [Admin or Configured Role]
   - /shutdown - Will shutdown the server (if configured server will restart see scripts at Shutdownsystem) [Admin or Configured Role]
+  - /admins - lists all admins speciefied by "AdminRoles" in Th3Condfig.json
+  - /serverinfo - prints game and mod verions
+  - /stats Print the output of the ingame /stats command [Admin or Configured Role]
 
 - Shutdownsystem
 
@@ -281,6 +285,9 @@ Make sure to persist your influxdb data with docker volumes/mounts.
   // sample will show for role Admin and the role will be colerd according to the value in serverconfig.json
   // [Admin] Th3Dilli: message
   // info since fonts are different on windows and linux this may look different depending on the operating system
-  "RoleFormat": "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}"
+  "RoleFormat": "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}",
+  // roles from serverconfig.json to be liste with the /admins ingame and discord command (enter the "Code" of a role for example Admin has Code admin or Creative Moderator has Code crmod)
+  // ["admin","crmod"]
+  "AdminRoles": null
 }
 ```

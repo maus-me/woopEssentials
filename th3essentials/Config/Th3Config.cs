@@ -40,6 +40,8 @@ namespace Th3Essentials.Config
 
         public string RoleFormat = "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}";
 
+        public List<string> AdminRoles = null;
+
         public void Init()
         {
             StringBuilder sb = new StringBuilder();
@@ -111,6 +113,7 @@ namespace Th3Essentials.Config
 
             ShowRole = configTemp.ShowRole;
             RoleFormat = configTemp.RoleFormat;
+            AdminRoles = configTemp.AdminRoles;
 
             if (configTemp.DiscordConfig != null)
             {

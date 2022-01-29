@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
+using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.Server;
@@ -14,7 +17,7 @@ namespace Th3Essentials.Discord
 {
     public enum SlashCommands
     {
-        Players, Date, RestartTime, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions, Shutdown
+        Players, Date, RestartTime, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions, Shutdown, Serverinfo, Stats, Admins
     }
 
     public class Th3SlashCommands
@@ -172,6 +175,27 @@ namespace Th3Essentials.Discord
                 Description = Lang.Get("th3essentials:slc-shutdown")
             };
             _ = _client.Rest.CreateGuildCommand(shutdown.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+
+            SlashCommandBuilder serverinfo = new SlashCommandBuilder
+            {
+                Name = SlashCommands.Serverinfo.ToString().ToLower(),
+                Description = Lang.Get("th3essentials:slc-serverinfo")
+            };
+            _ = _client.Rest.CreateGuildCommand(serverinfo.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+
+            SlashCommandBuilder stats = new SlashCommandBuilder
+            {
+                Name = SlashCommands.Stats.ToString().ToLower(),
+                Description = Lang.Get("th3essentials:slc-stats")
+            };
+            _ = _client.Rest.CreateGuildCommand(stats.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+
+            SlashCommandBuilder admins = new SlashCommandBuilder
+            {
+                Name = SlashCommands.Admins.ToString().ToLower(),
+                Description = Lang.Get("th3essentials:slc-admins")
+            };
+            _ = _client.Rest.CreateGuildCommand(admins.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
         }
 
         internal static void HandleButtonExecuted(Th3Discord discord, SocketMessageComponent component)
@@ -576,6 +600,90 @@ namespace Th3Essentials.Discord
                             {
                                 response = "Something went wrong: User was not a GuildUser";
                             }
+                            break;
+                        }
+                    case SlashCommands.Serverinfo:
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            sb.Append("Game version: ");
+                            sb.AppendLine(GameVersion.OverallVersion);
+                            sb.Append("Mods:");
+                            foreach (Mod mod in discord.Sapi.ModLoader.Mods)
+                            {
+                                sb.AppendLine();
+                                sb.Append($"  **{mod.Info.Name}** @ {mod.Info.Version} | {mod.Info.Side}");
+                            }
+                            response = sb.ToString();
+                            break;
+                        }
+                    case SlashCommands.Stats:
+                        {
+                            if (commandInteraction.User is SocketGuildUser guildUser)
+                            {
+                                if (HasPermission(guildUser, discord.Config.ModerationRoles))
+                                {
+                                    StringBuilder stringBuilder = new StringBuilder();
+                                    ServerMain server = (ServerMain)discord.Sapi.World;
+                                    long upSeconds = server.totalUpTime.ElapsedMilliseconds / 1000;
+                                    int upMinutes = 0;
+                                    int upHours = 0;
+                                    int upDays = 0;
+                                    if (upSeconds > 60)
+                                    {
+                                        upMinutes = (int)(upSeconds / 60);
+                                        upSeconds -= 60 * upMinutes;
+                                    }
+                                    if (upMinutes > 60)
+                                    {
+                                        upHours = upMinutes / 60;
+                                        upMinutes -= 60 * upHours;
+                                    }
+                                    if (upHours > 24)
+                                    {
+                                        upDays = upHours / 24;
+                                        upHours -= 24 * upDays;
+                                    }
+                                    stringBuilder.Append("Version: ");
+                                    stringBuilder.AppendLine(GameVersion.OverallVersion);
+                                    stringBuilder.AppendLine($"Uptime: {upDays} days, {upHours} hours, {upMinutes} minutes, {upSeconds} seconds");
+                                    stringBuilder.AppendLine($"Players online: {server.Clients.Count} / {server.Config.MaxClients}");
+
+                                    int activeEntities = 0;
+                                    foreach (KeyValuePair<long, Entity> loadedEntity in server.LoadedEntities)
+                                    {
+                                        if (loadedEntity.Value.State != EnumEntityState.Inactive)
+                                        {
+                                            activeEntities++;
+                                        }
+                                    }
+                                    stringBuilder.AppendLine($"Memory usage: {decimal.Round(GC.GetTotalMemory(forceFullCollection: false) / 1048576, 2)} Mb");
+                                    StatsCollection statsCollection = server.StatsCollector[GameMath.Mod(server.StatsCollectorIndex - 1, server.StatsCollector.Length)];
+
+                                    if (statsCollection.ticksTotal > 0)
+                                    {
+                                        stringBuilder.AppendLine($"Last 2s Average Tick Time: {decimal.Round(statsCollection.tickTimeTotal / (decimal)statsCollection.ticksTotal, 2)} ms");
+                                        stringBuilder.AppendLine($"Last 2s Ticks/s: {decimal.Round((decimal)(statsCollection.ticksTotal / 2.0), 2)}");
+                                        stringBuilder.AppendLine($"Last 10 ticks (ms): {string.Join(", ", statsCollection.tickTimes)}");
+                                    }
+                                    stringBuilder.AppendLine($"Loaded chunks: {discord.Sapi.World.LoadedChunkIndices.Count()}");
+                                    stringBuilder.AppendLine($"Loaded entities: {server.LoadedEntities.Count} ({activeEntities} active)");
+                                    stringBuilder.Append($"Network: {decimal.Round((decimal)(statsCollection.statTotalPackets / 2.0), 2)} Packets/s or {decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2, MidpointRounding.AwayFromZero) } Kb/s");
+                                    response = stringBuilder.ToString();
+                                }
+                                else
+                                {
+                                    response = "You do not have permissions to do that";
+                                }
+                            }
+                            else
+                            {
+                                response = "Something went wrong: User was not a GuildUser";
+                            }
+                            break;
+                        }
+                    case SlashCommands.Admins:
+                        {
+                            response = Th3Util.GetAdmins(discord.Sapi);
                             break;
                         }
                     default:

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using Th3Essentials.Commands;
@@ -107,6 +107,15 @@ namespace Th3Essentials
             if (Config.IsInlfuxDBConfigured() || Config.IsDiscordConfigured())
             {
                 _sapi.Event.PlayerDeath += PlayerDeathAsync;
+            }
+
+            if (Config.AdminRoles?.Count > 0)
+            {
+                _ = _sapi.RegisterCommand("admins", Lang.Get("th3essentials:slc-admins"), string.Empty,
+                 (IServerPlayer player, int groupId, CmdArgs args) =>
+                 {
+                     player.SendMessage(GlobalConstants.GeneralChatGroup, Th3Util.GetAdmins(_sapi), EnumChatType.CommandSuccess);
+                 }, Privilege.chat);
             }
 
             _ = _sapi.RegisterCommand("reloadth3config", Lang.Get("th3essentials:cd-reloadConfig"), string.Empty,
