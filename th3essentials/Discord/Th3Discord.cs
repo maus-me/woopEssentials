@@ -54,11 +54,6 @@ namespace Th3Essentials.Discord
 
         public void Init(ICoreServerAPI sapi)
         {
-            _harmony = new Harmony(_harmonyPatchkey);
-            MethodInfo original = AccessTools.Method(typeof(SystemTemporalStability), "onTempStormTick");
-            HarmonyMethod postfix = new HarmonyMethod(typeof(PatchSystemTemporalStability).GetMethod(nameof(PatchSystemTemporalStability.Postfix)));
-            _harmony.Patch(original, postfix: postfix);
-
             Config = Th3Essentials.Config.DiscordConfig;
             Sapi = sapi;
 
@@ -73,6 +68,14 @@ namespace Th3Essentials.Discord
             _client.Log += DiscordLog;
 
             Sapi.Server.LogVerboseDebug("Discord started");
+
+            if (Sapi.World.Config.GetBool("temporalStability", true))
+            {
+                _harmony = new Harmony(_harmonyPatchkey);
+                MethodInfo original = AccessTools.Method(typeof(SystemTemporalStability), "onTempStormTick");
+                HarmonyMethod postfix = new HarmonyMethod(typeof(PatchSystemTemporalStability).GetMethod(nameof(PatchSystemTemporalStability.Postfix)));
+                _harmony.Patch(original, postfix: postfix);
+            }
 
             // start discord bot
             BotMainAsync();
@@ -489,7 +492,7 @@ namespace Th3Essentials.Discord
                     Instance.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + TemporalStorm[i]);
                 }
                 // Waning
-                else if (nextStormDaysLeft < 0 && activeDaysLeft < 0.02 && StormState != 3)
+                else if (nextStormDaysLeft < 0 && activeDaysLeft > 0 && activeDaysLeft < 0.02 && StormState != 3)
                 {
                     StormState = 3;
                     Instance.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + TemporalStorm[6]);
