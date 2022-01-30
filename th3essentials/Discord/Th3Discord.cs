@@ -360,24 +360,21 @@ namespace Th3Essentials.Discord
         private void PlayerDisconnectAsync(IServerPlayer byPlayer)
         {
             // update player count with allplayer -1 since the disconnecting player is still online while this event fires
-            int players = UpdatePlayers(Sapi.World.AllOnlinePlayers.Length - 1);
+            int players = UpdatePlayers(-1);
 
             SendServerMessage(Lang.Get("th3essentials:disconnected", byPlayer.PlayerName, players, Sapi.Server.Config.MaxClients));
         }
 
         private void PlayerNowPlayingAsync(IServerPlayer byPlayer)
         {
-            int players = UpdatePlayers();
+            int players = UpdatePlayers(1);
 
             SendServerMessage(Lang.Get("th3essentials:connected", byPlayer.PlayerName, players, Sapi.Server.Config.MaxClients));
         }
 
-        private int UpdatePlayers(int players = -1)
+        private int UpdatePlayers(int players = 0)
         {
-            if (players < 0)
-            {
-                players = Sapi.World.AllOnlinePlayers.Length;
-            }
+            players += Sapi.Server.Players.Count(pl => pl.ConnectionState == EnumClientState.Playing);
             _ = _client.SetGameAsync($"players: {players}");
             return players;
         }
