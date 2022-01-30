@@ -88,12 +88,11 @@ namespace Th3Essentials.Influxdb
                         break;
                     }
                 case EnumLogType.Error:
+                case EnumLogType.Fatal:
                     {
                         WritePoint(PointData.Measurement("errors").Field("value", string.Format(message, args)));
                         break;
                     }
-                case EnumLogType.Fatal:
-                    break;
                 case EnumLogType.Audit:
                     break;
                 default:
