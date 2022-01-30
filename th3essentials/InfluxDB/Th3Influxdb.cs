@@ -94,7 +94,10 @@ namespace Th3Essentials.Influxdb
                         break;
                     }
                 case EnumLogType.Audit:
-                    break;
+                    {
+                        WritePoint(PointData.Measurement("audit").Field("value", string.Format(message, args)));
+                        break;
+                    }
                 default:
                     break;
             }
