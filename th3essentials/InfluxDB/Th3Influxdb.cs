@@ -109,7 +109,7 @@ namespace Th3Essentials.Influxdb
             {
                 if (player.ConnectionState == EnumClientState.Playing)
                 {
-                    _data.Add(PointData.Measurement("online").Tag("player", player.PlayerName).Field("value", player.Ping));
+                    _data.Add(PointData.Measurement("online").Tag("player", player.PlayerName.ToLower()).Field("value", player.Ping));
                 }
             }
 
@@ -162,7 +162,7 @@ namespace Th3Essentials.Influxdb
 
         internal void PlayerDied(IServerPlayer byPlayer, string msg)
         {
-            WritePoint(PointData.Measurement("deaths").Tag("player", byPlayer.PlayerName).Field("value", msg));
+            WritePoint(PointData.Measurement("deaths").Tag("player", byPlayer.PlayerName.ToLower()).Field("value", msg));
         }
 
         public void Dispose()
