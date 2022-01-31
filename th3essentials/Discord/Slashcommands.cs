@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
@@ -235,7 +238,7 @@ namespace Th3Essentials.Discord
             component.RespondAsync(response, ephemeral: discord.Config.UseEphermalCmdResponse);
         }
 
-        internal static void HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+        internal async static void HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
         {
             string response;
             MessageComponent components = null;
@@ -404,20 +407,29 @@ namespace Th3Essentials.Discord
                                                     }
                                             }
                                             string name = guildUser.Nickname ?? guildUser.Username;
-
-                                            GetPlayerUID(discord, targetPlayer, (playerUID) =>
-                                              {
-                                                  ((ServerMain)discord.Sapi.World).PlayerDataManager.WhitelistPlayer(targetPlayer, playerUID, name, reason, datetime);
-                                              });
-                                            response = $"Player is now whitelisted until {datetime}";
+                                            string playerUID = await GetPlayerUID(discord, targetPlayer);
+                                            if (playerUID != null)
+                                            {
+                                                ((ServerMain)discord.Sapi.World).PlayerDataManager.WhitelistPlayer(targetPlayer, playerUID, name, reason, datetime);
+                                                response = $"{targetPlayer} is now whitelisted until {datetime}";
+                                            }
+                                            else
+                                            {
+                                                response = $"Could not find player with name: {targetPlayer}";
+                                            }
                                         }
                                         else
                                         {
-                                            GetPlayerUID(discord, targetPlayer, (playerUID) =>
-                                              {
-                                                  _ = ((ServerMain)discord.Sapi.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, playerUID);
-                                              });
-                                            response = "Player is now removed from whitelist";
+                                            string playerUID = await GetPlayerUID(discord, targetPlayer);
+                                            if (playerUID != null)
+                                            {
+                                                _ = ((ServerMain)discord.Sapi.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, playerUID);
+                                                response = $"{targetPlayer} is now removed from whitelist";
+                                            }
+                                            else
+                                            {
+                                                response = $"Could not find player with name: {targetPlayer}";
+                                            }
                                         }
                                     }
                                     else
@@ -703,22 +715,34 @@ namespace Th3Essentials.Discord
             _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: discord.Config.UseEphermalCmdResponse, components: components);
         }
 
-        private static void GetPlayerUID(Th3Discord discord, string targetPlayer, Action<string> OnHavePlayerUid)
+        private async static Task<string> GetPlayerUID(Th3Discord discord, string targetPlayer)
         {
             IServerPlayerData player = discord.Sapi.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
             if (player == null)
             {
-                AuthServerComm.ResolvePlayerName(targetPlayer, (result, playeruid) => discord.Sapi.Event.EnqueueMainThreadTask(() =>
+                using (HttpClient client = new HttpClient())
                 {
-                    if (result == EnumServerResponse.Good)
+                    List<KeyValuePair<string, string>> bodydata = new List<KeyValuePair<string, string>>
                     {
-                        OnHavePlayerUid(playeruid);
+                        new KeyValuePair<string, string>("playername", targetPlayer)
+                    };
+                    FormUrlEncodedContent body = new FormUrlEncodedContent(bodydata);
+                    HttpResponseMessage result = await client.PostAsync("https://auth.vintagestory.at/resolveplayername", body);
+                    if (result.StatusCode == HttpStatusCode.OK)
+                    {
+                        string responseData = await result.Content.ReadAsStringAsync();
+                        ResolveResponse resolveResponse = JsonConvert.DeserializeObject<ResolveResponse>(responseData);
+                        return resolveResponse.playeruid;
                     }
-                }, "th3discord-whitelist-getuid"));
+                    else
+                    {
+                        return null;
+                    }
+                }
             }
             else
             {
-                OnHavePlayerUid(player.PlayerUID);
+                return player.PlayerUID;
             }
         }
 
