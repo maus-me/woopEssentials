@@ -36,14 +36,15 @@ Login to grafana web UI (by default `http://localhost:3000`) using default crede
 
 1. Go to `Configuration -> Data Sources`
 2. Choose `InfluxDB`:
-  - Set `Query Language` to `Flux`
-  - Set `URL` to `http://influxdb:8086` (or other port set in `$INFLUXDB_PORT`)
-  - Set `Organization` to the one set in account creation stage
-  - Set `Token` to the influxdb API Token 
-  - Click 'Save & test'
+
+- Set `Query Language` to `Flux`
+- Set `URL` to `http://influxdb:8086` (or other port set in `$INFLUXDB_PORT`)
+- Set `Organization` to the one set in account creation stage
+- Set `Token` to the influxdb API Token
+- Click 'Save & test'
 
 ### Dashboard configuration
 
-1. Go to `Dashboards -> Browse` 
+1. Go to `Dashboards -> Browse`
 2. Click `Import`
 3. Paste the contents of `VS_Metrics_Dashboard_Grafana.json` and click 'Load'
