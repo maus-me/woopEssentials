@@ -516,6 +516,7 @@ namespace Th3Essentials.Discord
                                                         discord.Config.ModerationRoles = new List<ulong>();
                                                     }
                                                     discord.Config.ModerationRoles.Add(role.Id);
+                                                    Th3Essentials.Config.MarkDirty();
                                                     response = $"Added role: {role.Name}";
                                                 }
                                                 else
@@ -532,6 +533,7 @@ namespace Th3Essentials.Discord
                                                     {
                                                         if (discord.Config.ModerationRoles.Remove(role.Id))
                                                         {
+                                                            Th3Essentials.Config.MarkDirty();
                                                             response = $"Removed role: {role.Name}";
                                                         }
                                                         else
@@ -555,6 +557,7 @@ namespace Th3Essentials.Discord
                                                 if (discord.Config.ModerationRoles != null)
                                                 {
                                                     discord.Config.ModerationRoles.Clear();
+                                                    Th3Essentials.Config.MarkDirty();
                                                     response = "All moderation roles removed";
                                                 }
                                                 else

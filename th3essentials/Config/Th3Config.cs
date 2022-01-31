@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Th3Essentials.Config
 {
     public class Th3Config
     {
+        [JsonIgnore]
+        public bool IsDirty;
+
         public Th3DiscordConfig DiscordConfig = null;
 
         public Th3InfluxConfig InfluxConfig = null;
@@ -89,6 +93,14 @@ namespace Th3Essentials.Config
         internal bool IsShutdownConfigured()
         {
             return (ShutdownAnnounce?.Length > 0) || (ShutdownTime != null && ShutdownEnabled);
+        }
+
+        public void MarkDirty()
+        {
+            if (!IsDirty)
+            {
+                IsDirty = true;
+            }
         }
 
         internal void Reload(Th3Config configTemp)

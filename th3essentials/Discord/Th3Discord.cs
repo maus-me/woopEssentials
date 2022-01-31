@@ -235,6 +235,7 @@ namespace Th3Essentials.Discord
                     {
                         Config.GuildId = guildUser.Guild.Id;
                         Config.ChannelId = message.Channel.Id;
+                        Th3Essentials.Config.MarkDirty();
 
                         CreateSlashCommands();
                         if (!GetDiscordChannel())

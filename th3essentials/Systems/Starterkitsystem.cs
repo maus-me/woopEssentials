@@ -58,6 +58,7 @@ namespace Th3Essentials.Systems
                         _config.Items.Add(new StarterkitItem(enumItemClass, code, stackSize, attributes));
                     }
                 }
+                _config.IsDirty = true;
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-setup"), EnumChatType.CommandSuccess);
             }, Privilege.controlserver);
 

@@ -258,8 +258,9 @@ namespace Th3Essentials
 
         private void GameWorldSave()
         {
-            if (Config != null)
+            if (Config != null && Config.IsDirty)
             {
+                Config.IsDirty = false;
                 _sapi.StoreModConfig(Config, _configFile);
             }
 
