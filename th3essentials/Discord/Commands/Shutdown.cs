@@ -1,0 +1,41 @@
+using System.Collections.Generic;
+using Discord;
+using Discord.WebSocket;
+using Vintagestory.API.Config;
+
+namespace Th3Essentials.Discord.Commands
+{
+    public class Shutdown
+    {
+        public static void CreateCommand(DiscordSocketClient _client)
+        {
+            SlashCommandBuilder shutdown = new SlashCommandBuilder
+            {
+                Name = SlashCommands.Shutdown.ToString().ToLower(),
+                Description = Lang.Get("th3essentials:slc-shutdown")
+            };
+            _ = _client.Rest.CreateGuildCommand(shutdown.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+        }
+
+        public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction, ref MessageComponent components)
+        {
+            if (commandInteraction.User is SocketGuildUser guildUser)
+            {
+                if (Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
+                {
+                    ComponentBuilder builder = new ComponentBuilder().WithButton("Confirm", "shutdown-confirm");
+                    components = builder.Build();
+                    return "Do you really want to shutdown the server?";
+                }
+                else
+                {
+                    return "You do not have permissions to do that";
+                }
+            }
+            else
+            {
+                return "Something went wrong: User was not a GuildUser";
+            }
+        }
+    }
+}
