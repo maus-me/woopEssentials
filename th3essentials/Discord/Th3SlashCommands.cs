@@ -10,7 +10,7 @@ namespace Th3Essentials.Discord
 {
     public enum SlashCommands
     {
-        Players, Date, RestartTime, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions, Shutdown, Serverinfo, Stats, Admins, Auth
+        Players, Date, RestartTime, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions, Shutdown, Serverinfo, Stats, Admins/* , Auth */
     }
 
     public class Th3SlashCommands
@@ -28,7 +28,7 @@ namespace Th3Essentials.Discord
             Serverinfo.CreateCommand(_client);
             Stats.CreateCommand(_client);
             Admins.CreateCommand(_client);
-            Auth.CreateCommand(_client);
+            // Auth.CreateCommand(_client);
         }
 
         internal static void HandleButtonExecuted(Th3Discord discord, SocketMessageComponent component)
@@ -131,11 +131,11 @@ namespace Th3Essentials.Discord
                             response = Th3Util.GetAdmins(discord.Sapi);
                             break;
                         }
-                    case SlashCommands.Auth:
+                    /* case SlashCommands.Auth:
                         {
                             response = Auth.HandleSlashCommand(discord, commandInteraction);
                             break;
-                        }
+                        } */
                     default:
                         {
                             response = "Unknown SlashCommand";
