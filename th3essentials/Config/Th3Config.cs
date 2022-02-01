@@ -140,6 +140,7 @@ namespace Th3Essentials.Config
                 DiscordConfig.ChannelId = configTemp.DiscordConfig.ChannelId;
                 DiscordConfig.GuildId = configTemp.DiscordConfig.GuildId;
                 DiscordConfig.ModerationRoles = configTemp.DiscordConfig.ModerationRoles;
+                DiscordConfig.LinkedAccounts = configTemp.DiscordConfig.LinkedAccounts;
             }
 
             if (configTemp.InfluxConfig != null)

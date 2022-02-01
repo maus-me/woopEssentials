@@ -17,5 +17,7 @@ namespace Th3Essentials.Config
         public List<ulong> ModerationRoles = null;
 
         public ulong HelpRoleID = 0;
+
+        public Dictionary<string, string> LinkedAccounts = null;
     }
 }

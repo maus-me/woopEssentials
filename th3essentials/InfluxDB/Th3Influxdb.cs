@@ -20,7 +20,7 @@ namespace Th3Essentials.Influxdb
 
         private long _writeDataListenerID;
 
-        public static Th3Influxdb Instance;
+        public static Th3Influxdb Instance { get; set; }
 
         private readonly string _harmonyPatchkey = "Th3Essentials.InfluxDB.Patch";
 

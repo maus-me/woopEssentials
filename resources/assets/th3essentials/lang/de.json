@@ -78,6 +78,7 @@
     "slc-serverinfo": "Zeige Information über den Server an (Spielversion, Mods)",
     "slc-stats": "Zeigt die Ausgabe des ingame Befehls /stats",
     "slc-admins": "Zeige alles admins des Servers",
+    "slc-auth": "Verlinke den Spiel- und Discord account",
     "restart-in-mins": "Server startet in {0} Minuten neu",
     "restart-in-min": "Server startet in 1 Minute neu",
     "th3config-error": "Th3Config konnte nicht geldaden werden: {0}",

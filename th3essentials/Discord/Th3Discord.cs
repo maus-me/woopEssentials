@@ -24,7 +24,7 @@ namespace Th3Essentials.Discord
 
         private readonly string _harmonyPatchkey = "Th3Essentials.Discord.Patch";
 
-        public static Th3Discord Instance;
+        public static Th3Discord Instance { get; set; }
 
         private DiscordSocketClient _client;
 
@@ -36,7 +36,9 @@ namespace Th3Essentials.Discord
 
         private bool _initialized;
 
-        public static string[] TemporalStorm;
+        public static string[] TemporalStorm { get; set; }
+
+        public static Dictionary<string, string> AccountsToLink { get; set; }
 
         public Th3Discord()
         {
@@ -50,6 +52,7 @@ namespace Th3Essentials.Discord
                 Lang.Get("A heavy temporal storm is imminent"),
                 Lang.Get("The temporal storm seems to be waning")
             };
+            AccountsToLink = new Dictionary<string, string>();
         }
 
         public void Init(ICoreServerAPI sapi)
@@ -77,9 +80,32 @@ namespace Th3Essentials.Discord
                 _harmony.Patch(original, postfix: postfix);
             }
 
+            Sapi.RegisterCommand("dcauth", "Link ingame and discord account", string.Empty, OnDicordAuth, Privilege.chat);
+
             // start discord bot
             BotMainAsync();
             Instance = this;
+        }
+
+        private void OnDicordAuth(IServerPlayer player, int groupId, CmdArgs args)
+        {
+            string token = args.PopAll();
+            foreach (KeyValuePair<string, string> account in AccountsToLink)
+            {
+                if (account.Key.Equals(token))
+                {
+                    if (Config.LinkedAccounts == null)
+                    {
+                        Config.LinkedAccounts = new Dictionary<string, string>();
+                    }
+                    Config.LinkedAccounts.Add(player.PlayerUID, account.Value);
+                    player.SendMessage(GlobalConstants.GeneralChatGroup, "Discord - Vintagestory accounts linked", EnumChatType.CommandSuccess);
+                    AccountsToLink.Remove(account.Key);
+                    Th3Essentials.Config.MarkDirty();
+                    return;
+                }
+            }
+            player.SendMessage(GlobalConstants.GeneralChatGroup, "Could not find token", EnumChatType.CommandError);
         }
 
         private Task DiscordLog(LogMessage log)
