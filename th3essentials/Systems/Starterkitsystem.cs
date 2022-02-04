@@ -172,7 +172,7 @@ namespace Th3Essentials.Systems
                     }
                     for (int i = 0; i < _config.Items.Count; i++)
                     {
-                        AssetLocation asset = new AssetLocation(_config.Items[i].Code.Path);
+                        AssetLocation asset = new AssetLocation(_config.Items[i].Code.ToString());
                         if (asset != null)
                         {
                             bool recived = false;
