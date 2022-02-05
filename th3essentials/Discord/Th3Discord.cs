@@ -402,6 +402,7 @@ namespace Th3Essentials.Discord
         private int UpdatePlayers(int players = 0)
         {
             players += Sapi.Server.Players.Count(pl => pl.ConnectionState == EnumClientState.Playing);
+            players = Math.Max(0, players);
             _ = _client.SetGameAsync($"players: {players}");
             return players;
         }
