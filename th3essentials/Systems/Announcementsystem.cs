@@ -1,6 +1,7 @@
 using System.Timers;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 
 namespace Th3Essentials.Systems
@@ -45,7 +46,7 @@ namespace Th3Essentials.Systems
             {
                 _currentMsg = 0;
             }
-            _sapi.BroadcastMessageToAllGroups($"<strong>[Info]</strong> {_config.AnnouncementMessages[_currentMsg]}", EnumChatType.Notification);
+            _sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup, $"<strong>[Info]</strong> {_config.AnnouncementMessages[_currentMsg]}", EnumChatType.Notification);
             _currentMsg++;
         }
     }
