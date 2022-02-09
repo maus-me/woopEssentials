@@ -465,7 +465,6 @@ namespace Th3Essentials.Discord
                 {
                     api = (ICoreAPI)AccessTools.Field(typeof(SystemTemporalStability), "api").GetValue(__instance);
                 }
-
             }
 
             public static void Postfix(SystemTemporalStability __instance)
