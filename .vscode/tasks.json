@@ -171,6 +171,34 @@
         "showReuseMessage": true,
         "clear": true
       }
+    },
+    {
+      "label": "crowdin upload",
+      "type": "shell",
+      "command": "crowdin",
+      "args": ["upload", "-v"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
+    },
+    {
+      "label": "crowdin download",
+      "type": "shell",
+      "command": "crowdin",
+      "args": ["download", "-v"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      }
     }
   ]
 }
