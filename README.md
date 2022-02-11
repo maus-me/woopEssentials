@@ -264,6 +264,7 @@ Make sure to persist your influxdb data with docker volumes/mounts.
   "ShutdownTime": "00:00:00",
 
   // time in minutes to announce the restart before it happens
+  // if this is set it will announce a restart even if shutdown ist not enabled but wont restart/shutdown the server
   // example value: [1,2,3,4,5,10,20,30]
   // [1,2,3,4,5,10,20,30] for every entry a message will appear like: "Server restart in x minutes"
   "ShutdownAnnounce": null,

@@ -1,4 +1,4 @@
-# you may need to set in a powershell terminal the execution policy to allow execution of local scripts, can be done with below command
+# you may need to set in a powershell (Admin) terminal the execution policy to allow execution of local scripts, can be done with below command
 # Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 while (1) {
