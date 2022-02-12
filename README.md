@@ -193,6 +193,8 @@ Make sure to persist your influxdb data with docker volumes/mounts.
 
 ```json
 {
+  // this is just for internal purposes, you can ignore this
+  "IsDirty": false,
   "DiscordConfig": {
     // Discord Bot Token
     // to turn it off - "Token": null,
