@@ -69,7 +69,7 @@ namespace Th3Essentials.Systems
                 if (ok != null && ok == "confirm")
                 {
                     ServerMain server = (ServerMain)sapi.World;
-                    GameDatabase gameDatabase = new GameDatabase(ServerMain.Logger);
+                    GameDatabase gameDatabase = new GameDatabase(sapi.Logger);
                     _ = gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out int foundVersion, out string errorMessage, out bool isReadonly);
                     gameDatabase.UpgradeToWriteAccess();
 
