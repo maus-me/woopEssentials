@@ -152,7 +152,15 @@ namespace Th3Essentials.Discord
 
         public static bool HasPermission(SocketGuildUser guildUser, List<ulong> moderationRoles)
         {
-            return guildUser.GuildPermissions.Administrator || guildUser.Roles.Select(r => r.Id).ToArray().Intersect(moderationRoles).Count() > 0;
+            if (guildUser.GuildPermissions.Administrator)
+            {
+                return true;
+            }
+            else if (moderationRoles != null)
+            {
+                return guildUser.Roles.Select(r => r.Id).ToArray().Intersect(moderationRoles).Count() > 0;
+            }
+            return false;
         }
     }
 }
