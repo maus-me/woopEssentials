@@ -40,6 +40,8 @@ namespace Th3Essentials.Discord
 
         public static Dictionary<string, string> AccountsToLink { get; set; }
 
+        public Dictionary<string, Rewards> rewards;
+
         public Th3Discord()
         {
             _initialized = false;
@@ -53,6 +55,7 @@ namespace Th3Essentials.Discord
                 Lang.Get("The temporal storm seems to be waning")
             };
             AccountsToLink = new Dictionary<string, string>();
+            rewards = new Dictionary<string, Rewards>();
         }
 
         public void Init(ICoreServerAPI sapi)
@@ -63,7 +66,8 @@ namespace Th3Essentials.Discord
             // create Discord client and set event methodes
             DiscordSocketConfig config = new DiscordSocketConfig()
             {
-                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildIntegrations | GatewayIntents.GuildMessages
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildIntegrations | GatewayIntents.GuildMessages | GatewayIntents.GuildMembers,
+                AlwaysDownloadUsers = true
             };
             _client = new DiscordSocketClient(config);
 
@@ -170,6 +174,16 @@ namespace Th3Essentials.Discord
                 if (Config.HelpRoleID != 0)
                 {
                     _ = Sapi.RegisterCommand("requesthelp", Lang.Get("th3essentials:cd-help"), Lang.Get("th3essentials:cd-reply-param"), ReqestingHelp);
+                }
+
+                SocketGuild guild = _client.GetGuild(Config.GuildId);
+                foreach (KeyValuePair<string, string> role in Th3Essentials.Config.DiscordConfig.RoleIdToName)
+                {
+                    SocketRole socketRole = guild.Roles.First((r) => r.Id == ulong.Parse(role.Key));
+                    if (socketRole != null)
+                    {
+                        rewards.Add(role.Key, new Rewards(socketRole, role.Value));
+                    }
                 }
 
                 _initialized = true;
@@ -380,7 +394,22 @@ namespace Th3Essentials.Discord
 
             if (Th3Essentials.Config.ShowRole && byPlayer.Role.PrivilegeLevel > 0)
             {
-                message = string.Format(Th3Essentials.Config.RoleFormat, Th3Essentials.ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
+                if (Th3Essentials.Config.DiscordConfig.Rewards)
+                {
+                    bool hasRewards = byPlayer.ServerData.CustomPlayerData.TryGetValue("th3rewards", out string id);
+                    if (hasRewards && rewards.TryGetValue(id, out Rewards reward))
+                    {
+                        message = string.Format(Th3Essentials.Config.DiscordConfig.RoleFormatRewards, Th3Essentials.ToHex(byPlayer.Role.Color), byPlayer.Role.Name, Th3Essentials.ToHex(reward.SocketRole.Color), reward.Name, message);
+                    }
+                    else
+                    {
+                        message = string.Format(Th3Essentials.Config.RoleFormat, Th3Essentials.ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
+                    }
+                }
+                else
+                {
+                    message = string.Format(Th3Essentials.Config.RoleFormat, Th3Essentials.ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
+                }
             }
         }
 
@@ -390,6 +419,10 @@ namespace Th3Essentials.Discord
             int players = UpdatePlayers(-1);
 
             SendServerMessage(Lang.Get("th3essentials:disconnected", byPlayer.PlayerName, players, Sapi.Server.Config.MaxClients));
+            if (Th3Essentials.Config.DiscordConfig.Rewards)
+            {
+                byPlayer.ServerData.CustomPlayerData.Remove("th3rewards");
+            }
         }
 
         private void PlayerNowPlayingAsync(IServerPlayer byPlayer)
@@ -397,6 +430,26 @@ namespace Th3Essentials.Discord
             int players = UpdatePlayers(1);
 
             SendServerMessage(Lang.Get("th3essentials:connected", byPlayer.PlayerName, players, Sapi.Server.Config.MaxClients));
+
+            if (Th3Essentials.Config.DiscordConfig.Rewards)
+            {
+                byPlayer.ServerData.CustomPlayerData.Remove("th3rewards");
+                if (Config.LinkedAccounts.TryGetValue(byPlayer.PlayerUID, out string discordid))
+                {
+                    SocketGuild guild = _client.GetGuild(Config.GuildId);
+                    SocketGuildUser socketGuildUser = guild.GetUser(ulong.Parse(discordid));
+
+                    foreach (KeyValuePair<string, string> role in Th3Essentials.Config.DiscordConfig.RoleIdToName)
+                    {
+                        SocketRole socketRole = socketGuildUser.Roles.First((r) => r.Id.ToString() == role.Key);
+                        if (socketRole != null)
+                        {
+                            Sapi.Logger.VerboseDebug($"{Th3Essentials.ToHex(socketRole.Color)}, {socketRole.Name}, {socketRole.Id}");
+                            byPlayer.ServerData.CustomPlayerData["th3rewards"] = socketRole.Id.ToString();
+                        }
+                    }
+                }
+            }
         }
 
         private int UpdatePlayers(int players = 0)

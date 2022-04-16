@@ -46,7 +46,6 @@ namespace Th3Essentials
         public override void StartServerSide(ICoreServerAPI sapi)
         {
             _sapi = sapi;
-
             try
             {
                 Config = _sapi.LoadModConfig<Th3Config>(_configFile);

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Discord;
 using Discord.WebSocket;
 using Vintagestory.API.Config;
@@ -18,6 +17,7 @@ namespace Th3Essentials.Discord.Commands
                     Name = "mode",
                     Description = Lang.Get("th3essentials:slc-auth-mode"),
                     Type = ApplicationCommandOptionType.String,
+                    IsRequired = true,
                     Choices = new List<ApplicationCommandOptionChoiceProperties>(){
                         new ApplicationCommandOptionChoiceProperties(){Name = "connect", Value = "connect"},
                         new ApplicationCommandOptionChoiceProperties(){Name = "disconnect", Value = "disconnect"}

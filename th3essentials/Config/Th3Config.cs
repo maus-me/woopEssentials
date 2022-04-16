@@ -141,6 +141,9 @@ namespace Th3Essentials.Config
                 DiscordConfig.GuildId = configTemp.DiscordConfig.GuildId;
                 DiscordConfig.ModerationRoles = configTemp.DiscordConfig.ModerationRoles;
                 DiscordConfig.LinkedAccounts = configTemp.DiscordConfig.LinkedAccounts;
+                DiscordConfig.RoleFormatRewards = configTemp.DiscordConfig.RoleFormatRewards;
+                DiscordConfig.RoleIdToName = configTemp.DiscordConfig.RoleIdToName;
+                DiscordConfig.Rewards = configTemp.DiscordConfig.Rewards;
             }
 
             if (configTemp.InfluxConfig != null)
