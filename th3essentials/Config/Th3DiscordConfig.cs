@@ -20,11 +20,13 @@ namespace Th3Essentials.Config
 
         public Dictionary<string, string> LinkedAccounts = null;
 
-        public Dictionary<string, string> RoleIdToName = null;
+        public Dictionary<string, string> RewardIdToName = null;
 
         public bool Rewards = false;
 
-        public string RoleFormatRewards = "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font><font size=\"18\" color=\"{2}\"><strong> [{3}] </strong></font>{4}";
+        public string RoleRewardsFormat = "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font><font size=\"18\" color=\"{2}\"><strong>[{3}]</strong></font>{4}";
+
+        public string RewardsFormat = "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}";
 
     }
 }

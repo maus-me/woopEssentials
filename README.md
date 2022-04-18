@@ -25,6 +25,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - /requesthelp [message] , pings the `HelpRoleID` in Discord with the message [on/off]
 - show role information infront of ingame chatname [on/off]
 - /admin ingame/discord command , lists all roles specified by "AdminRoles" [on/off]
+- reward system that allows you to add a text/icon to ingame chat if that player has a certain role in discord (Patreon)
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -85,6 +86,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
   - /admins - lists all admins speciefied by "AdminRoles" in Th3Condfig.json
   - /serverinfo - prints game and mod versions
   - /stats Print the output of the ingame /stats command [Admin or Configured Role]
+  - /auth start to link discord and ingame account for the reward system
 
 - Shutdownsystem
 
@@ -121,6 +123,9 @@ Download the mod and put it into your mods folder. Start your server once to gen
   `"AnnouncementMessages" : ["message 1", "message 2"]`
   `"AnnouncementInterval" : 10` sets the time in minutes between the messages
   if the interval is `0` or the `"AnnouncementMessages" : null` then it is disabled
+
+- Rewards
+  The reward system will show a special text/icon that you can specify in the config `RewardIdToName`. This is only shown to players that have a certain role in discord that is linked to the rewards system. With this you can link for exmaple your Patropn discord roles to ingame. Every player that wants to recive their reward ingame needs to use the discord command `/auth` the bot will give you a comand you will have to enter ingame. After that the player needs to relog and they should see their reward when chatting. The rewards are loaded only on player login. To update the rward role mapping stop the server and add new ones see config example at the bottom.
 
 - Messages and Language
   Further you can unpack the .zip archive and navigate to assets/th3essentials/lang/en.json for example and customize almost all messages send by this mod, except the death messages since those are reused from the game (you could override the games death messages and that would change them in the mod too).
@@ -159,12 +164,13 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
     once those are ticked a section for "BOT PERMISSIONS" will appear on there tick
 
-    - View Channels
+    - Read Message/View Channels
     - Send Messages
     - Send Messages in Threads
-    - Read Message History
 
     after that you can click on "Copy" and open that link in your browser, this will ask you to invite your bot to one of your server where you have permissions to invite a bot to
+
+    if you wanna use the reward/auth system you need to enable in the "Bot" menu the "SERVER MEMBERS INTENT" toggle.
 
     yay your should have your bot now on your discord server :)
 
@@ -213,7 +219,24 @@ Make sure to persist your influxdb data with docker volumes/mounts.
     "DiscordChatColor": "7289DA",
     // ID of the role the gets pinged when some one uses /requesthelp ingame - 0 to turn it off
     // to get a role id you have to be in developer mode in the discord app (Advanced -> Developer mode) and then you can righclick on roles to copy the id
-    "HelpRoleID": 0
+    "HelpRoleID": 0,
+    // part of the reward system - no need to manually modify it use /auth in discord
+    "LinkedAccounts": null,
+    // here you can setup the rewards - link a discord role (Patreon) to a reward role ingame
+    // exmaple: first is the ID of the role from discord and second is the text/icon to display in chat for them
+    // to get a role id you have to be in developer mode in the discord app (Advanced -> Developer mode) and then you can righclick on roles to copy the id
+    // if a discord user has multiple roles that should give a reward, only the first one in the list is applied
+    // "RewardIdToName": {
+    //   "951870816126111815": "☆",
+    //   "951870898833608824": "✪",
+    // },
+    "RewardIdToName": null,
+    // if the reward system should be turned on
+    "Rewards": true,
+    // if the reward system is activated you can modify how the chat is formated for someone who has a reward and role
+    "RoleRewardsFormat": "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font><font size=\"18\" color=\"{2}\"><strong>[{3}]</strong></font>{4}",
+    // if the reward system is activated you can modify how the chat is formated for someone who has a only reward and no admin/mod role
+    "RewardsFormat": "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}"
   },
 
   "InfluxConfig": {
