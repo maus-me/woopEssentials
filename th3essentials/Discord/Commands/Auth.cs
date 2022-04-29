@@ -53,7 +53,7 @@ namespace Th3Essentials.Discord.Commands
                 {
                     case "connect":
                         {
-                            if (!(bool)Th3Essentials.Config.DiscordConfig.LinkedAccounts?.ContainsValue(guildUser.Id.ToString()))
+                            if (Th3Essentials.Config.DiscordConfig.LinkedAccounts == null || !Th3Essentials.Config.DiscordConfig.LinkedAccounts.ContainsValue(guildUser.Id.ToString()))
                             {
                                 string token = Guid.NewGuid().ToString();
                                 Th3Discord.AccountsToLink.Add(token, guildUser.Id.ToString());
