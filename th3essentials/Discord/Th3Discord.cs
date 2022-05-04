@@ -400,7 +400,7 @@ namespace Th3Essentials.Discord
             {
                 Match playerMsg = Regex.Match(message, "> (.+)");
                 string msg = playerMsg.Groups[1].Value;
-                msg = msg.Replace("&lt;", "<").Replace("&gt;", ">");
+                msg = msg.Replace("&lt;", "<").Replace("&gt;", ">").Replace("@here", "@_here").Replace("@everyone", "@_everyone");
 
                 if (Th3Essentials.Config.ShowRole && byPlayer.Role.PrivilegeLevel > 0)
                 {
