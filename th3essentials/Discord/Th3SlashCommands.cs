@@ -10,7 +10,7 @@ namespace Th3Essentials.Discord
 {
     public enum SlashCommands
     {
-        Players, Date, RestartTime, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions, Shutdown, Serverinfo, Stats, Admins, Auth
+        Players, Date, RestartTime, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions, Shutdown, Serverinfo, Stats, Admins, Auth, Announce
     }
 
     public class Th3SlashCommands
@@ -29,6 +29,7 @@ namespace Th3Essentials.Discord
             Stats.CreateCommand(_client);
             Admins.CreateCommand(_client);
             Auth.CreateCommand(_client);
+            Announce.CreateCommand(_client);
         }
 
         internal static void HandleButtonExecuted(Th3Discord discord, SocketMessageComponent component)
@@ -71,6 +72,7 @@ namespace Th3Essentials.Discord
         internal async static void HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
         {
             string response;
+            bool ephemeral = discord.Config.UseEphermalCmdResponse;
             MessageComponent components = null;
             if (Enum.TryParse(commandInteraction.Data.Name, true, out SlashCommands cmd))
             {
@@ -136,6 +138,11 @@ namespace Th3Essentials.Discord
                             response = Auth.HandleSlashCommand(commandInteraction);
                             break;
                         }
+                    case SlashCommands.Announce:
+                        {
+                            response = Announce.HandleSlashCommand(discord, commandInteraction, ref ephemeral);
+                            break;
+                        }
                     default:
                         {
                             response = "Unknown SlashCommand";
@@ -147,7 +154,7 @@ namespace Th3Essentials.Discord
             {
                 response = "Unknown SlashCommand";
             }
-            _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: discord.Config.UseEphermalCmdResponse, components: components);
+            _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: ephemeral, components: components);
         }
 
         public static bool HasPermission(SocketGuildUser guildUser, List<ulong> moderationRoles)

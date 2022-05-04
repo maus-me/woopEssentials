@@ -26,6 +26,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - show role information infront of ingame chatname [on/off]
 - /admin ingame/discord command , lists all roles specified by "AdminRoles" [on/off]
 - reward system that allows you to add a text/icon to ingame chat if that player has a certain role in discord (Patreon)
+- announce a message from discord to ingame
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -85,8 +86,9 @@ Download the mod and put it into your mods folder. Start your server once to gen
   - /shutdown - Will shutdown the server (if configured server will restart see scripts at Shutdownsystem) [Admin or Configured Role]
   - /admins - lists all admins speciefied by "AdminRoles" in Th3Condfig.json
   - /serverinfo - prints game and mod versions
-  - /stats Print the output of the ingame /stats command [Admin or Configured Role]
-  - /auth start to link discord and ingame account for the reward system
+  - /stats - Print the output of the ingame /stats command [Admin or Configured Role]
+  - /auth - start to link discord and ingame account for the reward system
+  - /announce - announce a message from discord to ingame chat [Admin or Configured Role]
 
 - Shutdownsystem
 
