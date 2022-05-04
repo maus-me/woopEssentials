@@ -39,6 +39,7 @@ namespace Th3Essentials.Discord.Commands
                     if (option.Value is SocketTextChannel channel)
                     {
                         discord.Config.ChannelId = channel.Id;
+                        Th3Essentials.Config.MarkDirty();
                         if (!discord.GetDiscordChannel())
                         {
                             discord.Sapi.Server.LogError($"Could not find channel with id: {discord.Config.ChannelId}");
