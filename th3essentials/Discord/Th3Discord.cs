@@ -156,49 +156,56 @@ namespace Th3Essentials.Discord
 
         private Task ReadyAsync()
         {
-            Sapi.Server.LogVerboseDebug($"{_client.CurrentUser.Username} is connected!");
-
-            if (!GetDiscordChannel())
+            try
             {
-                Sapi.Server.LogError($"Could not find channel with id: {Config.ChannelId}");
-            }
+                Sapi.Server.LogVerboseDebug($"{_client.CurrentUser.Username} is connected!");
 
-            // needed since discord might disconect from the gateway and reconnect emitting the ReadyAsync again
-            if (!_initialized)
-            {
-                _client.MessageReceived += MessageReceivedAsync;
-                _client.InteractionCreated += InteractionCreated;
-                _client.ButtonExecuted += ButtonExecuted;
-
-                //add vs api events
-                Sapi.Event.PlayerChat += PlayerChatAsync;
-                Sapi.Event.PlayerDisconnect += PlayerDisconnectAsync;
-                Sapi.Event.PlayerNowPlaying += PlayerNowPlayingAsync;
-                Sapi.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
-                Sapi.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
-
-                if (Config.HelpRoleID != 0)
+                if (!GetDiscordChannel())
                 {
-                    _ = Sapi.RegisterCommand("requesthelp", Lang.Get("th3essentials:cd-help"), Lang.Get("th3essentials:cd-reply-param"), ReqestingHelp);
+                    Sapi.Server.LogError($"Could not find channel with id: {Config.ChannelId}");
                 }
 
-                if (Config.Rewards)
+                // needed since discord might disconect from the gateway and reconnect emitting the ReadyAsync again
+                if (!_initialized)
                 {
-                    SocketGuild guild = _client.GetGuild(Config.GuildId);
-                    foreach (KeyValuePair<string, string> role in Config.RewardIdToName)
+                    _client.MessageReceived += MessageReceivedAsync;
+                    _client.InteractionCreated += InteractionCreated;
+                    _client.ButtonExecuted += ButtonExecuted;
+
+                    //add vs api events
+                    Sapi.Event.PlayerChat += PlayerChatAsync;
+                    Sapi.Event.PlayerDisconnect += PlayerDisconnectAsync;
+                    Sapi.Event.PlayerNowPlaying += PlayerNowPlayingAsync;
+                    Sapi.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
+                    Sapi.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
+
+                    if (Config.HelpRoleID != 0)
                     {
-                        SocketRole socketRole = guild.Roles.First((r) => r.Id == ulong.Parse(role.Key));
-                        if (socketRole != null)
+                        _ = Sapi.RegisterCommand("requesthelp", Lang.Get("th3essentials:cd-help"), Lang.Get("th3essentials:cd-reply-param"), ReqestingHelp);
+                    }
+
+                    if (Config.Rewards && Config.RewardIdToName != null)
+                    {
+                        SocketGuild guild = _client.GetGuild(Config.GuildId);
+                        foreach (KeyValuePair<string, string> role in Config.RewardIdToName)
                         {
-                            rewards.Add(role.Key, new Rewards(socketRole, role.Value));
+                            SocketRole socketRole = guild.Roles.First((r) => r.Id == ulong.Parse(role.Key));
+                            if (socketRole != null)
+                            {
+                                rewards.Add(role.Key, new Rewards(socketRole, role.Value));
+                            }
                         }
                     }
+
+                    _initialized = true;
                 }
 
-                _initialized = true;
+                _ = UpdatePlayers();
             }
-
-            _ = UpdatePlayers();
+            catch (Exception e)
+            {
+                Sapi.Server.LogError($"Exception: {e.Message}");
+            }
             return Task.CompletedTask;
         }
 
@@ -458,7 +465,7 @@ namespace Th3Essentials.Discord
 
             SendServerMessage(Lang.Get("th3essentials:connected", byPlayer.PlayerName, players, Sapi.Server.Config.MaxClients));
 
-            if (Config.Rewards)
+            if (Config.Rewards && Config.LinkedAccounts != null)
             {
                 byPlayer.ServerData.CustomPlayerData.Remove("th3rewards");
                 if (Config.LinkedAccounts.TryGetValue(byPlayer.PlayerUID, out string discordid))
