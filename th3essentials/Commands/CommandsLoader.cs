@@ -9,6 +9,7 @@ namespace Th3Essentials.Commands
             new Serverinfo().Init(sapi);
             new Message().Init(sapi);
             new Restart().Init(sapi);
+            new Warp().Init(sapi);
         }
     }
 }

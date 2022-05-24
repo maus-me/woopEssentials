@@ -77,11 +77,7 @@ namespace Th3Essentials.Systems
                 }
                 else
                 {
-                    BlockPos teleportTo = playerData.LastPosition;
-                    playerData.LastPosition = player.Entity.Pos.AsBlockPos;
-                    player.Entity.TeleportTo(teleportTo);
-                    playerData.HomeLastuseage = DateTime.Now;
-                    playerData.MarkDirty();
+                    TeleportTo(player, playerData, playerData.LastPosition);
                     player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-back"), EnumChatType.CommandSuccess);
                 }
             }
@@ -97,10 +93,7 @@ namespace Th3Essentials.Systems
             Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
             if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
             {
-                playerData.LastPosition = player.Entity.Pos.AsBlockPos;
-                player.Entity.TeleportTo(_sapi.World.DefaultSpawnPosition);
-                playerData.HomeLastuseage = DateTime.Now;
-                playerData.MarkDirty();
+                TeleportTo(player, playerData, _sapi.World.DefaultSpawnPosition.AsBlockPos);
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-tp-spawn"), EnumChatType.CommandSuccess);
             }
             else
@@ -108,7 +101,6 @@ namespace Th3Essentials.Systems
                 TimeSpan diff = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown) - DateTime.Now;
                 player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds), EnumChatType.CommandSuccess);
             }
-
         }
 
         public void Home(IServerPlayer player, string name)
@@ -138,10 +130,7 @@ namespace Th3Essentials.Systems
                 {
                     if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
                     {
-                        playerData.LastPosition = player.Entity.Pos.AsBlockPos;
-                        player.Entity.TeleportTo(point.Position);
-                        playerData.HomeLastuseage = DateTime.Now;
-                        playerData.MarkDirty();
+                        TeleportTo(player, playerData, point.Position);
                         player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-tp-point", name), EnumChatType.CommandSuccess);
                     }
                     else
@@ -203,9 +192,17 @@ namespace Th3Essentials.Systems
             }
         }
 
-        public bool CanTravel(Th3PlayerData playerData)
+        public static void TeleportTo(IServerPlayer player, Th3PlayerData playerData, BlockPos location)
         {
-            DateTime canTravel = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown);
+            playerData.LastPosition = player.Entity.Pos.AsBlockPos;
+            player.Entity.TeleportTo(location);
+            playerData.HomeLastuseage = DateTime.Now;
+            playerData.MarkDirty();
+        }
+
+        public static bool CanTravel(Th3PlayerData playerData)
+        {
+            DateTime canTravel = playerData.HomeLastuseage.AddSeconds(Th3Essentials.Config.HomeCooldown);
             return canTravel <= DateTime.Now;
         }
     }

@@ -46,6 +46,10 @@ namespace Th3Essentials.Config
 
         public List<string> AdminRoles = null;
 
+        public bool WarpEnabled = false;
+
+        public List<HomePoint> WarpLocations = null;
+
         public void Init()
         {
             StringBuilder sb = new StringBuilder();
@@ -95,6 +99,11 @@ namespace Th3Essentials.Config
             return (ShutdownAnnounce?.Length > 0) || (ShutdownTime != null && ShutdownEnabled);
         }
 
+        public HomePoint FindPointByName(string name)
+        {
+            return WarpLocations?.Find(point => point.Name == name);
+        }
+
         public void MarkDirty()
         {
             if (!IsDirty)
@@ -126,6 +135,9 @@ namespace Th3Essentials.Config
             ShowRole = configTemp.ShowRole;
             RoleFormat = configTemp.RoleFormat;
             AdminRoles = configTemp.AdminRoles;
+
+            WarpEnabled = configTemp.WarpEnabled;
+            WarpLocations = configTemp.WarpLocations;
 
             if (configTemp.DiscordConfig != null)
             {

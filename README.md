@@ -3,6 +3,7 @@
 For help, discussion, suggestions and polls on new fetures join the [Discord Server](https://discord.gg/GX65XawGWX)
 
 - [Installation](#installation)
+- [Updating](#updating)
 
 ## Features:
 
@@ -27,6 +28,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - /admin ingame/discord command , lists all roles specified by "AdminRoles" [on/off]
 - reward system that allows you to add a text/icon to ingame chat if that player has a certain role in discord (Patreon)
 - announce a message from discord to ingame
+- /warp [ add \<warp name\> | remove \<warp name\> | list |\<warp name\> ] to predfined locations (setup by admin, also respecting home cooldown time) [on/off]
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -197,6 +199,12 @@ Make sure to persist your influxdb data with docker volumes/mounts.
 - [InfluxDB Docs](https://docs.influxdata.com/influxdb/v2.1/)
 - [Grafana Docs](https://grafana.com/docs/grafana/latest/installation/?pg=docs)
 
+## Updating
+
+When updating make sure to run `!setupth3essentials` again to create all new Discord commands if any.
+
+Further change the config value `IsDirty:false` to `IsDirty:true` and run `/autosavenow` on the server console after you started the server. This will save all new config options to the config file so you can change them.
+
 ## This sample config shows all default settings:
 
 ```json
@@ -316,6 +324,10 @@ Make sure to persist your influxdb data with docker volumes/mounts.
   "RoleFormat": "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}",
   // roles from serverconfig.json to be liste with the /admins ingame and discord command (enter the "Code" of a role for example Admin has Code admin or Creative Moderator has Code crmod)
   // ["admin","crmod"]
-  "AdminRoles": null
+  "AdminRoles": null,
+  // enable the ingame /warp command
+  "WarpEnabled": true,
+  // managed ingame with /warp add|remove name /warp name
+  "WarpLocations": null
 }
 ```
