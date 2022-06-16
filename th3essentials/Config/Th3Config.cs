@@ -99,7 +99,7 @@ namespace Th3Essentials.Config
             return (ShutdownAnnounce?.Length > 0) || (ShutdownTime != null && ShutdownEnabled);
         }
 
-        public HomePoint FindPointByName(string name)
+        public HomePoint FindWarpByName(string name)
         {
             return WarpLocations?.Find(point => point.Name == name);
         }

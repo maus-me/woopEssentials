@@ -26,28 +26,40 @@ namespace Th3Essentials.Commands
         private void OnWarp(IServerPlayer player, int groupId, CmdArgs args)
         {
             string cmd = args.PopWord(string.Empty);
+            //TODO handle/prevent warpnames that contain " "
             switch (cmd)
             {
                 case "add":
                     {
-                        if (player.HasPrivilege(Privilege.controlserver))
+                        if (!player.HasPrivilege(Privilege.controlserver))
                         {
-                            string warpName = args.PopWord(string.Empty);
-                            if (Th3Essentials.Config.WarpLocations == null)
-                            {
-                                Th3Essentials.Config.WarpLocations = new List<HomePoint>();
-                            }
-                            if (warpName != string.Empty)
-                            {
-                                Th3Essentials.Config.WarpLocations.Add(new HomePoint(warpName, player.Entity.Pos.AsBlockPos));
-                                Th3Essentials.Config.MarkDirty();
-                                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-added", warpName), EnumChatType.CommandSuccess);
-                            }
-                            else
-                            {
-                                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-no-name"), EnumChatType.CommandError);
-                            }
+                            break;
                         }
+
+                        string warpName = args.PopWord(string.Empty);
+
+
+                        if (warpName == string.Empty)
+                        {
+                            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-no-name"), EnumChatType.CommandError);
+                            break;
+                        }
+
+                        if (Th3Essentials.Config.FindWarpByName(warpName) != null)
+                        {
+                            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-exists", warpName), EnumChatType.CommandError);
+                            break;
+                        }
+
+                        if (Th3Essentials.Config.WarpLocations == null)
+                        {
+                            Th3Essentials.Config.WarpLocations = new List<HomePoint>();
+                        }
+
+                        Th3Essentials.Config.WarpLocations.Add(new HomePoint(warpName, player.Entity.Pos.AsBlockPos));
+                        Th3Essentials.Config.MarkDirty();
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-added", warpName), EnumChatType.CommandSuccess);
+
                         break;
                     }
                 case "remove":
@@ -57,7 +69,7 @@ namespace Th3Essentials.Commands
                             string warpName = args.PopWord(string.Empty);
                             if (Th3Essentials.Config.WarpLocations != null)
                             {
-                                HomePoint warpPoint = Th3Essentials.Config.FindPointByName(warpName);
+                                HomePoint warpPoint = Th3Essentials.Config.FindWarpByName(warpName);
                                 Th3Essentials.Config.WarpLocations.Remove(warpPoint);
                                 Th3Essentials.Config.MarkDirty();
                             }
@@ -86,7 +98,7 @@ namespace Th3Essentials.Commands
                             Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
                             if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || Homesystem.CanTravel(playerData))
                             {
-                                HomePoint warpPoint = Th3Essentials.Config.FindPointByName(cmd);
+                                HomePoint warpPoint = Th3Essentials.Config.FindWarpByName(cmd);
                                 if (warpPoint != null)
                                 {
                                     Homesystem.TeleportTo(player, playerData, warpPoint.Position);

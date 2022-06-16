@@ -94,5 +94,6 @@
     "wp-to": "Warping to {0}",
     "wp-notfound": "Warp location \"{0}\" not found",
     "wp-list": "Warp locations:",
-    "wp-no-name": "Warp name missing"
+    "wp-no-name": "Warp name missing",
+    "wp-exists": "Warp \"{0}\" already exists!"
 }
