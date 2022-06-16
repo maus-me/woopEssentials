@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using HarmonyLib;
 using Th3Essentials.Config;
 using Th3Essentials.InfluxDB;
@@ -180,48 +181,95 @@ namespace Th3Essentials.Influxdb
 
         public class PatchFrameProfilerUtil
         {
-            public static bool Prefix(FrameProfilerUtil __instance, Stopwatch ___stopwatch, ref Dictionary<string, long> ___elems, long ___start)
+            public static bool Prefix(FrameProfilerUtil __instance, ProfileEntryRange ___rootEntry, ILogger ___logger)
             {
                 if (!__instance.Enabled && !__instance.PrintSlowTicks)
                 {
                     return false;
                 }
 
-                if (__instance.PrintSlowTicks)
+                __instance.Mark("prefixEnd");
+                __instance.Leave();
+
+                __instance.PrevRootEntry = ___rootEntry;
+
+                double ms = (double)___rootEntry.ElapsedTicks / Stopwatch.Frequency * 1000;
+                if (__instance.PrintSlowTicks && ms > __instance.PrintSlowTicksThreshold)
                 {
-                    long total = 0;
-                    foreach (KeyValuePair<string, long> val in ___elems)
+                    StringBuilder strib = null;
+                    List<PointData> data = new List<PointData>();
+                    if (!(bool)(Instance?._config.InlfuxDBOverwriteLogTicks))
                     {
-                        total += val.Value;
+                        strib = new StringBuilder();
+                        strib.AppendLine(string.Format("A tick took {0:0.##} ms", ms));
                     }
 
-                    double ms = (double)total / Stopwatch.Frequency * 1000;
+                    SlowTicksToString(___rootEntry, strib, data);
 
-                    if (ms > __instance.PrintSlowTicksThreshold)
+                    if (!(bool)(Instance?._config.InlfuxDBOverwriteLogTicks))
                     {
-                        List<KeyValuePair<string, long>> myList = ___elems.ToList();
-                        myList.Sort((x, y) => y.Value.CompareTo(x.Value));
-                        for (int i = 0; i < Math.Min(myList.Count, 8); i++)
-                        {
-                            KeyValuePair<string, long> val = myList[i];
-                            if (val.Value > Instance?._config.InlfuxDBLogtickThreshold)
-                            {
-                                Instance?.WritePoint(PointData.Measurement("logticks").Tag("system", val.Key).Field("value", (double)val.Value / Stopwatch.Frequency * 1000.0));
-                            }
-                        }
+                        ___logger.Notification(strib.ToString());
                     }
+                    Instance?.WritePoints(data);
                 }
-                long ticks = ___stopwatch.ElapsedTicks;
-                ___elems["PrefixEnd"] = ticks - ___start;
-                ___start = ticks;
-                if ((bool)(Instance?._config.InlfuxDBOverwriteLogTicks))
+
+                return false;
+            }
+
+            static void SlowTicksToString(ProfileEntryRange entry, StringBuilder strib, List<PointData> data, double thresholdMs = 0.35, string indent = "")
+            {
+                double timeMS = (double)entry.ElapsedTicks / Stopwatch.Frequency * 1000;
+                if (timeMS < thresholdMs)
                 {
-                    ___elems = new Dictionary<string, long>();
-                    return false;
+                    return;
+                }
+
+                if (entry.CallCount > 1)
+                {
+                    if (!(bool)(Instance?._config.InlfuxDBOverwriteLogTicks))
+                    {
+                        strib.AppendLine(
+                            indent + string.Format("{0:0.00}ms, {1:####} calls, avg {2:0.00} us/call: {3:0.00}",
+                            timeMS, entry.CallCount, timeMS * 1000 / Math.Max(entry.CallCount, 1), entry.Code)
+                        );
+                    }
+                    data.Add(PointData.Measurement("logticks").Tag("system", entry.Code).Field("value", timeMS).Field("call", entry.CallCount).Field("avg", timeMS * 1000 / Math.Max(entry.CallCount, 1)));
                 }
                 else
                 {
-                    return true;
+                    if (!(bool)(Instance?._config.InlfuxDBOverwriteLogTicks))
+                    {
+                        strib.AppendLine(
+                            indent + string.Format("{0:0.00}ms, {1:####} call : {2}",
+                            timeMS, entry.CallCount, entry.Code)
+                        );
+                    }
+                    data.Add(PointData.Measurement("logticks").Tag("system", entry.Code).Field("value", timeMS).Field("call", entry.CallCount));
+                }
+
+                List<ProfileEntryRange> profiles = new List<ProfileEntryRange>();
+
+                if (entry.Marks != null)
+                {
+                    profiles.AddRange(entry.Marks.Select(e => new ProfileEntryRange() { ElapsedTicks = e.Value.ElapsedTicks, Code = e.Key, CallCount = e.Value.CallCount }));
+                }
+
+                if (entry.ChildRanges != null)
+                {
+                    profiles.AddRange(entry.ChildRanges.Values);
+                }
+
+                IOrderedEnumerable<ProfileEntryRange> profsordered = profiles.OrderByDescending((prof) => prof.ElapsedTicks);
+
+                int i = 0;
+                foreach (ProfileEntryRange prof in profsordered)
+                {
+                    if (i++ > 8)
+                    {
+                        return;
+                    }
+
+                    SlowTicksToString(prof, strib, data, thresholdMs, indent + "  ");
                 }
             }
         }
