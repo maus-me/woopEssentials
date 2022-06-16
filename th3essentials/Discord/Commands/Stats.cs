@@ -75,7 +75,7 @@ namespace Th3Essentials.Discord.Commands
                     }
                     stringBuilder.AppendLine($"Loaded chunks: {discord.Sapi.World.LoadedChunkIndices.Count()}");
                     stringBuilder.AppendLine($"Loaded entities: {server.LoadedEntities.Count} ({activeEntities} active)");
-                    stringBuilder.Append($"Network: {decimal.Round((decimal)(statsCollection.statTotalPackets / 2.0), 2)} Packets/s or {decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2, MidpointRounding.AwayFromZero) } Kb/s");
+                    stringBuilder.Append($"Network: {decimal.Round((decimal)(statsCollection.statTotalPackets / 2.0), 2)} Packets/s or {decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2, MidpointRounding.AwayFromZero)} Kb/s");
                     return stringBuilder.ToString();
                 }
                 else

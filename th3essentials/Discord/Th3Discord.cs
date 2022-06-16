@@ -176,7 +176,7 @@ namespace Th3Essentials.Discord
                     Sapi.Event.PlayerChat += PlayerChatAsync;
                     Sapi.Event.PlayerDisconnect += PlayerDisconnectAsync;
                     Sapi.Event.PlayerNowPlaying += PlayerNowPlayingAsync;
-                    Sapi.Event.ServerRunPhase(EnumServerRunPhase.GameReady, GameReady);
+                    Sapi.Event.ServerRunPhase(EnumServerRunPhase.RunGame, OnRunGame);
                     Sapi.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
 
                     if (Config.HelpRoleID != 0)
@@ -495,7 +495,7 @@ namespace Th3Essentials.Discord
             return players;
         }
 
-        private void GameReady()
+        private void OnRunGame()
         {
             SendServerMessage(Lang.Get("th3essentials:start"));
         }
