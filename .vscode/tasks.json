@@ -162,7 +162,7 @@
         "isDefault": true
       },
       "dependsOn": ["package (Debug)"],
-      "command": "mono $VINTAGE_STORY_SERVER_MODDING/VintagestoryServer.exe --dataPath $VINTAGE_STORY_SERVER_DATA_MODDING --addModPath ${workspaceFolder}/bin/packages/mods",
+      "command": "mono $VINTAGE_STORY_SERVER_MODDING/VintagestoryServer.exe --dataPath $VINTAGE_STORY_SERVER_DATA_MODDING --addModPath ${workspaceFolder}/th3essentials/bin/packages/mods",
       "presentation": {
         "echo": true,
         "reveal": "silent",
