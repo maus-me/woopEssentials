@@ -71,7 +71,8 @@ namespace Th3Essentials.Discord
 
         internal async static void HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
         {
-            string response;
+            string response = string.Empty;
+            List<string> responseMult = null;
             bool ephemeral = discord.Config.UseEphermalCmdResponse;
             MessageComponent components = null;
             if (Enum.TryParse(commandInteraction.Data.Name, true, out SlashCommands cmd))
@@ -120,7 +121,7 @@ namespace Th3Essentials.Discord
                         }
                     case SlashCommands.Serverinfo:
                         {
-                            response = Serverinfo.HandleSlashCommand(discord, commandInteraction);
+                            responseMult = Serverinfo.HandleSlashCommand(discord, commandInteraction);
                             break;
                         }
                     case SlashCommands.Stats:
@@ -154,7 +155,23 @@ namespace Th3Essentials.Discord
             {
                 response = "Unknown SlashCommand";
             }
-            _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: ephemeral, components: components);
+            if (response != string.Empty)
+            {
+                _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: ephemeral, components: components);
+            }
+            else
+            {
+                if (responseMult.Count > 0)
+                {
+                    response = responseMult.FirstOrDefault();
+                    responseMult.RemoveAt(0);
+                    _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: ephemeral, components: components);
+                    foreach (string res in responseMult)
+                    {
+                        _ = commandInteraction.FollowupAsync(discord.ServerMsg(res), ephemeral: ephemeral, components: components);
+                    }
+                }
+            }
         }
 
         public static bool HasPermission(SocketGuildUser guildUser, List<ulong> moderationRoles)
