@@ -4,7 +4,6 @@ using Discord;
 using Discord.WebSocket;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
-using Vintagestory.API.Datastructures;
 
 namespace Th3Essentials.Discord.Commands
 {
@@ -20,7 +19,7 @@ namespace Th3Essentials.Discord.Commands
             _ = _client.Rest.CreateGuildCommand(serverinfo.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
         }
 
-        public static List<string> HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+        public static List<string> HandleSlashCommand(Th3Discord discord, SocketSlashCommand _)
         {
             List<string> re = new List<string>();
             StringBuilder sb = new StringBuilder();

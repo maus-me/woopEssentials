@@ -105,7 +105,7 @@ namespace Th3Essentials.Influxdb
         {
             _data = new List<PointData>();
 
-            foreach (IServerPlayer player in _sapi.World.AllOnlinePlayers)
+            foreach (IServerPlayer player in _sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
             {
                 if (player.ConnectionState == EnumClientState.Playing)
                 {

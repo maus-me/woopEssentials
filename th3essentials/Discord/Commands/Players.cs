@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Discord;
 using Discord.WebSocket;
 using Vintagestory.API.Config;
@@ -39,7 +40,7 @@ namespace Th3Essentials.Discord.Commands
                 }
             }
             List<string> names = new List<string>();
-            foreach (IServerPlayer player in discord.Sapi.World.AllOnlinePlayers)
+            foreach (IServerPlayer player in discord.Sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
             {
                 if (ping == true)
                 {
