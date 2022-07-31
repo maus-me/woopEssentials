@@ -233,7 +233,7 @@ namespace Th3Essentials.Influxdb
                             timeMS, entry.CallCount, timeMS * 1000 / Math.Max(entry.CallCount, 1), entry.Code)
                         );
                     }
-                    data.Add(PointData.Measurement("logticks").Tag("system", entry.Code).Field("value", timeMS).Field("call", entry.CallCount).Field("avg", timeMS * 1000 / Math.Max(entry.CallCount, 1)));
+                    data.Add(PointData.Measurement("logticks").Tag("system", entry.Code).Field("value", timeMS).Field("call", entry.CallCount).Field("avg", timeMS / Math.Max(entry.CallCount, 1)));
                 }
                 else
                 {
