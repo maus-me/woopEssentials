@@ -1,17 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Numerics;
 using System.Text;
 
 namespace Th3Essentials.InfluxDB
 {
     public class PointData
     {
+        private static readonly DateTime EpochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
         private string _measurement;
 
         private readonly Dictionary<string, object> _fields;
 
         private readonly Dictionary<string, string> _tags;
+
+        private BigInteger? _time;
 
         public PointData()
         {
@@ -33,7 +38,21 @@ namespace Th3Essentials.InfluxDB
             EscapeKey(sb, _measurement, false);
             AppendTags(sb);
             bool appendedFields = AppendFields(sb);
-            return !appendedFields ? "" : sb.ToString();
+            if (!appendedFields)
+            {
+                return "";
+            }
+
+            AppendTime(sb);
+            var s = sb.ToString();
+            return s;
+        }
+
+        public PointData Timestamp()
+        {
+            _time = (BigInteger)(DateTime.UtcNow.Subtract(EpochStart).Ticks * 0.1);
+
+            return this;
         }
 
         internal PointData Field(string key, object value)
@@ -164,6 +183,17 @@ namespace Th3Essentials.InfluxDB
             }
 
             return appended;
+        }
+
+        private void AppendTime(StringBuilder sb)
+        {
+            if (_time == null)
+            {
+                return;
+            }
+
+            sb.Append(' ');
+            sb.Append(((BigInteger)_time).ToString(CultureInfo.InvariantCulture));
         }
 
         private void EscapeValue(StringBuilder sb, string value)
