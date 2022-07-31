@@ -218,14 +218,7 @@
       "dependsOn": [
         "package (Debug)"
       ],
-      "command": "mono",
-      "args": [
-        "--debug",
-        "$VINTAGE_STORY_SERVER_MODDING/VintagestoryServer.exe",
-        "--dataPath $VINTAGE_STORY_SERVER_DATA_MODDING",
-        "--addModPath",
-        "${workspaceFolder}/th3essentials/bin/packages/mods"
-      ],
+      "command": "mono --debug $VINTAGE_STORY_SERVER_MODDING/VintagestoryServer.exe --dataPath $VINTAGE_STORY_SERVER_DATA_MODDING --addModPath ${workspaceFolder}/th3essentials/bin/packages/mods",
       "presentation": {
         "echo": true,
         "reveal": "silent",

@@ -24,7 +24,7 @@ namespace Th3Essentials.Commands
 
         private void OnWarp(IServerPlayer player, int groupId, CmdArgs args)
         {
-            string cmd = args.PopWord(string.Empty);
+            string cmd = args.PeekWord(string.Empty);
             switch (cmd)
             {
                 case "add":
@@ -33,7 +33,7 @@ namespace Th3Essentials.Commands
                         {
                             break;
                         }
-
+                        _ = args.PopWord();
                         string warpName = args.PopAll();
 
 
@@ -62,17 +62,19 @@ namespace Th3Essentials.Commands
                     }
                 case "remove":
                     {
-                        if (player.HasPrivilege(Privilege.controlserver))
+                        if (!player.HasPrivilege(Privilege.controlserver))
                         {
-                            string warpName = args.PopAll();
-                            if (Th3Essentials.Config.WarpLocations != null)
-                            {
-                                HomePoint warpPoint = Th3Essentials.Config.FindWarpByName(warpName);
-                                Th3Essentials.Config.WarpLocations.Remove(warpPoint);
-                                Th3Essentials.Config.MarkDirty();
-                            }
-                            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-removed", warpName), EnumChatType.CommandSuccess);
+                            break;
                         }
+                        _ = args.PopWord();
+                        string warpName = args.PopAll();
+                        if (Th3Essentials.Config.WarpLocations != null)
+                        {
+                            HomePoint warpPoint = Th3Essentials.Config.FindWarpByName(warpName);
+                            Th3Essentials.Config.WarpLocations.Remove(warpPoint);
+                            Th3Essentials.Config.MarkDirty();
+                        }
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-removed", warpName), EnumChatType.CommandSuccess);
                         break;
                     }
                 case "list":
