@@ -68,6 +68,21 @@
         "--addModPath",
         "${workspaceFolder}/th3essentials/bin/packages/mods"
       ]
+    },
+    {
+      "name": "Cake build debug",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "dotnet-cake",
+      "args": [
+        "${workspaceRoot}/th3essentials/build.cake",
+        "--debug",
+        "--verbosity=diagnostic",
+        "--target=Package"
+      ],
+      "cwd": "${workspaceRoot}/th3essentials",
+      "stopAtEntry": false,
+      "externalConsole": false
     }
   ]
 }
