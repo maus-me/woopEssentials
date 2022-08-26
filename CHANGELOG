@@ -1,0 +1,97 @@
+V2.0.0-pre.1
+- update to v2 since we now requiere a game version of atleast 1.17.0-pre.1
+- add warp ingame command (admins can set up warp locations)
+- update logticks metric collector for new 1.17
+- fixed /serverinfo command if many mods are installed
+
+v1.1.9
+- fixed problems related to reward system
+- fixed setchannel not saving to config
+- fixed mention @ everyone from ingame
+- add announce discord command
+- updated discord bot lib and docker images
+
+v1.1.8
+- fix bot permission if rewards are not used
+- improved rewards messages
+
+v1.1.7
+- added basic rewards system (can map discord roles to ingame role and display it in chat)
+- fixed a bug where when "ModerationRoles" : null  was set the server would crash if some one without admin permissions would use a admin or mod slashcommand in discord
+
+v1.1.6
+- fixed starterkit for usage with other mods items/blocks
+- fixed player count (-1)
+- add fr,it,ru translations thx to the generous contributors ❤️
+- fixed reset starterkit-all command
+
+v1.1.5
+- fixed modify roles not working
+- added multiple server support for grafana
+- possible shutdown hang error fix (was not able to reproduce)
+- include fatal log level in grafana log
+- improved player count accuracy
+- only save config when modified 
+- fix whitelist command always success response
+- fix temporal msg on restart even if turned off (edge case)
+- add new slashcommands (stats, admins [works also ingame], serverinfo)
+
+v1.1.4
+- fix temporal messages if server restarts when storm is on
+- fix nullpointer if logticks is on but influxdb is not used
+- add config option to customize how roles are shown ingame
+- add influxdb playtime metric
+
+v1.1.3
+fixes multiple nullpointer exceptions (PlayerDeath, InfluxDB, Dispose)
+- also fixes hanging on shutdown
+- seperated overload messages in influxdb
+- improved performance for getting temporal messages
+
+v1.1.2
+- better workaround for windows (assembly load issues)
+- improved error handling for influxdb
+- added ingame command /requesthelp to send a notifiaction for a spesific role to discord see
+    DiscordConfig -> HelpRoleID
+- added to the /players discord command the additional arguments ping to show player ping time
+- added ability to show player roles ingame and discord roles can be configured in serverconfig.json, system is enabled in Th3Config.json
+- included debug symbols
+
+v1.1.1
+- updated discord version
+
+v1.1.0
+- Added logging to influxdb see repo readme for install instructions and config
+- only works with 1.16.0-pre.7 and up
+
+v1.0.9
+- fixed food spawning in rotted (since the timer was saved with the item when i intoduced the attributes to fix lanterns)
+
+v1.0.8
+- Fix starterkitsystem finally
+- Added /r command to reply to last message (private ingame messages)
+
+v1.0.7
+- Fixed broken starterkit items (eg lanterns)
+
+v1.0.6
+- added new shutdown command (it will restart the server if configured)
+- renamed /restart to /restarttime to remove confusion
+
+v1.0.5
+- fixed whitelist slashcommand not working if player was not on server yet
+
+v1.0.4
+- Added configurable permissions for the whitelist and allowcharselonce slashcommands 
+- Added player count on join/leave messages (thx to Sps)
+
+v1.0.3
+- Fixed creation of slashcommands
+- Updated guid with permissions
+
+v1.0.1
+- Add the option to show discord command repsonse only to the user that used the command
+- Fixed messages are only send from GeneralChat (also includes Info log) to discord and not every chat channel like private groups and such
+
+v1.0.0
+initial release
