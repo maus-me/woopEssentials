@@ -31,6 +31,5 @@ before_script:
 build:
   stage: build
   script:
-    - 'cd $SOURCE_CODE_PATH'
     - 'dotnet cake --target=Package'
 
