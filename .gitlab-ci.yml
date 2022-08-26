@@ -9,6 +9,9 @@ variables:
   # 3) A relative path to the source code from project repository root.
   # NOTE: Please edit this path so it matches the structure of your project!
   SOURCE_CODE_PATH: 'th3essentials/'
+  VINTAGE_STORY_MODDDING: '/VintageStory'
+  SERVER_TYPE: 'unstable'
+  SERVER_VERSION: '1.17.0-rc.5'
 
 cache:
   # Per-stage and per-branch caching.
@@ -31,5 +34,8 @@ before_script:
 build:
   stage: build
   script:
+    - 'dotnet cake --target=Setup'
+    - 'curl -o $VINTAGE_STORY_MODDDING/server.tar.gz https://cdn.vintagestory.at/gamefiles/${SERVER_TYPE}/vs_server_${SERVER_VERSION}.tar.gz'
+    - 'tar -xzf $VINTAGE_STORY_MODDDING/server.tar.gz -C $VINTAGE_STORY_MODDDING'
     - 'dotnet cake --target=Package'
 
