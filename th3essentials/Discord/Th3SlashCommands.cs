@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Th3Essentials.Discord.Commands;
+using Vintagestory.API.Server;
+using Vintagestory.Common;
+using Vintagestory.Server;
 
 namespace Th3Essentials.Discord
 {
@@ -43,8 +47,41 @@ namespace Th3Essentials.Discord
                         {
                             if (HasPermission(guildUser, discord.Config.ModerationRoles))
                             {
+                                GameDatabase gameDatabase = null;
+                                string backupFileName = null;
+                                //TODO where to trigger this
+                                if (Th3Essentials.Config.BackupOnShutdown)
+                                {
+                                    discord.Sapi.Server.Config.Password = new Random().Next().ToString();
+                                    discord.Sapi.Logger.Notification($"Temporary server password is: {discord.Sapi.Server.Config.Password}");
+                                    foreach (IServerPlayer player in discord.Sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
+                                    {
+                                        player.Disconnect();
+                                    }
+                                    ServerMain server = (ServerMain)discord.Sapi.World;
+                                    gameDatabase = new GameDatabase(discord.Sapi.Logger);
+
+                                    _ = gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out _, out _, out _);
+                                    FileInfo fileInfo = new FileInfo(gameDatabase.DatabaseFilename);
+                                    long freeDiskSpace = ServerMain.xPlatInterface.GetFreeDiskSpace(fileInfo.DirectoryName);
+                                    if (freeDiskSpace > fileInfo.Length){
+                                        discord.Sapi.Logger.Debug($"SaveFileSize: {fileInfo.Length / 1000000 } MB, FreeDiskSpace: {freeDiskSpace / 1000000} MB");
+                                    }
+
+                                    string worldName = Path.GetFileName(discord.Sapi.WorldManager.CurrentWorldName);
+                                    if (worldName.Length == 0)
+                                    {
+                                        worldName = "world";
+                                    }
+                                    backupFileName = worldName + "-" + $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}" + ".vcdbs";
+                                }
+
                                 Task.Run(() =>
                                 {
+                                    if (Th3Essentials.Config.BackupOnShutdown)
+                                    {
+                                        gameDatabase.CreateBackup(backupFileName);
+                                    }
                                     discord.Sapi.Server.ShutDown();
                                 });
                                 response = "Server is going to shutdown now.";

@@ -34,6 +34,8 @@ namespace Th3Essentials.Config
 
         public bool ShutdownEnabled = false;
 
+        public bool BackupOnShutdown = false;
+
         public TimeSpan ShutdownTime = TimeSpan.Zero; // "00:00:00" in Th3Config.json
 
         public int[] ShutdownAnnounce = null;
