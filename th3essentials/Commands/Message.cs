@@ -21,49 +21,49 @@ namespace Th3Essentials.Commands
                     {
                         string playername = args.PopWord();
                         string msgRaw = args.PopAll();
-                        if (playername != null && msgRaw != string.Empty)
-                        {
-                            msgRaw = msgRaw.Replace("<", "&lt;").Replace(">", "&gt;");
-                            string msg = $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>{player.PlayerName} whispers:</strong></font> {msgRaw}";
-
-                            IEnumerable<IServerPlayer> otherPlayers = sapi.Server.Players.Where((curPlayer) => curPlayer.ConnectionState == EnumClientState.Playing && curPlayer.PlayerName.Equals(playername, StringComparison.InvariantCultureIgnoreCase));
-                            switch (otherPlayers.LongCount())
-                            {
-                                case 0:
-                                    {
-                                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-msg-fail", playername), EnumChatType.CommandError);
-                                        break;
-                                    }
-                                case 1:
-                                    {
-                                        IServerPlayer otherPlayer = otherPlayers.First();
-
-                                        if (LastMsgFrom.TryGetValue(otherPlayer.PlayerUID, out string playeruid))
-                                        {
-                                            playeruid = player.PlayerUID;
-                                        }
-                                        else
-                                        {
-                                            LastMsgFrom.Add(otherPlayer.PlayerUID, player.PlayerUID);
-                                        }
-
-                                        string msgSelf = $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>whispering to {otherPlayer.PlayerName}:</strong></font> {msgRaw}";
-                                        player.SendMessage(GlobalConstants.GeneralChatGroup, msgSelf, EnumChatType.OwnMessage);
-
-                                        otherPlayer.SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
-                                        break;
-                                    }
-                                default:
-                                    {
-                                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-msg-fail-mult", playername), EnumChatType.CommandError);
-                                        break;
-                                    }
-                            }
-                        }
-                        else
+                        if (playername == null || msgRaw == string.Empty)
                         {
                             player.SendMessage(GlobalConstants.GeneralChatGroup, "/msg " + Lang.Get("th3essentials:cd-msg-param"), EnumChatType.CommandError);
+                            return;
                         }
+
+                        msgRaw = msgRaw.Replace("<", "&lt;").Replace(">", "&gt;");
+                        string msg = $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>{player.PlayerName} whispers:</strong></font> {msgRaw}";
+
+                        IEnumerable<IServerPlayer> otherPlayers = sapi.Server.Players.Where((curPlayer) => curPlayer.ConnectionState == EnumClientState.Playing && curPlayer.PlayerName.Equals(playername, StringComparison.InvariantCultureIgnoreCase));
+                        switch (otherPlayers.LongCount())
+                        {
+                            case 0:
+                                {
+                                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-msg-fail", playername), EnumChatType.CommandError);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    IServerPlayer otherPlayer = otherPlayers.First();
+
+                                    if (LastMsgFrom.TryGetValue(otherPlayer.PlayerUID, out string playeruid))
+                                    {
+                                        playeruid = player.PlayerUID;
+                                    }
+                                    else
+                                    {
+                                        LastMsgFrom.Add(otherPlayer.PlayerUID, player.PlayerUID);
+                                    }
+
+                                    string msgSelf = $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>whispering to {otherPlayer.PlayerName}:</strong></font> {msgRaw}";
+                                    player.SendMessage(GlobalConstants.GeneralChatGroup, msgSelf, EnumChatType.OwnMessage);
+
+                                    otherPlayer.SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                                    break;
+                                }
+                            default:
+                                {
+                                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-msg-fail-mult", playername), EnumChatType.CommandError);
+                                    break;
+                                }
+                        }
+
                     }, Privilege.chat);
 
                 _ = sapi.RegisterCommand("r", Lang.Get("th3essentials:cd-reply"), Lang.Get("th3essentials:cd-reply-param"),
