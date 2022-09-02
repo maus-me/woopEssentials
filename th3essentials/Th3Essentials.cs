@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using Th3Essentials.Commands;
 using Th3Essentials.Config;
 using Th3Essentials.Discord;
@@ -11,6 +12,8 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
+using Vintagestory.Common;
+using Vintagestory.Server;
 
 [assembly: ModInfo("Th3Essentials",
     Description = "Th3Dilli essentials server mod",
@@ -154,7 +157,46 @@ namespace Th3Essentials
             }
             if (Config.ShutdownEnabled && TimeInMinutes < 1)
             {
+                if (Config.BackupOnShutdown)
+                {
+                    LockAndKick();
+                    CreateBackup();
+                }
                 _sapi.Server.ShutDown();
+            }
+        }
+
+        private void CreateBackup()
+        {
+            ServerMain server = (ServerMain)_sapi.World;
+            GameDatabase gameDatabase = new GameDatabase(_sapi.Logger);
+
+            _ = gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out _, out _, out _);
+            FileInfo fileInfo = new FileInfo(gameDatabase.DatabaseFilename);
+            long freeDiskSpace = ServerMain.xPlatInterface.GetFreeDiskSpace(fileInfo.DirectoryName);
+            if (freeDiskSpace <= fileInfo.Length)
+            {
+                _sapi.Logger.Warning($"SaveFileSize: {fileInfo.Length / 1000000} MB, FreeDiskSpace: {freeDiskSpace / 1000000} MB");
+                _sapi.Logger.Error("Not enought disk space left to create a backup");
+            }
+
+            string worldName = Path.GetFileName(_sapi.WorldManager.CurrentWorldName);
+            if (worldName.Length == 0)
+            {
+                worldName = "world";
+            }
+            string backupFileName = $"{worldName}-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.vcdbs";
+
+            gameDatabase.CreateBackup(backupFileName);
+        }
+
+        private void LockAndKick()
+        {
+            _sapi.Server.Config.Password = new Random().Next().ToString();
+            _sapi.Logger.Notification($"Temporary server password is: {_sapi.Server.Config.Password}");
+            foreach (IServerPlayer player in _sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
+            {
+                player.Disconnect();
             }
         }
 
