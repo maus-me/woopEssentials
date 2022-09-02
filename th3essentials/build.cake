@@ -49,6 +49,7 @@ Task("Package")
         EnsureDirectoryExists(packages);
         EnsureDirectoryExists(packageFolder);
         EnsureDirectoryExists(packageFolderOut);
+        CopyFiles($"bin/{configuration}/*", $"{packageFolder}/");
         if (configuration == "Release")
         {
             if (FileExists($"{packageFolder}/{name}.pdb"))
@@ -56,7 +57,6 @@ Task("Package")
                 DeleteFile($"{packageFolder}/{name}.pdb");
             }
         }
-        CopyFiles($"bin/{configuration}/*", $"{packageFolder}/");
         CopyDirectory("../resources/", packageFolder);
         Zip(packageFolder, zipfile);
     });

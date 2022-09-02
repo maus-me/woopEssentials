@@ -33,13 +33,13 @@
       "type": "mono",
       "request": "launch",
       "preLaunchTask": "package (Debug)",
-      "program": "${env:VINTAGE_STORY_MODDDING}/Vintagestory.exe",
+      "program": "${env:VINTAGE_STORY_MODDING}/Vintagestory.exe",
       "args": [
         "-p",
         "-o",
         "modding test world",
         "--dataPath",
-        "${env:VINTAGE_STORY_DATA_MODDDING}",
+        "${env:VINTAGE_STORY_DATA_MODDING}",
         "--addModPath",
         "${workspaceFolder}/th3essentials/bin/packages/mods"
       ]
@@ -49,10 +49,10 @@
       "type": "mono",
       "request": "launch",
       "preLaunchTask": "package (Debug)",
-      "program": "${env:VINTAGE_STORY_MODDDING}/Vintagestory.exe",
+      "program": "${env:VINTAGE_STORY_MODDING}/Vintagestory.exe",
       "args": [
         "--dataPath",
-        "${env:VINTAGE_STORY_DATA_MODDDING}",
+        "${env:VINTAGE_STORY_DATA_MODDING}",
         "--addModPath",
         "${workspaceFolder}/th3essentials/bin/packages/mods"
       ]
@@ -61,10 +61,10 @@
       "name": "Launch Client no world no build (Mono)",
       "type": "mono",
       "request": "launch",
-      "program": "${env:VINTAGE_STORY_MODDDING}/Vintagestory.exe",
+      "program": "${env:VINTAGE_STORY_MODDING}/Vintagestory.exe",
       "args": [
         "--dataPath",
-        "${env:VINTAGE_STORY_DATA_MODDDING}",
+        "${env:VINTAGE_STORY_DATA_MODDING}",
         "--addModPath",
         "${workspaceFolder}/th3essentials/bin/packages/mods"
       ]
