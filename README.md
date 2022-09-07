@@ -174,9 +174,11 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
     after that you can click on "Copy" and open that link in your browser, this will ask you to invite your bot to one of your server where you have permissions to invite a bot to
 
+    Next you will have to enable the `MESSAGE CONTENT INTENT` which you can find in the Bot sidebar menu entry. This will allow the bot to read user messages and forward them and also enables the `!setupth3essentials` command
+
     if you wanna use the reward/auth system you need to enable in the "Bot" menu the "SERVER MEMBERS INTENT" toggle.
 
-    yay your should have your bot now on your discord server :)
+    yay you should have your bot now on your discord server :)
 
 ## InfluxDB / Grafana
 
