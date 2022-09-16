@@ -9,30 +9,30 @@
 
 	<ItemGroup>
 		<Reference Include="VintagestoryAPI">
-			<HintPath>$(VINTAGE_STORY_MODDDING)/VintagestoryAPI.dll</HintPath>
+			<HintPath>$(VINTAGE_STORY_MODDING)/VintagestoryAPI.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="VintagestoryLib">
-			<HintPath>$(VINTAGE_STORY_MODDDING)/VintagestoryLib.dll</HintPath>
+			<HintPath>$(VINTAGE_STORY_MODDING)/VintagestoryLib.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="protobuf-net">
-			<HintPath>$(VINTAGE_STORY_MODDDING)\Lib\protobuf-net.dll</HintPath>
+			<HintPath>$(VINTAGE_STORY_MODDING)\Lib\protobuf-net.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="Newtonsoft.Json">
-			<HintPath>$(VINTAGE_STORY_MODDDING)\Lib\Newtonsoft.Json.dll</HintPath>
+			<HintPath>$(VINTAGE_STORY_MODDING)\Lib\Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="0Harmony">
-			<HintPath>$(VINTAGE_STORY_MODDDING)\Lib\0Harmony.dll</HintPath>
+			<HintPath>$(VINTAGE_STORY_MODDING)\Lib\0Harmony.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>
 		<Reference Include="VSSurvivalMod">
-			<HintPath>$(VINTAGE_STORY_MODDDING)/Mods/VSSurvivalMod.dll</HintPath>
+			<HintPath>$(VINTAGE_STORY_MODDING)/Mods/VSSurvivalMod.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
