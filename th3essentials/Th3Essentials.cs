@@ -151,7 +151,7 @@ namespace Th3Essentials
                         string msg = TimeInMinutes == 1 ? Lang.Get("th3essentials:restart-in-min") : Lang.Get("th3essentials:restart-in-mins", TimeInMinutes);
                         _sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
                         _th3Discord?.SendServerMessage(msg);
-                        _sapi.Logger.Debug(msg);
+                        _sapi.Logger.Event(msg);
                     }
                 }
             }
@@ -178,14 +178,18 @@ namespace Th3Essentials
             {
                 _sapi.Logger.Warning($"SaveFileSize: {fileInfo.Length / 1000000} MB, FreeDiskSpace: {freeDiskSpace / 1000000} MB");
                 _sapi.Logger.Error("Not enought disk space left to create a backup");
+                return;
             }
 
-            string worldName = Path.GetFileName(_sapi.WorldManager.CurrentWorldName);
+            string worldName = Path.GetFileNameWithoutExtension(_sapi.WorldManager.CurrentWorldName);
             if (worldName.Length == 0)
             {
                 worldName = "world";
             }
             string backupFileName = $"{worldName}-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.vcdbs";
+
+            _sapi.Logger.Event(Lang.Get("th3essentials:backup"));
+            _th3Discord?.SendServerMessage(Lang.Get("th3essentials:backup-dc"));
 
             gameDatabase.CreateBackup(backupFileName);
         }
@@ -193,7 +197,7 @@ namespace Th3Essentials
         private void LockAndKick()
         {
             _sapi.Server.Config.Password = new Random().Next().ToString();
-            _sapi.Logger.Notification($"Temporary server password is: {_sapi.Server.Config.Password}");
+            _sapi.Logger.Event($"Temporary server password is: {_sapi.Server.Config.Password}");
             foreach (IServerPlayer player in _sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
             {
                 player.Disconnect();
