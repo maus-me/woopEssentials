@@ -29,6 +29,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - reward system that allows you to add a text/icon to ingame chat if that player has a certain role in discord (Patreon)
 - announce a message from discord to ingame
 - /warp [ add \<warp name\> | remove \<warp name\> | list |\<warp name\> ] to predfined locations (setup by admin, also respecting home cooldown time) [on/off]
+- automatic backup - will create a backup when using the shutdown feature [on/off]
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -99,6 +100,11 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
   The `ShutdownTime` indicates the time when the server will shutdown (only if `"ShutdownEnabled" : true`) the second functionality bound to this value is to announce the restart with ingame and discord messages.
   By setting `"ShutdownAnnounce" : [1,2,3,4,5,10,20,30]` it will send messages 30,20 ,..., 2, 1 minutes before restart - "Server will shutdown in x minutes".
+
+- Backupsystem
+
+  when the shutdownsystem is turned on it will create a backup.
+  Once it would shutdown it first kicks all players, then locks the server with a temporary password (printed to the console if someone really needs to connect), next it will start creating a backup and put it in the `/Backups` folder in the data folder of the server. Finally it will shutdown the server. 
 
 - Homesystem / Spawn and Back command
 
@@ -296,6 +302,8 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
 
   // if the server should shutdown after the timer reaches 0 min till restart time [false, true]
   "ShutdownEnabled": false,
+  // if ShutdownEnabled is this will create a backup and restart after that is finished
+  "BackupOnShutdown": false,
 
   // time on the server when the server should restart, also used for the ShutdownAnnounce messages - do not set this to null - if ShutdownEnabled is false and ShutdownAnnounce is null it wont do anything
   "ShutdownTime": "00:00:00",

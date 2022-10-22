@@ -52,6 +52,8 @@
     "hs-back": "teleportet to last position",
     "shutdown": ":no_entry: Server shutdown",
     "start": ":white_check_mark: Server started",
+    "backup": "Backing up world... Do not turn off the server! It will shutdown once it finished.",
+    "backup-dc": ":floppy_disk: Backing up world...",
     "connected": ":inbox_tray: Player {0} connected ({1}/{2})",
     "disconnected": ":outbox_tray: Player {0} disconnected ({1}/{2})",
     "playerdeath": "Player {0} died",

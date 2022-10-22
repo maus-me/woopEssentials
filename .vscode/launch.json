@@ -39,7 +39,7 @@
         "-o",
         "modding test world",
         "--dataPath",
-        "${env:VINTAGE_STORY_DATA_MODDDING}",
+        "${env:VINTAGE_STORY_DATA_MODDING}",
         "--addModPath",
         "${workspaceFolder}/th3essentials/bin/packages/mods"
       ]
@@ -52,7 +52,7 @@
       "program": "${env:VINTAGE_STORY_MODDING}/Vintagestory.exe",
       "args": [
         "--dataPath",
-        "${env:VINTAGE_STORY_DATA_MODDDING}",
+        "${env:VINTAGE_STORY_DATA_MODDING}",
         "--addModPath",
         "${workspaceFolder}/th3essentials/bin/packages/mods"
       ]
@@ -64,7 +64,7 @@
       "program": "${env:VINTAGE_STORY_MODDING}/Vintagestory.exe",
       "args": [
         "--dataPath",
-        "${env:VINTAGE_STORY_DATA_MODDDING}",
+        "${env:VINTAGE_STORY_DATA_MODDING}",
         "--addModPath",
         "${workspaceFolder}/th3essentials/bin/packages/mods"
       ]
