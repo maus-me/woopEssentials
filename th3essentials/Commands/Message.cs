@@ -42,9 +42,9 @@ namespace Th3Essentials.Commands
                                 {
                                     IServerPlayer otherPlayer = otherPlayers.First();
 
-                                    if (LastMsgFrom.TryGetValue(otherPlayer.PlayerUID, out string playeruid))
+                                    if (LastMsgFrom.ContainsKey(otherPlayer.PlayerUID))
                                     {
-                                        playeruid = player.PlayerUID;
+                                        LastMsgFrom[otherPlayer.PlayerUID] = player.PlayerUID;
                                     }
                                     else
                                     {
