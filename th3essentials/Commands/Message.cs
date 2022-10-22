@@ -84,9 +84,9 @@ namespace Th3Essentials.Commands
                                 player.SendMessage(GlobalConstants.GeneralChatGroup, msgSelf, EnumChatType.OwnMessage);
 
                                 otherPlayer.SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
-                                if (LastMsgFrom.TryGetValue(otherPlayer.PlayerUID, out string playeruid))
+                                if (LastMsgFrom.ContainsKey(otherPlayer.PlayerUID))
                                 {
-                                    playeruid = player.PlayerUID;
+                                    LastMsgFrom[otherPlayer.PlayerUID] = player.PlayerUID;
                                 }
                                 else
                                 {
