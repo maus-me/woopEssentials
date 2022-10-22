@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -134,7 +135,14 @@ namespace Th3Essentials.Discord
                     }
                 case LogSeverity.Warning:
                     {
-                        Sapi.Logger.Warning($"[Discord] {log.ToString(prependTimestamp: false)}");
+                        var logMessage = log.ToString(prependTimestamp: false);
+                        if(log.Exception is GatewayReconnectException || log.Exception.InnerException is WebSocketException){
+                            Sapi.Logger.VerboseDebug($"[Discord] {logMessage}");
+                        }
+                        else
+                        {
+                            Sapi.Logger.Warning($"[Discord] {logMessage}");
+                        }
                         break;
                     }
                 case LogSeverity.Info:
