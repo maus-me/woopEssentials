@@ -1,4 +1,10 @@
-V2.0.0-pre.1
+v2.1.0
+- add automatic backup feature (lock server, kick players, backup, restart)
+- fix reply command to reply to last received message
+- separate discord reconnect warnings to debug log
+
+v2.0.0
+v2.0.0-pre.1 
 - update to v2 since we now requiere a game version of atleast 1.17.0-pre.1
 - add warp ingame command (admins can set up warp locations)
 - update logticks metric collector for new 1.17
