@@ -57,7 +57,7 @@ namespace Th3Essentials.Discord.Commands
                             {
                                 string token = Guid.NewGuid().ToString();
                                 Th3Discord.AccountsToLink.Add(token, guildUser.Id.ToString());
-                                return $"Type `/dcauth {token}` ingame";
+                                return $"Type `/dcauth {token}` ingame then relog.";
                             }
                             return "User already linked to a ingame account";
                         }

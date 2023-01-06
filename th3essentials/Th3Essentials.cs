@@ -21,6 +21,9 @@ using Vintagestory.Server;
     Authors = new[] { "Th3Dilli" })]
 namespace Th3Essentials
 {
+
+    public delegate void PlayerWithRewardJoin(IServerPlayer player, string discordRewardId);
+    
     public class Th3Essentials : ModSystem
     {
         private const string _configFile = "Th3Config.json";
@@ -31,11 +34,13 @@ namespace Th3Essentials
 
         internal static string Th3EssentialsModDataKey = "Th3Essentials";
 
-        private ICoreServerAPI _sapi;
+        internal ICoreServerAPI _sapi;
 
         private Th3Discord _th3Discord;
 
         private Th3Influxdb _th3Influx;
+
+        public event PlayerWithRewardJoin OnPlayerWithRewardJoin;
 
         public Th3Essentials()
         {
@@ -88,7 +93,7 @@ namespace Th3Essentials
             if (Config.IsDiscordConfigured())
             {
                 _th3Discord = new Th3Discord();
-                _th3Discord.Init(_sapi);
+                _th3Discord.Init(this);
             }
             else
             {
@@ -132,6 +137,10 @@ namespace Th3Essentials
                         player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-reloadconfig-fail"), EnumChatType.CommandError);
                     }
                 }, Privilege.controlserver);
+        }
+
+        internal void PlayerWithRewardJoin(IServerPlayer player, string discordRewardId){
+            OnPlayerWithRewardJoin?.Invoke(player, discordRewardId);
         }
 
         private void PlayerChatAsync(IServerPlayer byPlayer, int channelId, ref string message, ref string data, BoolRef consumed)
