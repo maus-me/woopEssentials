@@ -285,7 +285,7 @@ namespace Th3Essentials.Discord
 
         private Task MessageReceivedAsync(SocketMessage messageParam)
         {
-            if (messageParam.Author.IsBot)
+            if (messageParam.Author.Id == _client.CurrentUser.Id)
             {
                 return Task.CompletedTask;
             }
