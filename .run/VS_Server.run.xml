@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="VS_Server" type="RunExe" factoryName=".NET Executable">
     <option name="EXE_PATH" value="$USER_HOME$/Applications/VintageStoryServerModding/VintagestoryServer.exe" />
-    <option name="PROGRAM_PARAMETERS" value="--addModPath $PROJECT_DIR$/th3essentials/bin/packages/mods --dataPath $USER_HOME$/.config/VintagestoryDataModdingServer" />
+    <option name="PROGRAM_PARAMETERS" value="--addModPath $PROJECT_DIR$/Th3Essentials/bin/packages/mods --dataPath $USER_HOME$/.config/VintagestoryDataModdingServer" />
     <option name="WORKING_DIRECTORY" value="$USER_HOME$/Applications/VintageStoryServerModding" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />

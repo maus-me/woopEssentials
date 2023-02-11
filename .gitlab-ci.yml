@@ -28,7 +28,6 @@ cache:
     - '$NUGET_PACKAGES_DIRECTORY'
 before_script:
   - 'dotnet tool restore'
-  - 'cd $SOURCE_CODE_PATH'
   - 'dotnet restore --packages $NUGET_PACKAGES_DIRECTORY'
 
 build:
