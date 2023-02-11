@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="VS_Client" type="RunExe" factoryName=".NET Executable">
+    <option name="EXE_PATH" value="$USER_HOME$/Applications/VintageStoryModding/Vintagestory.exe" />
+    <option name="PROGRAM_PARAMETERS" value="--addModPath $PROJECT_DIR$/th3essentials/bin/packages/mods --dataPath $USER_HOME$/.config/VintagestoryDataModding" />
+    <option name="WORKING_DIRECTORY" value="$USER_HOME$/Applications/VintageStoryModding" />
+    <option name="PASS_PARENT_ENVS" value="1" />
+    <option name="USE_EXTERNAL_CONSOLE" value="0" />
+    <option name="USE_MONO" value="0" />
+    <option name="RUNTIME_ARGUMENTS" value="--debug" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="CakeBuild" run_configuration_type="DotNetProject" />
+    </method>
+  </configuration>
+</component>

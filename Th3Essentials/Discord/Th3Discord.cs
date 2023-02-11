@@ -140,7 +140,8 @@ namespace Th3Essentials.Discord
                 case LogSeverity.Warning:
                     {
                         var logMessage = log.ToString(prependTimestamp: false);
-                        if(log.Exception is GatewayReconnectException || log.Exception.InnerException is WebSocketException){
+                        if (log.Exception is GatewayReconnectException || log.Exception.InnerException is WebSocketException)
+                        {
                             Sapi.Logger.VerboseDebug($"[Discord] {logMessage}");
                         }
                         else
@@ -181,7 +182,7 @@ namespace Th3Essentials.Discord
                 if (!_initialized)
                 {
                     _client.MessageReceived += MessageReceivedAsync;
-                    _client.InteractionCreated += InteractionCreated;
+                    _client.SlashCommandExecuted += InteractionCreated;
                     _client.ButtonExecuted += ButtonExecuted;
 
                     //add vs api events
@@ -256,19 +257,9 @@ namespace Th3Essentials.Discord
             }
         }
 
-        private Task InteractionCreated(SocketInteraction interaction)
+        private Task InteractionCreated(SocketSlashCommand command)
         {
-            switch (interaction)
-            {
-                // Slash commands
-                case SocketSlashCommand commandInteraction:
-                    {
-                        Th3SlashCommands.HandleSlashCommand(this, commandInteraction);
-                        break;
-                    }
-                default:
-                    break;
-            }
+            Th3SlashCommands.HandleSlashCommand(this, command);
             return Task.CompletedTask;
         }
 
@@ -326,15 +317,21 @@ namespace Th3Essentials.Discord
                 // use blue font ingame for discord messages
                 // const string format = "<font color=\"#{0}\"><strong>{1}: </strong></font><font family=\"Twitter Color Emoji\">{2}</font>";
                 const string format = "<font color=\"#{0}\"><strong>{1}: </strong></font>{2}";
+                string name = null;
+
                 if (message.Author is SocketGuildUser guildUser)
                 {
-                    string name = guildUser.Nickname ?? guildUser.Username;
-                    msg = message.Attachments.Count > 0
-                        ? string.Format(format, Config.DiscordChatColor, name, $" [Attachments] {msg}")
-                        : string.Format(format, Config.DiscordChatColor, name, msg);
-                    Sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
-                    Sapi.Logger.Chat(msg);
+                    name = guildUser.Nickname ?? guildUser.Username;
                 }
+                else
+                {
+                    name = message.Author.Username;
+                }
+                msg = message.Attachments.Count > 0
+                    ? string.Format(format, Config.DiscordChatColor, name, $" [Attachments] {msg}")
+                    : string.Format(format, Config.DiscordChatColor, name, msg);
+                Sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                Sapi.Logger.Chat(msg);
             }
             return Task.CompletedTask;
         }
@@ -535,7 +532,7 @@ namespace Th3Essentials.Discord
             {
                 _initialized = false;
                 _client.MessageReceived -= MessageReceivedAsync;
-                _client.InteractionCreated -= InteractionCreated;
+                _client.SlashCommandExecuted -= InteractionCreated;
                 _client.ButtonExecuted -= ButtonExecuted;
 
                 Sapi.Event.PlayerChat -= PlayerChatAsync;

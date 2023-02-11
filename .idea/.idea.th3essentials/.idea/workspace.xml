@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="01fa3ddf-e7d4-47f4-885e-29fc17ab704f" name="Changes" comment="change to cake build">
+      <change afterPath="$PROJECT_DIR$/.run/CakeBuild.run.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.run/VS_Client.run.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.run/VS_Server.run.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.config/dotnet-tools.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/tasks.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/th3essentials.code-workspace" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/influx_grafana/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/influx_grafana/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/influx_grafana/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/influx_grafana/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/modinfo.json" beforeDir="false" afterPath="$PROJECT_DIR$/resources/modinfo.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Commands/Command.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Commands/CommandsLoader.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Commands/Message.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Commands/Restart.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Commands/Serverinfo.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Commands/Warp.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Config/HomePoint.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Config/Rewards.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Config/StarterkitItem.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Config/Th3Config.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Config/Th3DiscordConfig.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Config/Th3InfluxConfig.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Config/Th3PlayerConfig.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Config/Th3PlayerData.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/Admins.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/AllowCharSelOnce.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/Announce.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/Auth.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/Date.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/ModifyPermissions.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/Players.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/RestartTime.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/Serverinfo.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/SetChannel.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/Shutdown.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/Stats.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Commands/Whitelist.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Th3Discord.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Discord/Th3SlashCommands.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/InfluxDB/InfluxDBClient.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/InfluxDB/PointData.License.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/InfluxDB/PointData.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/InfluxDB/Th3Influxdb.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Systems/Announcementsystem.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Systems/Homesystem.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Systems/Starterkitsystem.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Th3Essentials.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Th3Essentials.csproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/Th3Utils.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/th3essentials/build.cake" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProjectId" id="2LbJeGIFFLGoAYnzwXcPTlzBELO" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/home/dilli/drive_linux/git_repos/vintagestory/mods/th3essentials/th3essentials/Th3Essentials.csproj",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "/home/dilli/.config/JetBrains/Rider2022.3/resharper-host/DecompilerCache",
+      "/home/dilli/.config/JetBrains/Rider2022.3/resharper-host/SourcesCache",
+      "/home/dilli/.local/share/Symbols/src"
+    ]
+  }
+}]]></component>
+  <component name="RunManager" selected=".NET Project.CakeBuild" />
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="01fa3ddf-e7d4-47f4-885e-29fc17ab704f" name="Changes" comment="" />
+      <created>1676133941984</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1676133941984</updated>
+      <workItem from="1676133943272" duration="845000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+</project>

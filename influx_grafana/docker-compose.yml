@@ -2,7 +2,7 @@ version: '3.3'
 services:
   influxdb:
     container_name: th3essentials-influxdb
-    image: 'influxdb:2.2.0'
+    image: 'influxdb:2.6.1'
     ports:
         - ${INFLUXDB_PORT}:8086
     volumes:
@@ -10,7 +10,7 @@ services:
         - ${INFLUXDB_CONFIG}:/etc/influxdb2
   grafana:
     container_name: th3essentials-grafana
-    image: grafana/grafana:8.5.2
+    image: grafana/grafana:9.3.6
 # add this and make sure that your default user has write acces to the grafana folder
     user: "1000"
     ports:

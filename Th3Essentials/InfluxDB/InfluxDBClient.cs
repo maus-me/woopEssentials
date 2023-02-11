@@ -18,7 +18,7 @@ namespace Th3Essentials.InfluxDB
         public InfluxDBClient(string inlfuxDBURL, string inlfuxDBToken, string inlfuxDBOrg, string inlfuxDBBucket, ICoreServerAPI api)
         {
             _api = api;
-            _writeEndpoint = $"write?org={inlfuxDBOrg}&bucket={inlfuxDBBucket}&precision=s";
+            _writeEndpoint = $"write?org={inlfuxDBOrg}&bucket={inlfuxDBBucket}&precision=ms";
             _httpClient = new HttpClient
             {
                 BaseAddress = new Uri($"{inlfuxDBURL}/api/v2/")

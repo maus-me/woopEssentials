@@ -17,7 +17,7 @@ Edit `.env` file to set docker volumes paths and port mappings:
 To start the services:
 
 ```
-docker-compose up -d
+docker compose up -d
 ```
 
 You can now check the services status by inspecting docker containers (`docker ps`)
@@ -26,7 +26,7 @@ You can now check the services status by inspecting docker containers (`docker p
 
 1. Login to InfluxDB web UI (by default `http://localhost:8086`), create the account.
 2. For bucket name choose `serverstats`, otherwise you'll need to modify grafana dashboard json.
-3. Get API token from `Data -> Buckets -> API Tokens` - you'll need it for `Th3Config.json` and grafana
+3. Get API token from `Data -> API Tokens` - you'll need it for `Th3Config.json` and grafana
 
 ## Grafana configuration
 

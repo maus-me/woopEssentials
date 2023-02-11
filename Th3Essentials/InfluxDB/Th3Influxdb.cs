@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using HarmonyLib;
 using Th3Essentials.Config;
@@ -11,6 +10,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
+using Vintagestory.Common;
 using Vintagestory.Server;
 
 namespace Th3Essentials.Influxdb
@@ -40,11 +40,20 @@ namespace Th3Essentials.Influxdb
         internal void Init(ICoreServerAPI sapi)
         {
             _harmony = new Harmony(_harmonyPatchkey);
-            MethodInfo original = typeof(FrameProfilerUtil).GetMethod(nameof(FrameProfilerUtil.End));
-            HarmonyMethod prefix = new HarmonyMethod(typeof(PatchFrameProfilerUtil).GetMethod(nameof(PatchFrameProfilerUtil.Prefix)));
+            var original = typeof(FrameProfilerUtil).GetMethod(nameof(FrameProfilerUtil.End));
+            var prefix = new HarmonyMethod(typeof(PatchFrameProfilerUtil).GetMethod(nameof(PatchFrameProfilerUtil.Prefix)));
             _harmony.Patch(original, prefix: prefix);
 
-            _sapi = sapi;
+            var original2 = typeof(CoreServerEventManager).GetMethod(nameof(CoreServerEventManager.TriggerChatCommand));
+            var prefix2 = new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(PatchAdminLogging.TriggerChatCommand)));
+            _harmony.Patch(original2, prefix: prefix2);
+
+            var original4 = typeof(InventoryPlayerCreative).GetMethod(nameof(InventoryPlayerCreative.ActivateSlot));
+            var postfix4 = new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(PatchAdminLogging.ActivateSlot)));
+            _harmony.Patch(original4, postfix: postfix4);
+
+
+           _sapi = sapi;
             _config = Th3Essentials.Config.InfluxConfig;
             _server = (ServerMain)_sapi.World;
             _vsProcess = Process.GetCurrentProcess();
@@ -52,9 +61,29 @@ namespace Th3Essentials.Influxdb
             _client = new InfluxDBClient(_config.InlfuxDBURL, _config.InlfuxDBToken, _config.InlfuxDBOrg, _config.InlfuxDBBucket, sapi);
 
             _sapi.Logger.EntryAdded += LogEntryAdded;
+            _sapi.Event.DidPlaceBlock += OnDidPlaceBlock;
+            _sapi.Event.DidBreakBlock += OnDidBreakBlock;
 
             _writeDataListenerID = _sapi.Event.RegisterGameTickListener(WriteData, 10000);
             Instance = this;
+        }
+
+        private void OnDidBreakBlock(IServerPlayer byPlayer, int oldblockId, BlockSelection blockSel)
+        {
+            if (byPlayer.WorldData.CurrentGameMode == EnumGameMode.Creative)
+            {
+                PointData pointData = PointData.Measurement("playerlogcrbreak").Tag("player", byPlayer.PlayerName.ToLower()).Tag("playerUID", byPlayer.PlayerUID).Tag("position", blockSel.Position.ToString()).Field("value", $"{Instance._sapi.World.Blocks[oldblockId].Code} {blockSel.Position.ToString()}");
+                WritePoint(pointData);
+            }
+        }
+
+        private void OnDidPlaceBlock(IServerPlayer byPlayer, int oldblockId, BlockSelection blockSel, ItemStack withItemStack)
+        {
+            if (byPlayer.WorldData.CurrentGameMode == EnumGameMode.Creative)
+            {
+                PointData pointData = PointData.Measurement("playerlogcrplace").Tag("player", byPlayer.PlayerName.ToLower()).Tag("playerUID", byPlayer.PlayerUID).Tag("position", blockSel.Position.ToString()).Field("value", $"{withItemStack.Collectible?.Code} {blockSel.Position.ToString()}");
+                WritePoint(pointData);
+            }
         }
 
         private void LogEntryAdded(EnumLogType logType, string message, object[] args)
@@ -177,6 +206,32 @@ namespace Th3Essentials.Influxdb
             }
 
             _harmony?.UnpatchAll(_harmonyPatchkey);
+        }
+
+        public class PatchAdminLogging
+        {
+            public static void TriggerChatCommand(IPlayer player, int channelId, string command, CmdArgs args)
+            {
+                PointData pointData = PointData.Measurement("playerlog").Tag("player", player.PlayerName.ToLower()).Tag("playerUID", player.PlayerUID).Field("value", $"{command} {args.PopAll()}");
+                Instance?.WritePoint(pointData);
+            }
+
+            public static void ActivateSlot(InventoryPlayerCreative __instance, int slotId, ItemSlot sourceSlot, ref ItemStackMoveOperation op)
+            {
+                if (op.MovedQuantity == 0) return;
+                if (op.ShiftDown)
+                {
+                    ItemSlot itemSlot = __instance[slotId];
+                    PointData pointData = PointData.Measurement("playerloginv").Tag("player", op.ActingPlayer?.PlayerName.ToLower()).Tag("playerUID", op.ActingPlayer?.PlayerUID).Field("value", $"{op.MovedQuantity} {itemSlot.Itemstack?.Collectible?.Code}");
+                    Instance?.WritePoint(pointData);
+                }
+                else
+                {
+
+                    PointData pointData = PointData.Measurement("playerloginv").Tag("player", op.ActingPlayer?.PlayerName.ToLower()).Tag("playerUID", op.ActingPlayer?.PlayerUID).Field("value", $"{op.MovedQuantity} {sourceSlot.Itemstack?.Collectible?.Code}");
+                    Instance?.WritePoint(pointData);
+                }
+            }
         }
 
         public class PatchFrameProfilerUtil
