@@ -45,6 +45,6 @@ build:
     - 'mkdir $VINTAGE_STORY_MODDING'
     - 'curl -o $VINTAGE_STORY_MODDING/server.tar.gz https://cdn.vintagestory.at/gamefiles/${SERVER_TYPE}/vs_server_${SERVER_VERSION}.tar.gz'
     - 'tar -xzf $VINTAGE_STORY_MODDING/server.tar.gz -C $VINTAGE_STORY_MODDING'
-    - 'dotnet run --project ./CakeBuild/Builder.csproj'
+    - 'dotnet run --project ./CakeBuild/CakeBuild.csproj'
 
 
