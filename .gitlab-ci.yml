@@ -8,10 +8,10 @@ variables:
   NUGET_PACKAGES_DIRECTORY: '.nuget'
   # 3) A relative path to the source code from project repository root.
   # NOTE: Please edit this path so it matches the structure of your project!
-  SOURCE_CODE_PATH: 'th3essentials/'
+  SOURCE_CODE_PATH: 'Th3Essentials/'
   VINTAGE_STORY_MODDING: '/VintageStory'
-  SERVER_TYPE: 'unstable'
-  SERVER_VERSION: '1.17.0-rc.5'
+  SERVER_TYPE: 'stable'
+  SERVER_VERSION: '1.17.11'
 
 cache:
   # Per-stage and per-branch caching.
@@ -37,7 +37,7 @@ build:
           when: on_success
           expire_in: 5 days
           paths:
-              - th3essentials/bin/packages/mods/
+              - Th3Essentials/bin/packages/mods/
   only:
     - main
     - merge_requests
@@ -45,5 +45,6 @@ build:
     - 'mkdir $VINTAGE_STORY_MODDING'
     - 'curl -o $VINTAGE_STORY_MODDING/server.tar.gz https://cdn.vintagestory.at/gamefiles/${SERVER_TYPE}/vs_server_${SERVER_VERSION}.tar.gz'
     - 'tar -xzf $VINTAGE_STORY_MODDING/server.tar.gz -C $VINTAGE_STORY_MODDING'
-    - 'dotnet cake --target=Package'
+    - 'dotnet run --project ./CakeBuild/Builder.csproj'
+
 
