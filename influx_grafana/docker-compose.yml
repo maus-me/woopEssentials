@@ -11,7 +11,7 @@ services:
   grafana:
     container_name: th3essentials-grafana
     image: grafana/grafana:9.3.6
-# add this and make sure that your default user has write acces to the grafana folder
+# add this and make sure that your default user has write access to the grafana folder
     user: "1000"
     ports:
       - ${GRAFANA_PORT}:3000
