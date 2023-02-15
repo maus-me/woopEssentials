@@ -24,7 +24,7 @@ namespace Th3Essentials.Discord.Commands
             List<string> re = new List<string>();
             StringBuilder sb = new StringBuilder();
             sb.Append("Game version: ");
-            sb.AppendLine(GameVersion.OverallVersion);
+            sb.AppendLine(Th3Util.GetVsVersion());
             sb.Append("Mods:");
             foreach (Mod mod in discord.Sapi.ModLoader.Mods)
             {

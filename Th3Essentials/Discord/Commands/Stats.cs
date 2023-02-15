@@ -52,7 +52,7 @@ namespace Th3Essentials.Discord.Commands
                         upHours -= 24 * upDays;
                     }
                     stringBuilder.Append("Version: ");
-                    stringBuilder.AppendLine(GameVersion.OverallVersion);
+                    stringBuilder.AppendLine(Th3Util.GetVsVersion());
                     stringBuilder.AppendLine($"Uptime: {upDays} days, {upHours} hours, {upMinutes} minutes, {upSeconds} seconds");
                     stringBuilder.AppendLine($"Players online: {server.Clients.Count} / {server.Config.MaxClients}");
 

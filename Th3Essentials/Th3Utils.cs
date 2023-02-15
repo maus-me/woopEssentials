@@ -1,14 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.Server;
 
 namespace Th3Essentials
 {
-    public class Th3Util
+    public static class Th3Util
     {
+        public static string GetVsVersion()
+        {
+            var fieldInfo = typeof(GameVersion).GetField(nameof(GameVersion.OverallVersion), BindingFlags.Public | BindingFlags.Static);
+            if (fieldInfo == null)
+            {
+                throw new Exception("Cannot read 'GameVersion.OverallVersion'");
+            }
+            return fieldInfo.GetValue(null) as string;
+        }
+        
         public static TimeSpan GetTimeTillRestart()
         {
             DateTime now = DateTime.Now;
