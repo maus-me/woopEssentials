@@ -48,9 +48,29 @@ namespace Th3Essentials.InfluxDB
             return s;
         }
 
-        public PointData Timestamp()
+        public PointData Timestamp(WritePrecision precision)
         {
-            _time = (BigInteger)(DateTime.UtcNow.Subtract(EpochStart).Ticks * 0.1);
+            BigInteger time;
+            var timestamp = (DateTime.UtcNow - EpochStart);
+            switch (precision)
+            {
+                case WritePrecision.Ns:
+                    time = timestamp.Ticks * 100;
+                    break;
+                case WritePrecision.Us:
+                    time = (BigInteger)(timestamp.Ticks * 0.1);
+                    break;
+                case WritePrecision.Ms:
+                    time = (BigInteger)timestamp.TotalMilliseconds;
+                    break;
+                case WritePrecision.S:
+                    time = (BigInteger)timestamp.TotalSeconds;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(precision), precision,
+                        "WritePrecision value is not supported");
+            }
+            _time = time;
 
             return this;
         }
@@ -140,37 +160,40 @@ namespace Th3Essentials.InfluxDB
                 EscapeKey(sb, key);
                 _ = sb.Append('=');
 
-                if (value is double || value is float)
+                switch (value)
                 {
-                    _ = sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
-                }
-                else if (value is uint || value is ulong || value is ushort)
-                {
-                    _ = sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
-                    _ = sb.Append('u');
-                }
-                else if (value is byte || value is int || value is long || value is sbyte || value is short)
-                {
-                    _ = sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
-                    _ = sb.Append('i');
-                }
-                else if (value is bool b)
-                {
-                    _ = sb.Append(b ? "true" : "false");
-                }
-                else if (value is string s)
-                {
-                    _ = sb.Append('"');
-                    EscapeValue(sb, s);
-                    _ = sb.Append('"');
-                }
-                else if (value is IConvertible c)
-                {
-                    _ = sb.Append(c.ToString(CultureInfo.InvariantCulture));
-                }
-                else
-                {
-                    _ = sb.Append(value);
+                    case double _:
+                    case float _:
+                        _ = sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
+                        break;
+                    case uint _:
+                    case ulong _:
+                    case ushort _:
+                        _ = sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
+                        _ = sb.Append('u');
+                        break;
+                    case byte _:
+                    case int _:
+                    case long _:
+                    case sbyte _:
+                    case short _:
+                        _ = sb.Append(((IConvertible)value).ToString(CultureInfo.InvariantCulture));
+                        _ = sb.Append('i');
+                        break;
+                    case bool b:
+                        _ = sb.Append(b ? "true" : "false");
+                        break;
+                    case string s:
+                        _ = sb.Append('"');
+                        EscapeValue(sb, s);
+                        _ = sb.Append('"');
+                        break;
+                    case IConvertible c:
+                        _ = sb.Append(c.ToString(CultureInfo.InvariantCulture));
+                        break;
+                    default:
+                        _ = sb.Append(value);
+                        break;
                 }
 
                 _ = sb.Append(',');
