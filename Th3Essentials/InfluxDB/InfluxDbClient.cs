@@ -87,14 +87,14 @@ namespace Th3Essentials.InfluxDB
 
                     if (precision != null)
                     {
-                        var httpResponseMessage = await _httpClient.PostAsync($"{_writeEndpoint}&precision={precision.ToString().ToLower()}",
+                        var httpResponseMessage = await _httpClient.PostAsync(
+                            $"{_writeEndpoint}&precision={precision.ToString().ToLower()}",
                             new StringContent(sb.ToString(), Encoding.UTF8, "application/json"));
                         if (!httpResponseMessage.IsSuccessStatusCode)
                         {
                             var response = await httpResponseMessage.Content.ReadAsStringAsync();
                             _api.Logger.Warning($"[InfluxDB] {(int)httpResponseMessage.StatusCode} : {response}");
                         }
-                        
                     }
                     else
                     {
@@ -112,6 +112,28 @@ namespace Th3Essentials.InfluxDB
                     _api.Logger.Warning($"[InfluxDB] {e}");
                 }
             });
+        }
+
+        public bool HasConnection()
+        {
+            try
+            {
+                var httpResponseMessage = _httpClient.GetAsync("orgs").GetAwaiter().GetResult();
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    _api.Logger.Debug("Influxdb connected");
+                    return true;
+                }
+
+                _api.Logger.Error($"Error connecting to {_httpClient.BaseAddress}, shutting down influxdb service. {httpResponseMessage.StatusCode}");
+                return false;
+            }
+            catch (Exception e)
+            {
+                _api.Logger.Error(
+                    $"Could not connect to {_httpClient.BaseAddress}, shutting down influxdb service. {e.Message}");
+                return false;
+            }
         }
     }
 }

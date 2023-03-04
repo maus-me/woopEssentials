@@ -39,26 +39,34 @@ namespace Th3Essentials.Influxdb
 
         internal void Init(ICoreServerAPI sapi)
         {
-            _harmony = new Harmony(HarmonyPatchKey);
-            var original = typeof(FrameProfilerUtil).GetMethod(nameof(FrameProfilerUtil.End));
-            var prefix = new HarmonyMethod(typeof(PatchFrameProfilerUtil).GetMethod(nameof(PatchFrameProfilerUtil.Prefix)));
-            _harmony.Patch(original, prefix: prefix);
-
-            var original2 = typeof(CoreServerEventManager).GetMethod(nameof(CoreServerEventManager.TriggerChatCommand));
-            var prefix2 = new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(PatchAdminLogging.TriggerChatCommand)));
-            _harmony.Patch(original2, prefix: prefix2);
-
-            var original4 = typeof(InventoryPlayerCreative).GetMethod(nameof(InventoryPlayerCreative.ActivateSlot));
-            var postfix4 = new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(PatchAdminLogging.ActivateSlot)));
-            _harmony.Patch(original4, postfix: postfix4);
-
-
-           _sapi = sapi;
+            _sapi = sapi;
             _config = Th3Essentials.Config.InfluxConfig;
             _server = (ServerMain)_sapi.World;
             _vsProcess = Process.GetCurrentProcess();
 
-            _client = new InfluxDbClient(_config.InlfuxDBURL, _config.InlfuxDBToken, _config.InlfuxDBOrg, _config.InlfuxDBBucket, sapi);
+            _client = new InfluxDbClient(_config.InlfuxDBURL, _config.InlfuxDBToken, _config.InlfuxDBOrg,
+                _config.InlfuxDBBucket, sapi);
+            if (!_client.HasConnection())
+            {
+                _client = null;
+                return;
+            }
+
+            _harmony = new Harmony(HarmonyPatchKey);
+            var original = typeof(FrameProfilerUtil).GetMethod(nameof(FrameProfilerUtil.End));
+            var prefix =
+                new HarmonyMethod(typeof(PatchFrameProfilerUtil).GetMethod(nameof(PatchFrameProfilerUtil.Prefix)));
+            _harmony.Patch(original, prefix: prefix);
+
+            var original2 = typeof(CoreServerEventManager).GetMethod(nameof(CoreServerEventManager.TriggerChatCommand));
+            var prefix2 =
+                new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(PatchAdminLogging.TriggerChatCommand)));
+            _harmony.Patch(original2, prefix: prefix2);
+
+            var original4 = typeof(InventoryPlayerCreative).GetMethod(nameof(InventoryPlayerCreative.ActivateSlot));
+            var postfix4 =
+                new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(PatchAdminLogging.ActivateSlot)));
+            _harmony.Patch(original4, postfix: postfix4);
 
             _sapi.Logger.EntryAdded += LogEntryAdded;
             _sapi.Event.DidPlaceBlock += OnDidPlaceBlock;
@@ -71,14 +79,19 @@ namespace Th3Essentials.Influxdb
         private void OnDidBreakBlock(IServerPlayer byPlayer, int oldBlockId, BlockSelection blockSel)
         {
             if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) return;
-            var pointData = PointData.Measurement("playerlogcrbreak").Tag("player", byPlayer.PlayerName.ToLower()).Tag("playerUID", byPlayer.PlayerUID).Tag("position", blockSel.Position.ToString()).Field("value", $"{Instance._sapi.World.Blocks[oldBlockId].Code} {blockSel.Position.ToString()}");
+            var pointData = PointData.Measurement("playerlogcrbreak").Tag("player", byPlayer.PlayerName.ToLower())
+                .Tag("playerUID", byPlayer.PlayerUID).Tag("position", blockSel.Position.ToString()).Field("value",
+                    $"{Instance._sapi.World.Blocks[oldBlockId].Code} {blockSel.Position.ToString()}");
             WritePoint(pointData, WritePrecision.Ms);
         }
 
-        private void OnDidPlaceBlock(IServerPlayer byPlayer, int oldBlockId, BlockSelection blockSel, ItemStack withItemStack)
+        private void OnDidPlaceBlock(IServerPlayer byPlayer, int oldBlockId, BlockSelection blockSel,
+            ItemStack withItemStack)
         {
             if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) return;
-            var pointData = PointData.Measurement("playerlogcrplace").Tag("player", byPlayer.PlayerName.ToLower()).Tag("playerUID", byPlayer.PlayerUID).Tag("position", blockSel.Position.ToString()).Field("value", $"{withItemStack.Collectible?.Code} {blockSel.Position.ToString()}");
+            var pointData = PointData.Measurement("playerlogcrplace").Tag("player", byPlayer.PlayerName.ToLower())
+                .Tag("playerUID", byPlayer.PlayerUID).Tag("position", blockSel.Position.ToString()).Field("value",
+                    $"{withItemStack.Collectible?.Code} {blockSel.Position.ToString()}");
             WritePoint(pointData, WritePrecision.Ms);
         }
 
@@ -101,24 +114,25 @@ namespace Th3Essentials.Influxdb
                 case EnumLogType.Notification:
                     break;
                 case EnumLogType.Warning:
+                {
+                    var msg = string.Format(message, args);
+                    if (msg.Contains("Server overloaded"))
                     {
-                        var msg = string.Format(message, args);
-                        if (msg.Contains("Server overloaded"))
-                        {
-                            WritePoint(PointData.Measurement("overloadwarnings").Field("value", msg));
-                        }
-                        else
-                        {
-                            WritePoint(PointData.Measurement("warnings").Field("value", msg));
-                        }
-                        break;
+                        WritePoint(PointData.Measurement("overloadwarnings").Field("value", msg));
                     }
+                    else
+                    {
+                        WritePoint(PointData.Measurement("warnings").Field("value", msg));
+                    }
+
+                    break;
+                }
                 case EnumLogType.Error:
                 case EnumLogType.Fatal:
-                    {
-                        WritePoint(PointData.Measurement("errors").Field("value", string.Format(message, args)));
-                        break;
-                    }
+                {
+                    WritePoint(PointData.Measurement("errors").Field("value", string.Format(message, args)));
+                    break;
+                }
                 case EnumLogType.Audit:
                     break;
                 default:
@@ -134,25 +148,32 @@ namespace Th3Essentials.Influxdb
             {
                 if (player.ConnectionState == EnumClientState.Playing)
                 {
-                    _data.Add(PointData.Measurement("online").Tag("player", player.PlayerName.ToLower()).Field("value", player.Ping));
+                    _data.Add(PointData.Measurement("online").Tag("player", player.PlayerName.ToLower())
+                        .Field("value", player.Ping));
                 }
             }
 
             _data.Add(PointData.Measurement("clients").Field("value", _server.Clients.Count));
 
 
-            var activeEntities = _sapi.World.LoadedEntities.Count(loadedEntity => loadedEntity.Value.State != EnumEntityState.Inactive);
+            var activeEntities =
+                _sapi.World.LoadedEntities.Count(loadedEntity => loadedEntity.Value.State != EnumEntityState.Inactive);
             _data.Add(PointData.Measurement("entitiesActive").Field("value", activeEntities));
 
 
-            var statsCollection = _server.StatsCollector[GameMath.Mod(_server.StatsCollectorIndex - 1, _server.StatsCollector.Length)];
+            var statsCollection =
+                _server.StatsCollector[GameMath.Mod(_server.StatsCollectorIndex - 1, _server.StatsCollector.Length)];
             if (statsCollection.ticksTotal > 0)
             {
-                _data.Add(PointData.Measurement("l2avgticktime").Field("value", (double)statsCollection.tickTimeTotal / statsCollection.ticksTotal));
+                _data.Add(PointData.Measurement("l2avgticktime").Field("value",
+                    (double)statsCollection.tickTimeTotal / statsCollection.ticksTotal));
                 _data.Add(PointData.Measurement("l2stickspersec").Field("value", statsCollection.ticksTotal / 2.0));
             }
+
             _data.Add(PointData.Measurement("packetspresec").Field("value", statsCollection.statTotalPackets / 2.0));
-            _data.Add(PointData.Measurement("kilobytespersec").Field("value", decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2, MidpointRounding.AwayFromZero)));
+            _data.Add(PointData.Measurement("kilobytespersec").Field("value",
+                decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2,
+                    MidpointRounding.AwayFromZero)));
 
             _vsProcess.Refresh();
             var memory = _vsProcess.PrivateMemorySize64 / 1048576;
@@ -164,7 +185,8 @@ namespace Th3Essentials.Influxdb
 
             _data.Add(PointData.Measurement("entities").Field("value", _sapi.World.LoadedEntities.Count));
 
-            _data.Add(PointData.Measurement("generatingChunks").Field("value", _sapi.WorldManager.CurrentGeneratingChunkCount));
+            _data.Add(PointData.Measurement("generatingChunks")
+                .Field("value", _sapi.WorldManager.CurrentGeneratingChunkCount));
             WritePoints(_data);
         }
 
@@ -180,7 +202,8 @@ namespace Th3Essentials.Influxdb
 
         internal void PlayerDied(IServerPlayer byPlayer, string msg)
         {
-            WritePoint(PointData.Measurement("deaths").Tag("player", byPlayer.PlayerName.ToLower()).Field("value", msg));
+            WritePoint(PointData.Measurement("deaths").Tag("player", byPlayer.PlayerName.ToLower())
+                .Field("value", msg));
         }
 
         public void Dispose()
@@ -201,23 +224,30 @@ namespace Th3Essentials.Influxdb
         {
             public static void TriggerChatCommand(IPlayer player, int channelId, string command, CmdArgs args)
             {
-                var pointData = PointData.Measurement("playerlog").Tag("player", player.PlayerName.ToLower()).Tag("playerUID", player.PlayerUID).Field("value", $"{command} {args.PopAll()}");
+                var pointData = PointData.Measurement("playerlog").Tag("player", player.PlayerName.ToLower())
+                    .Tag("playerUID", player.PlayerUID).Field("value", $"{command} {args.PopAll()}");
                 Instance?.WritePoint(pointData);
             }
 
-            public static void ActivateSlot(InventoryPlayerCreative __instance, int slotId, ItemSlot sourceSlot, ref ItemStackMoveOperation op)
+            public static void ActivateSlot(InventoryPlayerCreative __instance, int slotId, ItemSlot sourceSlot,
+                ref ItemStackMoveOperation op)
             {
                 if (op.MovedQuantity == 0) return;
                 if (op.ShiftDown)
                 {
                     var itemSlot = __instance[slotId];
-                    var pointData = PointData.Measurement("playerloginv").Tag("player", op.ActingPlayer?.PlayerName.ToLower()).Tag("playerUID", op.ActingPlayer?.PlayerUID).Field("value", $"{op.MovedQuantity} {itemSlot.Itemstack?.Collectible?.Code}");
+                    var pointData = PointData.Measurement("playerloginv")
+                        .Tag("player", op.ActingPlayer?.PlayerName.ToLower())
+                        .Tag("playerUID", op.ActingPlayer?.PlayerUID).Field("value",
+                            $"{op.MovedQuantity} {itemSlot.Itemstack?.Collectible?.Code}");
                     Instance?.WritePoint(pointData);
                 }
                 else
                 {
-
-                    var pointData = PointData.Measurement("playerloginv").Tag("player", op.ActingPlayer?.PlayerName.ToLower()).Tag("playerUID", op.ActingPlayer?.PlayerUID).Field("value", $"{op.MovedQuantity} {sourceSlot.Itemstack?.Collectible?.Code}");
+                    var pointData = PointData.Measurement("playerloginv")
+                        .Tag("player", op.ActingPlayer?.PlayerName.ToLower())
+                        .Tag("playerUID", op.ActingPlayer?.PlayerUID).Field("value",
+                            $"{op.MovedQuantity} {sourceSlot.Itemstack?.Collectible?.Code}");
                     Instance?.WritePoint(pointData);
                 }
             }
@@ -238,7 +268,7 @@ namespace Th3Essentials.Influxdb
                 __instance.PrevRootEntry = ___rootEntry;
 
                 var ms = (double)___rootEntry.ElapsedTicks / Stopwatch.Frequency * 1000;
-                
+
                 if (!__instance.PrintSlowTicks || !(ms > __instance.PrintSlowTicksThreshold)) return false;
                 StringBuilder stringBuilder = null;
                 var data = new List<PointData>();
@@ -254,12 +284,14 @@ namespace Th3Essentials.Influxdb
                 {
                     ___logger.Notification(stringBuilder.ToString());
                 }
+
                 Instance?.WritePoints(data, WritePrecision.Ms);
 
                 return false;
             }
 
-            private static void SlowTicksToString(ProfileEntryRange entry, StringBuilder stringBuilder, List<PointData> data, double thresholdMs = 0.35, string indent = "")
+            private static void SlowTicksToString(ProfileEntryRange entry, StringBuilder stringBuilder,
+                List<PointData> data, double thresholdMs = 0.35, string indent = "")
             {
                 var timeMs = (double)entry.ElapsedTicks / Stopwatch.Frequency * 1000;
                 if (timeMs < thresholdMs)
@@ -275,7 +307,10 @@ namespace Th3Essentials.Influxdb
                             $"{indent}{timeMs:0.00}ms, {entry.CallCount:####} calls, avg {timeMs * 1000 / Math.Max(entry.CallCount, 1):0.00} us/call: {entry.Code}"
                         );
                     }
-                    data.Add(PointData.Measurement("logticks").Tag("system", entry.Code).Field("value", timeMs).Field("call", entry.CallCount).Field("avg", timeMs / Math.Max(entry.CallCount, 1)).Timestamp(WritePrecision.Ms));
+
+                    data.Add(PointData.Measurement("logticks").Tag("system", entry.Code).Field("value", timeMs)
+                        .Field("call", entry.CallCount).Field("avg", timeMs / Math.Max(entry.CallCount, 1))
+                        .Timestamp(WritePrecision.Ms));
                 }
                 else
                 {
@@ -285,14 +320,17 @@ namespace Th3Essentials.Influxdb
                             $"{indent}{timeMs:0.00}ms, {entry.CallCount:####} call : {entry.Code}"
                         );
                     }
-                    data.Add(PointData.Measurement("logticks").Tag("system", entry.Code).Field("value", timeMs).Field("call", entry.CallCount).Timestamp(WritePrecision.Ms));
+
+                    data.Add(PointData.Measurement("logticks").Tag("system", entry.Code).Field("value", timeMs)
+                        .Field("call", entry.CallCount).Timestamp(WritePrecision.Ms));
                 }
 
                 var profiles = new List<ProfileEntryRange>();
 
                 if (entry.Marks != null)
                 {
-                    profiles.AddRange(entry.Marks.Select(e => new ProfileEntryRange() { ElapsedTicks = e.Value.ElapsedTicks, Code = e.Key, CallCount = e.Value.CallCount }));
+                    profiles.AddRange(entry.Marks.Select(e => new ProfileEntryRange()
+                        { ElapsedTicks = e.Value.ElapsedTicks, Code = e.Key, CallCount = e.Value.CallCount }));
                 }
 
                 if (entry.ChildRanges != null)
