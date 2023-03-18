@@ -307,6 +307,10 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
 
   // time on the server when the server should restart, also used for the ShutdownAnnounce messages - do not set this to null - if ShutdownEnabled is false and ShutdownAnnounce is null it wont do anything
   "ShutdownTime": "00:00:00",
+  // if you wanna have  multiple shutdowns per day you can define the time in here , will send shutodwn announce messages for every shutdown
+  // on startup this will be checked for the next shutdown and written to ShutdownTime - so this value has priority over ShutdownTime
+  // example value: ["00:00:00", "12:00:00"]
+  "ShutdownTimes": null,
 
   // time in minutes to announce the restart before it happens
   // if this is set it will announce a restart even if shutdown ist not enabled but wont restart/shutdown the server
@@ -336,7 +340,7 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // ["admin","crmod"]
   "AdminRoles": null,
   // enable the ingame /warp command
-  "WarpEnabled": true,
+  "WarpEnabled": false,
   // managed ingame with /warp add|remove name /warp name
   "WarpLocations": null
 }

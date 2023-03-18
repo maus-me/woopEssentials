@@ -37,6 +37,7 @@ namespace Th3Essentials.Config
         public bool BackupOnShutdown = false;
 
         public TimeSpan ShutdownTime = TimeSpan.Zero; // "00:00:00" in Th3Config.json
+        public TimeSpan[] ShutdownTimes = null;
 
         public int[] ShutdownAnnounce = null;
 
@@ -98,7 +99,7 @@ namespace Th3Essentials.Config
 
         internal bool IsShutdownConfigured()
         {
-            return (ShutdownAnnounce?.Length > 0) || (ShutdownTime != null && ShutdownEnabled);
+            return (ShutdownAnnounce?.Length > 0) || (ShutdownTime != null && ShutdownEnabled) || ShutdownTimes != null;
         }
 
         public HomePoint FindWarpByName(string name)
@@ -130,6 +131,7 @@ namespace Th3Essentials.Config
             ShutdownEnabled = configTemp.ShutdownEnabled;
             ShutdownAnnounce = configTemp.ShutdownAnnounce;
             ShutdownTime = configTemp.ShutdownTime;
+            ShutdownTimes = configTemp.ShutdownTimes;
 
             MessageCmdColor = configTemp.MessageCmdColor;
             MessageEnabled = configTemp.MessageEnabled;

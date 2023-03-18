@@ -82,6 +82,21 @@ namespace Th3Essentials
 
             if (Config.IsShutdownConfigured())
             {
+                if (Config.ShutdownTimes != null)
+                {
+                    var next = TimeSpan.Zero;
+                    var nextMin = double.MaxValue;
+                    foreach (var time in Config.ShutdownTimes)
+                    {
+                        var timeMin = Th3Util.GetTimeTillRestart(time);
+                        if (timeMin.TotalMinutes < nextMin)
+                        {
+                            nextMin = timeMin.TotalMinutes;
+                            next = time;
+                        }
+                    }
+                    Config.ShutdownTime = next;
+                }
                 _ = _sapi.Event.RegisterGameTickListener(CheckRestart, 60000);
             }
 
@@ -150,7 +165,7 @@ namespace Th3Essentials
 
         private void CheckRestart(float t1)
         {
-            int TimeInMinutes = (int)Th3Util.GetTimeTillRestart().TotalMinutes;
+            int TimeInMinutes = (int)Th3Util.GetTimeTillRestart(Config.ShutdownTime).TotalMinutes;
             if (Config.ShutdownAnnounce != null)
             {
                 foreach (int time in Config.ShutdownAnnounce)

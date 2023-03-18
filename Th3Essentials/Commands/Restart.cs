@@ -16,7 +16,7 @@ namespace Th3Essentials.Commands
                     {
                         if (Th3Essentials.Config.ShutdownTime != null)
                         {
-                            TimeSpan restart = Th3Util.GetTimeTillRestart();
+                            TimeSpan restart = Th3Util.GetTimeTillRestart(Th3Essentials.Config.ShutdownTime);
                             string response = Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"), restart.Minutes.ToString("D2"));
                             player.SendMessage(GlobalConstants.GeneralChatGroup, response, EnumChatType.Notification);
                         }
