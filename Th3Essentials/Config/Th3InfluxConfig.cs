@@ -11,5 +11,7 @@ namespace Th3Essentials.Config
         public string InlfuxDBOrg = null;
 
         public bool InlfuxDBOverwriteLogTicks = true;
+
+        public int DataCollectInterval = 10000;
     }
 }

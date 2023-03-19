@@ -174,6 +174,7 @@ namespace Th3Essentials.Config
                 InfluxConfig.InlfuxDBBucket = configTemp.InfluxConfig.InlfuxDBBucket;
                 InfluxConfig.InlfuxDBOrg = configTemp.InfluxConfig.InlfuxDBOrg;
                 InfluxConfig.InlfuxDBOverwriteLogTicks = configTemp.InfluxConfig.InlfuxDBOverwriteLogTicks;
+                InfluxConfig.DataCollectInterval = configTemp.InfluxConfig.DataCollectInterval;
             }
         }
     }

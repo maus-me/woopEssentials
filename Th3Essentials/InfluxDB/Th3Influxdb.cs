@@ -7,7 +7,6 @@ using HarmonyLib;
 using Th3Essentials.Config;
 using Th3Essentials.InfluxDB;
 using Vintagestory.API.Common;
-using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.Common;
@@ -36,6 +35,7 @@ namespace Th3Essentials.Influxdb
         private Process _vsProcess;
 
         private List<PointData> _data;
+        private List<PointData> _dataOnline;
 
         internal void Init(ICoreServerAPI sapi)
         {
@@ -72,7 +72,8 @@ namespace Th3Essentials.Influxdb
             _sapi.Event.DidPlaceBlock += OnDidPlaceBlock;
             _sapi.Event.DidBreakBlock += OnDidBreakBlock;
 
-            _writeDataListenerId = _sapi.Event.RegisterGameTickListener(WriteData, 10000);
+            _writeDataListenerId = _sapi.Event.RegisterGameTickListener(WriteOnline, 10000);
+            _writeDataListenerId = _sapi.Event.RegisterGameTickListener(WriteData, _config.DataCollectInterval);
             Instance = this;
         }
 
@@ -81,7 +82,7 @@ namespace Th3Essentials.Influxdb
             if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) return;
             var pointData = PointData.Measurement("playerlogcrbreak").Tag("player", byPlayer.PlayerName.ToLower())
                 .Tag("playerUID", byPlayer.PlayerUID).Tag("position", blockSel.Position.ToString()).Field("value",
-                    $"{Instance._sapi.World.Blocks[oldBlockId].Code} {blockSel.Position.ToString()}");
+                    $"{Instance._sapi.World.Blocks[oldBlockId].Code} {blockSel.Position}");
             WritePoint(pointData, WritePrecision.Ms);
         }
 
@@ -91,7 +92,7 @@ namespace Th3Essentials.Influxdb
             if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) return;
             var pointData = PointData.Measurement("playerlogcrplace").Tag("player", byPlayer.PlayerName.ToLower())
                 .Tag("playerUID", byPlayer.PlayerUID).Tag("position", blockSel.Position.ToString()).Field("value",
-                    $"{withItemStack.Collectible?.Code} {blockSel.Position.ToString()}");
+                    $"{withItemStack.Collectible?.Code} {blockSel.Position}");
             WritePoint(pointData, WritePrecision.Ms);
         }
 
@@ -144,18 +145,6 @@ namespace Th3Essentials.Influxdb
         {
             _data = new List<PointData>();
 
-            foreach (var player in _sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
-            {
-                if (player.ConnectionState == EnumClientState.Playing)
-                {
-                    _data.Add(PointData.Measurement("online").Tag("player", player.PlayerName.ToLower())
-                        .Field("value", player.Ping));
-                }
-            }
-
-            _data.Add(PointData.Measurement("clients").Field("value", _server.Clients.Count));
-
-
             var activeEntities =
                 _sapi.World.LoadedEntities.Count(loadedEntity => loadedEntity.Value.State != EnumEntityState.Inactive);
             _data.Add(PointData.Measurement("entitiesActive").Field("value", activeEntities));
@@ -188,6 +177,23 @@ namespace Th3Essentials.Influxdb
             _data.Add(PointData.Measurement("generatingChunks")
                 .Field("value", _sapi.WorldManager.CurrentGeneratingChunkCount));
             WritePoints(_data);
+        }
+
+        private void WriteOnline(float t1)
+        {
+            _dataOnline = new List<PointData>();
+
+            foreach (var player in _sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
+            {
+                if (player.ConnectionState == EnumClientState.Playing)
+                {
+                    _dataOnline.Add(PointData.Measurement("online").Tag("player", player.PlayerName.ToLower())
+                        .Field("value", player.Ping));
+                }
+            }
+
+            _dataOnline.Add(PointData.Measurement("clients").Field("value", _server.Clients.Count));
+            WritePoints(_dataOnline);
         }
 
         private void WritePoints(List<PointData> data, WritePrecision? precision = null)

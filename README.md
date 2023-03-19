@@ -271,6 +271,8 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
     "InlfuxDBOverwriteLogTicks": true,
     // only systems from logticks with that threshold will be loged to influx
     "InlfuxDBLogtickThreshold": 20,
+    // intervall in wich the data like logticks, ticktime, generating/active chunks, memory, entities will be collected (value in milliseconds)
+    "DataCollectInterval": 10000,
     // enable some debug output for influx connection (mybeusefull if you have issues setting it up connection/token)
     "Debug": false
   },

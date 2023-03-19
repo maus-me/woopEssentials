@@ -3,6 +3,7 @@
   <component name="UserContentModel">
     <attachedFolders />
     <explicitIncludes>
+      <Path>influx_grafana</Path>
       <Path>resources/modinfo.json</Path>
     </explicitIncludes>
     <explicitExcludes />
