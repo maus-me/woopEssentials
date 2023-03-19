@@ -99,7 +99,7 @@ namespace Th3Essentials.Config
 
         internal bool IsShutdownConfigured()
         {
-            return (ShutdownAnnounce?.Length > 0) || (ShutdownTime != null && ShutdownEnabled) || ShutdownTimes != null;
+            return ShutdownAnnounce?.Length > 0 || ShutdownEnabled || ShutdownTimes?.Length > 0;
         }
 
         public HomePoint FindWarpByName(string name)

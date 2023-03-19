@@ -82,7 +82,7 @@ namespace Th3Essentials
 
             if (Config.IsShutdownConfigured())
             {
-                if (Config.ShutdownTimes != null)
+                if (Config.ShutdownTimes?.Length > 0)
                 {
                     var next = TimeSpan.Zero;
                     var nextMin = double.MaxValue;
