@@ -38,8 +38,7 @@ build:
           paths:
               - Th3Essentials/bin/packages/mods/
   only:
-    - main
-    - merge_requests
+    - tags
   script:
     - 'mkdir $VINTAGE_STORY_MODDING'
     - 'curl -o $VINTAGE_STORY_MODDING/server.tar.gz https://cdn.vintagestory.at/gamefiles/${SERVER_TYPE}/vs_server_${SERVER_VERSION}.tar.gz'
