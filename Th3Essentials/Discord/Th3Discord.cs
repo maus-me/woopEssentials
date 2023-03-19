@@ -311,7 +311,7 @@ namespace Th3Essentials.Discord
             }
             // only send messages from specific channel to vs server chat
             // ignore empty messages (message is empty when only picture/file is send)
-            else if (message.Channel.Id == Config.ChannelId && message.Content != "")
+            else if (Config.DiscordChatRelay && message.Channel.Id == Config.ChannelId && message.Content != "")
             {
                 string msg = CleanDiscordMessage(message);
                 // use blue font ingame for discord messages
@@ -405,7 +405,7 @@ namespace Th3Essentials.Discord
 
         private void PlayerChatAsync(IServerPlayer byPlayer, int channelId, ref string message, ref string data, BoolRef consumed)
         {
-            if (_discordChannel != null && channelId == GlobalConstants.GeneralChatGroup)
+            if (Config.DiscordChatRelay && _discordChannel != null && channelId == GlobalConstants.GeneralChatGroup)
             {
                 Match playerMsg = Regex.Match(message, "> (.+)");
                 string msg = playerMsg.Groups[1].Value;

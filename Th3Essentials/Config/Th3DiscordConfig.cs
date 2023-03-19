@@ -28,5 +28,6 @@ namespace Th3Essentials.Config
 
         public string RewardsFormat = "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}";
 
+        public bool DiscordChatRelay = true;
     }
 }

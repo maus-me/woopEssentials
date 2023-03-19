@@ -160,6 +160,7 @@ namespace Th3Essentials.Config
                 DiscordConfig.RoleRewardsFormat = configTemp.DiscordConfig.RoleRewardsFormat;
                 DiscordConfig.RewardIdToName = configTemp.DiscordConfig.RewardIdToName;
                 DiscordConfig.Rewards = configTemp.DiscordConfig.Rewards;
+                DiscordConfig.DiscordChatRelay = configTemp.DiscordConfig.DiscordChatRelay;
             }
 
             if (configTemp.InfluxConfig != null)
