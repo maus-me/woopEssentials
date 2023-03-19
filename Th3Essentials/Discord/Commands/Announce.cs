@@ -100,10 +100,11 @@ namespace Th3Essentials.Discord.Commands
                     }
                     if (message != null && show != null)
                     {
+                        var cleanMessage = message.Replace("<", "&lt;").Replace(">", "&gt;");
                         ephemeral = !(bool)show;
-                        discord.Sapi.Logger.Event($"{guildUser.DisplayName}#{guildUser.Discriminator} announced: {message}.");
-                        discord.Sapi.BroadcastMessageToAllGroups($"<strong><font color=\"{color}\">{message}</font></strong>", EnumChatType.AllGroups);
-                        return message;
+                        discord.Sapi.Logger.Event($"{guildUser.DisplayName}#{guildUser.Discriminator} announced: {cleanMessage}.");
+                        discord.Sapi.BroadcastMessageToAllGroups($"<strong><font color=\"{color}\">{cleanMessage}</font></strong>", EnumChatType.AllGroups);
+                        return cleanMessage;
                     }
                     else
                     {
