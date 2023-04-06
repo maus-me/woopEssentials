@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using HarmonyLib;
 using Th3Essentials.Config;
@@ -67,6 +68,13 @@ namespace Th3Essentials.Influxdb
             var postfix4 =
                 new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(PatchAdminLogging.ActivateSlot)));
             _harmony.Patch(original4, postfix: postfix4);
+
+            var handleCreateItemstack = typeof(ServerMain).Assembly.GetType("Vintagestory.Server.ServerSystemInventory")
+                .GetMethod("HandleCreateItemstack", BindingFlags.NonPublic | BindingFlags.Instance);
+            var handleCreateItemstackPostfix =
+                new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(PatchAdminLogging.HandleCreateItemstack)));
+            
+            _harmony.Patch(handleCreateItemstack, postfix: handleCreateItemstackPostfix);
 
             _sapi.Logger.EntryAdded += LogEntryAdded;
             _sapi.Event.DidPlaceBlock += OnDidPlaceBlock;
@@ -254,6 +262,26 @@ namespace Th3Essentials.Influxdb
                         .Tag("player", op.ActingPlayer?.PlayerName.ToLower())
                         .Tag("playerUID", op.ActingPlayer?.PlayerUID).Field("value",
                             $"{op.MovedQuantity} {sourceSlot.Itemstack?.Collectible?.Code}");
+                    Instance?.WritePoint(pointData);
+                }
+            }
+
+            public static void HandleCreateItemstack(Packet_Client packet, ConnectedClient client)
+            {
+                ServerPlayer player = (ServerPlayer)client.GetType().GetField("Player", BindingFlags.Instance | BindingFlags.NonPublic )?.GetValue(client);
+                Packet_CreateItemstack createpacket = (Packet_CreateItemstack)packet.GetType().GetField("CreateItemstack", BindingFlags.Instance | BindingFlags.NonPublic )?.GetValue(packet);
+                string targetInventoryId = (string)createpacket.GetType().GetField("TargetInventoryId", BindingFlags.Instance | BindingFlags.NonPublic ).GetValue(createpacket);
+                int targetSlot = (int)createpacket.GetType().GetField("TargetSlot", BindingFlags.Instance | BindingFlags.NonPublic )?.GetValue(createpacket);
+
+                player.InventoryManager.GetInventory(targetInventoryId, out var inv);
+                ItemSlot slot = inv?[targetSlot];
+                
+                if (player.WorldData.CurrentGameMode == EnumGameMode.Creative && slot.Itemstack != null)
+                {
+                    var pointData = PointData.Measurement("playerloginv")
+                        .Tag("player", player.PlayerName.ToLower())
+                        .Tag("playerUID", player.PlayerUID).Field("value",
+                            $"1 {slot.Itemstack?.Collectible?.Code}");
                     Instance?.WritePoint(pointData);
                 }
             }
