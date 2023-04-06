@@ -58,8 +58,8 @@ namespace Th3Essentials.Influxdb
             var prefix =
                 new HarmonyMethod(typeof(PatchFrameProfilerUtil).GetMethod(nameof(PatchFrameProfilerUtil.Prefix)));
             _harmony.Patch(original, prefix: prefix);
-
-            var original2 = typeof(CoreServerEventManager).GetMethod(nameof(CoreServerEventManager.TriggerChatCommand));
+            
+            var original2 = typeof(ChatCommandApi).GetMethods().First(m => m.Name.Equals("Execute") && m.GetParameters().Any(p => p.ParameterType.IsAssignableFrom(typeof(IServerPlayer))));
             var prefix2 =
                 new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(PatchAdminLogging.TriggerChatCommand)));
             _harmony.Patch(original2, prefix: prefix2);
@@ -236,10 +236,10 @@ namespace Th3Essentials.Influxdb
 
         public class PatchAdminLogging
         {
-            public static void TriggerChatCommand(IPlayer player, int channelId, string command, CmdArgs args)
+            public static void TriggerChatCommand(string commandName, IServerPlayer player, int groupId, string args, Action<TextCommandResult> onCommandComplete)
             {
                 var pointData = PointData.Measurement("playerlog").Tag("player", player.PlayerName.ToLower())
-                    .Tag("playerUID", player.PlayerUID).Field("value", $"{command} {args.PopAll()}");
+                    .Tag("playerUID", player.PlayerUID).Field("value", $"{commandName} {args}");
                 Instance?.WritePoint(pointData);
             }
 
