@@ -42,10 +42,6 @@ namespace Th3Essentials
 
         public event PlayerWithRewardJoin OnPlayerWithRewardJoin;
 
-        public Th3Essentials()
-        {
-        }
-
         public override bool ShouldLoad(EnumAppSide forSide)
         {
             return forSide == EnumAppSide.Server;
