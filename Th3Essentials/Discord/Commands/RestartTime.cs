@@ -19,9 +19,9 @@ namespace Th3Essentials.Discord.Commands
 
         public static string HandleSlashCommand()
         {
-            if (Th3Essentials.Config.ShutdownTime != null)
+            if (Th3Essentials.Config.ShutdownEnabled)
             {
-                TimeSpan restart = Th3Util.GetTimeTillRestart(Th3Essentials.Config.ShutdownTime);
+                var restart = Th3Util.GetTimeTillRestart(Th3Essentials.Config.ShutdownTime);
                 return Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"), restart.Minutes.ToString("D2"));
             }
             else
