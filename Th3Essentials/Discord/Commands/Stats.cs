@@ -57,7 +57,7 @@ namespace Th3Essentials.Discord.Commands
                     stringBuilder.AppendLine($"Players online: {server.Clients.Count} / {server.Config.MaxClients}");
 
                     int activeEntities = 0;
-                    foreach (KeyValuePair<long, Entity> loadedEntity in server.LoadedEntities)
+                    foreach (KeyValuePair<long, Entity> loadedEntity in discord.Sapi.World.LoadedEntities)
                     {
                         if (loadedEntity.Value.State != EnumEntityState.Inactive)
                         {
@@ -74,7 +74,7 @@ namespace Th3Essentials.Discord.Commands
                         stringBuilder.AppendLine($"Last 10 ticks (ms): {string.Join(", ", statsCollection.tickTimes)}");
                     }
                     stringBuilder.AppendLine($"Loaded chunks: {discord.Sapi.World.LoadedChunkIndices.Count()}");
-                    stringBuilder.AppendLine($"Loaded entities: {server.LoadedEntities.Count} ({activeEntities} active)");
+                    stringBuilder.AppendLine($"Loaded entities: {discord.Sapi.World.LoadedEntities.Count} ({activeEntities} active)");
                     stringBuilder.Append($"Network: {decimal.Round((decimal)(statsCollection.statTotalPackets / 2.0), 2)} Packets/s or {decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2, MidpointRounding.AwayFromZero)} Kb/s");
                     return stringBuilder.ToString();
                 }
