@@ -32,7 +32,7 @@
 
 	<ItemGroup>
 		<Reference Include="VSSurvivalMod">
-			<HintPath>$(VINTAGE_STORY_MODDING)/Mods/VSSurvivalMod.dll</HintPath>
+			<HintPath>$(VINTAGE_STORY_PRE)/Mods/VSSurvivalMod.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>

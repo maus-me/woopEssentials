@@ -194,7 +194,7 @@ namespace Th3Essentials.Discord
 
                     if (Config.HelpRoleID != 0)
                     {
-                        _ = Sapi.RegisterCommand("requesthelp", Lang.Get("th3essentials:cd-help"), Lang.Get("th3essentials:cd-reply-param"), ReqestingHelp);
+                        _ = Sapi.RegisterCommand("requesthelp", Lang.Get("th3essentials:cd-help"), Lang.Get("th3essentials:cd-reply-param"), RequestingHelp);
                     }
 
                     if (Config.Rewards && Config.RewardIdToName != null)
@@ -397,7 +397,7 @@ namespace Th3Essentials.Discord
             return msg.Replace("<", "&lt;").Replace(">", "&gt;");
         }
 
-        public void ReqestingHelp(IServerPlayer player, int groupId, CmdArgs args)
+        private void RequestingHelp(IServerPlayer player, int groupId, CmdArgs args)
         {
             SendServerMessage($"<@&{Config.HelpRoleID}> **{player.PlayerName}**: {args.PopAll()}");
             player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-help-response"), EnumChatType.CommandSuccess);
@@ -415,22 +415,22 @@ namespace Th3Essentials.Discord
                 {
                     if (Config.Rewards && byPlayer.ServerData.CustomPlayerData.TryGetValue(REWARDS_SERVER_DATA_KEY, out string id) && rewards.TryGetValue(id, out Rewards reward))
                     {
-                        msg = string.Format("**[{0}] [{1}] {2}:** {3}", byPlayer.Role.Name, reward.Name, byPlayer.PlayerName, msg);
+                        msg = $"**[{byPlayer.Role.Name}] [{reward.Name}] {byPlayer.PlayerName}:** {msg}";
                     }
                     else
                     {
-                        msg = string.Format("**[{0}] {1}:** {2}", byPlayer.Role.Name, byPlayer.PlayerName, msg);
+                        msg = $"**[{byPlayer.Role.Name}] {byPlayer.PlayerName}:** {msg}";
                     }
                 }
                 else
                 {
                     if (Config.Rewards && byPlayer.ServerData.CustomPlayerData.TryGetValue(REWARDS_SERVER_DATA_KEY, out string id) && rewards.TryGetValue(id, out Rewards reward))
                     {
-                        msg = string.Format("**[{0}] {1}:** {2}", reward.Name, byPlayer.PlayerName, msg);
+                        msg = $"**[{reward.Name}] {byPlayer.PlayerName}:** {msg}";
                     }
                     else
                     {
-                        msg = string.Format("**{0}:** {1}", byPlayer.PlayerName, msg);
+                        msg = $"**{byPlayer.PlayerName}:** {msg}";
                     }
                 }
                 _ = _discordChannel.SendMessageAsync(msg);
