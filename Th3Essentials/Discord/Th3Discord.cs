@@ -189,8 +189,9 @@ namespace Th3Essentials.Discord
                     Sapi.Event.PlayerChat += PlayerChatAsync;
                     Sapi.Event.PlayerDisconnect += PlayerDisconnectAsync;
                     Sapi.Event.PlayerNowPlaying += PlayerNowPlayingAsync;
-                    Sapi.Event.ServerRunPhase(EnumServerRunPhase.RunGame, OnRunGame);
                     Sapi.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
+                    
+                    SendServerMessage(Lang.Get("th3essentials:start"));
 
                     if (Config.HelpRoleID != 0)
                     {
@@ -504,11 +505,6 @@ namespace Th3Essentials.Discord
             players = Math.Max(0, players);
             _ = _client.SetGameAsync($"players: {players}");
             return players;
-        }
-
-        private void OnRunGame()
-        {
-            SendServerMessage(Lang.Get("th3essentials:start"));
         }
 
         private async void Shutdown()
