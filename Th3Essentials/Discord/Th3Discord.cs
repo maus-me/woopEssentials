@@ -545,7 +545,7 @@ namespace Th3Essentials.Discord
 
         internal string ServerMsg(string msg)
         {
-            return $"*{msg}*";
+            return $"***{msg}***";
         }
 
         public class PatchSystemTemporalStability
