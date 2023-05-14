@@ -58,8 +58,10 @@ namespace Th3Essentials.Influxdb
             var prefix =
                 new HarmonyMethod(typeof(PatchFrameProfilerUtil).GetMethod(nameof(PatchFrameProfilerUtil.Prefix)));
             _harmony.Patch(original, prefix: prefix);
-            
-            var original2 = typeof(ChatCommandApi).GetMethods().First(m => m.Name.Equals("Execute") && m.GetParameters().Any(p => p.ParameterType.IsAssignableFrom(typeof(IServerPlayer))));
+
+            var original2 = typeof(ChatCommandApi).GetMethods().First(m =>
+                m.Name.Equals("Execute") &&
+                m.GetParameters().Any(p => p.ParameterType.IsAssignableFrom(typeof(IServerPlayer))));
             var prefix2 =
                 new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(PatchAdminLogging.TriggerChatCommand)));
             _harmony.Patch(original2, prefix: prefix2);
@@ -73,7 +75,7 @@ namespace Th3Essentials.Influxdb
                 .GetMethod("HandleCreateItemstack", BindingFlags.NonPublic | BindingFlags.Instance);
             var handleCreateItemstackPostfix =
                 new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(PatchAdminLogging.HandleCreateItemstack)));
-            
+
             _harmony.Patch(handleCreateItemstack, postfix: handleCreateItemstackPostfix);
 
             _sapi.Logger.EntryAdded += LogEntryAdded;
@@ -236,7 +238,8 @@ namespace Th3Essentials.Influxdb
 
         public class PatchAdminLogging
         {
-            public static void TriggerChatCommand(string commandName, IServerPlayer player, int groupId, string args, Action<TextCommandResult> onCommandComplete)
+            public static void TriggerChatCommand(string commandName, IServerPlayer player, int groupId, string args,
+                Action<TextCommandResult> onCommandComplete)
             {
                 var pointData = PointData.Measurement("playerlog").Tag("player", player.PlayerName.ToLower())
                     .Tag("playerUID", player.PlayerUID).Field("value", $"{commandName} {args}");
@@ -268,14 +271,19 @@ namespace Th3Essentials.Influxdb
 
             public static void HandleCreateItemstack(Packet_Client packet, ConnectedClient client)
             {
-                ServerPlayer player = (ServerPlayer)client.GetType().GetField("Player", BindingFlags.Instance | BindingFlags.NonPublic )?.GetValue(client);
-                Packet_CreateItemstack createpacket = (Packet_CreateItemstack)packet.GetType().GetField("CreateItemstack", BindingFlags.Instance | BindingFlags.NonPublic )?.GetValue(packet);
-                string targetInventoryId = (string)createpacket.GetType().GetField("TargetInventoryId", BindingFlags.Instance | BindingFlags.NonPublic ).GetValue(createpacket);
-                int targetSlot = (int)createpacket.GetType().GetField("TargetSlot", BindingFlags.Instance | BindingFlags.NonPublic )?.GetValue(createpacket);
+                ServerPlayer player = (ServerPlayer)client.GetType()
+                    .GetField("Player", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(client);
+                Packet_CreateItemstack createpacket = (Packet_CreateItemstack)packet.GetType()
+                    .GetField("CreateItemstack", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(packet);
+                string targetInventoryId = (string)createpacket.GetType()
+                    .GetField("TargetInventoryId", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .GetValue(createpacket);
+                int targetSlot = (int)createpacket.GetType()
+                    .GetField("TargetSlot", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(createpacket);
 
                 player.InventoryManager.GetInventory(targetInventoryId, out var inv);
                 ItemSlot slot = inv?[targetSlot];
-                
+
                 if (player.WorldData.CurrentGameMode == EnumGameMode.Creative && slot.Itemstack != null)
                 {
                     var pointData = PointData.Measurement("playerloginv")
@@ -305,27 +313,25 @@ namespace Th3Essentials.Influxdb
 
                 if (!__instance.PrintSlowTicks || !(ms > __instance.PrintSlowTicksThreshold)) return false;
                 StringBuilder stringBuilder = null;
-                var data = new List<PointData>();
+                stringBuilder = new StringBuilder();
+                stringBuilder.AppendLine($"A tick took {ms:0.##} ms");
+
+                SlowTicksToString(___rootEntry, stringBuilder);
+
+                var message = stringBuilder.ToString();
                 if (Instance?._config.InlfuxDBOverwriteLogTicks == false)
                 {
-                    stringBuilder = new StringBuilder();
-                    stringBuilder.AppendLine($"A tick took {ms:0.##} ms");
+                    ___logger.Notification(message);
                 }
 
-                SlowTicksToString(___rootEntry, stringBuilder, data);
+                var data = PointData.Measurement("logticks").Field("log", message).Field("ms", ms).Timestamp(WritePrecision.Ms);
 
-                if (Instance?._config.InlfuxDBOverwriteLogTicks == false)
-                {
-                    ___logger.Notification(stringBuilder.ToString());
-                }
-
-                Instance?.WritePoints(data, WritePrecision.Ms);
+                Instance?.WritePoint(data, WritePrecision.Ms);
 
                 return false;
             }
 
-            private static void SlowTicksToString(ProfileEntryRange entry, StringBuilder stringBuilder,
-                List<PointData> data, double thresholdMs = 0.35, string indent = "")
+            private static void SlowTicksToString(ProfileEntryRange entry, StringBuilder stringBuilder, double thresholdMs = 0.35, string indent = "")
             {
                 var timeMs = (double)entry.ElapsedTicks / Stopwatch.Frequency * 1000;
                 if (timeMs < thresholdMs)
@@ -335,28 +341,15 @@ namespace Th3Essentials.Influxdb
 
                 if (entry.CallCount > 1)
                 {
-                    if (Instance?._config.InlfuxDBOverwriteLogTicks == false)
-                    {
-                        stringBuilder.AppendLine(
-                            $"{indent}{timeMs:0.00}ms, {entry.CallCount:####} calls, avg {timeMs * 1000 / Math.Max(entry.CallCount, 1):0.00} us/call: {entry.Code}"
-                        );
-                    }
-
-                    data.Add(PointData.Measurement("logticks").Tag("system", entry.Code).Field("value", timeMs)
-                        .Field("call", entry.CallCount).Field("avg", timeMs / Math.Max(entry.CallCount, 1))
-                        .Timestamp(WritePrecision.Ms));
+                    stringBuilder.AppendLine(
+                        $"{indent}{timeMs:0.00}ms, {entry.CallCount:####} calls, avg {timeMs * 1000 / Math.Max(entry.CallCount, 1):0.00} us/call: {entry.Code}"
+                    );
                 }
                 else
                 {
-                    if (Instance?._config.InlfuxDBOverwriteLogTicks == false)
-                    {
-                        stringBuilder.AppendLine(
-                            $"{indent}{timeMs:0.00}ms, {entry.CallCount:####} call : {entry.Code}"
-                        );
-                    }
-
-                    data.Add(PointData.Measurement("logticks").Tag("system", entry.Code).Field("value", timeMs)
-                        .Field("call", entry.CallCount).Timestamp(WritePrecision.Ms));
+                    stringBuilder.AppendLine(
+                        $"{indent}{timeMs:0.00}ms, {entry.CallCount:####} call : {entry.Code}"
+                    );
                 }
 
                 var profiles = new List<ProfileEntryRange>();
@@ -382,7 +375,7 @@ namespace Th3Essentials.Influxdb
                         return;
                     }
 
-                    SlowTicksToString(prof, stringBuilder, data, thresholdMs, indent + "  ");
+                    SlowTicksToString(prof, stringBuilder, thresholdMs, indent + "  ");
                 }
             }
         }
