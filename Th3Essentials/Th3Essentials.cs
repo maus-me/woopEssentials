@@ -169,7 +169,7 @@ namespace Th3Essentials
                     if (time == TimeInMinutes)
                     {
                         string msg = TimeInMinutes == 1 ? Lang.Get("th3essentials:restart-in-min") : Lang.Get("th3essentials:restart-in-mins", TimeInMinutes);
-                        _sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                        SendIngameServerMsg(msg);
                         _th3Discord?.SendServerMessage(msg);
                         _sapi.Logger.Event(msg);
                     }
@@ -184,6 +184,14 @@ namespace Th3Essentials
                 }
                 _sapi.Server.ShutDown();
             }
+        }
+
+        private void SendIngameServerMsg(string msg)
+        {
+            _sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup,
+                !string.IsNullOrEmpty(Config.SystemMsgColor)
+                    ? $"<font color=\"#{Config.SystemMsgColor}\"><strong>{msg}</strong></font>"
+                    : msg, EnumChatType.OthersMessage);
         }
 
         private void CreateBackup()

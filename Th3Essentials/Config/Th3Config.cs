@@ -42,6 +42,8 @@ namespace Th3Essentials.Config
         public int[] ShutdownAnnounce = null;
 
         public string MessageCmdColor = "ff9102";
+        
+        public string SystemMsgColor = "ff9102";
 
         public bool ShowRole = false;
 
@@ -135,6 +137,8 @@ namespace Th3Essentials.Config
 
             MessageCmdColor = configTemp.MessageCmdColor;
             MessageEnabled = configTemp.MessageEnabled;
+            
+            SystemMsgColor = configTemp.SystemMsgColor;
 
             ShowRole = configTemp.ShowRole;
             RoleFormat = configTemp.RoleFormat;

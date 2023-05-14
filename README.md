@@ -324,6 +324,9 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
 
   // color to use for the name of the sender for the /msg command [hex color value] https://colorpicker.me/
   "MessageCmdColor": "ff9102",
+  
+  // color to use for the system messages ingame (restart warnings) [hex color value] https://colorpicker.me/
+  "SystemMsgColor": "ff9102",
 
   // shows the players role ingame and in discord like: [Admin] Th3Dilli: hello
   // this uses the the roles provided by the game itself see serverconfig.json -> Roles
