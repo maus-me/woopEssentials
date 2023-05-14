@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Th3Essentials.Commands;
 using Th3Essentials.Config;
 using Th3Essentials.Discord;
@@ -20,17 +21,21 @@ using Vintagestory.Server;
     Website = "https://gitlab.com/Th3Dilli/",
     Authors = new[] { "Th3Dilli" })]
 
+[assembly: InternalsVisibleTo("Tests")]
+
 namespace Th3Essentials
 {
     public delegate void PlayerWithRewardJoin(IServerPlayer player, string discordRewardId);
 
     public class Th3Essentials : ModSystem
     {
-        private const string _configFile = "Th3Config.json";
+        internal const string _configFile = "Th3Config.json";
 
-        internal static Th3Config Config { get; private set; }
+        internal static Th3Config Config { get; set; }
 
         internal static Th3PlayerConfig PlayerConfig { get; private set; }
+
+        internal static DateTime ShutDownTime;
 
         internal static string Th3EssentialsModDataKey = "Th3Essentials";
 
@@ -80,7 +85,7 @@ namespace Th3Essentials
 
             if (Config.IsShutdownConfigured())
             {
-                LoadRestartTime();
+                LoadRestartTime(DateTime.Now);
                 _restartListener = _sapi.Event.RegisterGameTickListener(CheckRestart, 60000);
             }
 
@@ -127,12 +132,12 @@ namespace Th3Essentials
 
             _sapi.ChatCommands.Create("reloadth3config")
                 .WithDescription(Lang.Get("th3essentials:slc-reloadConfig"))
-                .RequiresPrivilege(Privilege.chat)
+                .RequiresPrivilege(Privilege.controlserver)
                 .HandleWith(args =>
                 {
                     if (ReloadConfig())
                     {
-                        LoadRestartTime();
+                        LoadRestartTime(DateTime.Now);
                         return TextCommandResult.Success(Lang.Get("th3essentials:cd-reloadconfig-msg"));
                     }
 
@@ -141,21 +146,29 @@ namespace Th3Essentials
                 .Validate();
         }
 
-        private static void LoadRestartTime()
+        internal static void LoadRestartTime(DateTime now)
         {
-            if (!(Config.ShutdownTimes?.Length > 0)) return;
-
-            var next = TimeSpan.Zero;
-            var nextMin = double.MaxValue;
-            foreach (var time in Config.ShutdownTimes)
+            if (Config.ShutdownTimes?.Length > 0)
             {
-                var timeMin = Th3Util.GetTimeTillRestart(time, true);
-                if (!(timeMin.TotalSeconds < nextMin)) continue;
-                nextMin = timeMin.TotalSeconds;
-                next = time;
-            }
+                var next = now;
+                var nextSeconds = double.MaxValue;
+                foreach (var time in Config.ShutdownTimes)
+                {
+                    var restartDate = Th3Util.GetRestartDate(time, now);
+                    var timeSpan = restartDate - now;
+                    if (timeSpan.TotalSeconds < nextSeconds)
+                    {
+                        nextSeconds = timeSpan.TotalSeconds;
+                        next = restartDate;
+                    }
+                }
 
-            Config.ShutdownTime = next;
+                ShutDownTime = next;
+            }
+            else
+            {
+                ShutDownTime = Th3Util.GetRestartDate(Config.ShutdownTime, now);
+            }
         }
 
         internal void PlayerWithRewardJoin(IServerPlayer player, string discordRewardId)
@@ -171,7 +184,7 @@ namespace Th3Essentials
 
         private void CheckRestart(float t1)
         {
-            var timeTillRestart = Th3Util.GetTimeTillRestart(Config.ShutdownTime);
+            var timeTillRestart = ShutDownTime - DateTime.Now;
             var timeInMinutes = (int)timeTillRestart.TotalMinutes;
             if (Config.ShutdownAnnounce != null)
             {
@@ -186,8 +199,8 @@ namespace Th3Essentials
                     _sapi.Logger.Event(msg);
                 }
             }
+
             var totalSeconds = (int)timeTillRestart.TotalSeconds;
-            Mod.Logger.Notification($"restarttime: {totalSeconds}");
             if (!Config.ShutdownEnabled || totalSeconds >= 5) return;
 
             if (Config.BackupOnShutdown)

@@ -25,5 +25,11 @@
     <ItemGroup>
       <ProjectReference Include="..\Th3Essentials\Th3Essentials.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <Reference Include="VintagestoryAPI">
+            <HintPath>/home/dilli/Applications/VintageStoryModding/VintagestoryAPI.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 
 </Project>

@@ -30,6 +30,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - announce a message from discord to ingame
 - /warp [ add \<warp name\> | remove \<warp name\> | list |\<warp name\> ] to predfined locations (setup by admin, also respecting home cooldown time) [on/off]
 - automatic backup - will create a backup when using the shutdown feature [on/off]
+- /reloadth3config - reload the th3config.json and the restart timer
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -92,6 +93,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
   - /stats - Print the output of the ingame /stats command [Admin or Configured Role]
   - /auth - start to link discord and ingame account for the reward system
   - /announce - announce a message from discord to ingame chat [Admin or Configured Role]
+  - /reloadconfig - reload the th3config.json and the restart timer [Admin or Configured Role]
 
 - Shutdownsystem
 

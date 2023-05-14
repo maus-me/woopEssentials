@@ -85,6 +85,7 @@
     "slc-announce-msg": "The message to be announced",
     "slc-announce-showindiscord": "Show message in discord",
     "slc-announce-color": "Message color",
+    "slc-reload": "Reload Th3Config and restart times",
     "restart-in-mins": "Server is restarting in {0} minutes",
     "restart-in-min": "Server is restarting in 1 minute",
     "th3config-error": "Th3Config could not be loaded: {0}",

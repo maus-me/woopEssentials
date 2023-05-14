@@ -20,17 +20,16 @@ namespace Th3Essentials
             }
             return fieldInfo.GetValue(null) as string;
         }
-        
-        public static TimeSpan GetTimeTillRestart(TimeSpan time, bool nextDayOnNegative = false)
+
+        public static DateTime GetRestartDate(TimeSpan time, DateTime now)
         {
-            var now = DateTime.Now;
             var restartDate = new DateTime(now.Year, now.Month, now.Day, time.Hours, time.Minutes, time.Seconds);
 
-            if (nextDayOnNegative && now.TimeOfDay > time)
+            if (now.TimeOfDay > time)
             {
                 restartDate = restartDate.AddDays(1);
             }
-            return restartDate - now;
+            return restartDate;
         }
 
         public static string GetAdmins(ICoreServerAPI sapi)

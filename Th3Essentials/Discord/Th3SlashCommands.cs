@@ -10,7 +10,8 @@ namespace Th3Essentials.Discord
 {
     public enum SlashCommands
     {
-        Players, Date, RestartTime, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions, Shutdown, Serverinfo, Stats, Admins, Auth, Announce
+        Players, Date, RestartTime, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions, Shutdown, Serverinfo, Stats, Admins, Auth, Announce,
+        ReloadConfig
     }
 
     public class Th3SlashCommands
@@ -30,6 +31,7 @@ namespace Th3Essentials.Discord
             Admins.CreateCommand(_client);
             Auth.CreateCommand(_client);
             Announce.CreateCommand(_client);
+            ReloadConfig.CreateCommand(_client);
         }
 
         internal static void HandleButtonExecuted(Th3Discord discord, SocketMessageComponent component)
@@ -140,10 +142,15 @@ namespace Th3Essentials.Discord
                             break;
                         }
                     case SlashCommands.Announce:
-                        {
-                            response = Announce.HandleSlashCommand(discord, commandInteraction, ref ephemeral);
-                            break;
-                        }
+                    {
+                        response = Announce.HandleSlashCommand(discord, commandInteraction, ref ephemeral);
+                        break;
+                    }
+                    case SlashCommands.ReloadConfig:
+                    {
+                        response = ReloadConfig.HandleSlashCommand(discord, commandInteraction);
+                        break;
+                    }
                     default:
                         {
                             response = "Unknown SlashCommand";
@@ -180,11 +187,8 @@ namespace Th3Essentials.Discord
             {
                 return true;
             }
-            else if (moderationRoles != null)
-            {
-                return guildUser.Roles.Select(r => r.Id).ToArray().Intersect(moderationRoles).Count() > 0;
-            }
-            return false;
+
+            return moderationRoles != null && guildUser.Roles.Select(r => r.Id).ToArray().Intersect(moderationRoles).Any();
         }
     }
 }
