@@ -19,11 +19,11 @@ using Vintagestory.Server;
     Description = "Th3Dilli essentials server mod",
     Website = "https://gitlab.com/Th3Dilli/",
     Authors = new[] { "Th3Dilli" })]
+
 namespace Th3Essentials
 {
-
     public delegate void PlayerWithRewardJoin(IServerPlayer player, string discordRewardId);
-    
+
     public class Th3Essentials : ModSystem
     {
         private const string _configFile = "Th3Config.json";
@@ -39,6 +39,7 @@ namespace Th3Essentials
         private Th3Discord _th3Discord;
 
         private Th3Influxdb _th3Influx;
+        private long _restartListener;
 
         public event PlayerWithRewardJoin OnPlayerWithRewardJoin;
 
@@ -61,7 +62,8 @@ namespace Th3Essentials
                     _sapi.StoreModConfig(Config, _configFile);
 
                     _sapi.Server.LogWarning(Lang.Get("th3essentials:config-init"));
-                    _sapi.Server.LogWarning(Lang.Get("th3essentials:config-file-info", Path.Combine(GamePaths.ModConfig, _configFile)));
+                    _sapi.Server.LogWarning(Lang.Get("th3essentials:config-file-info",
+                        Path.Combine(GamePaths.ModConfig, _configFile)));
                 }
             }
             catch (Exception e)
@@ -78,22 +80,8 @@ namespace Th3Essentials
 
             if (Config.IsShutdownConfigured())
             {
-                if (Config.ShutdownTimes?.Length > 0)
-                {
-                    var next = TimeSpan.Zero;
-                    var nextMin = double.MaxValue;
-                    foreach (var time in Config.ShutdownTimes)
-                    {
-                        var timeMin = Th3Util.GetTimeTillRestart(time);
-                        if (timeMin.TotalMinutes < nextMin)
-                        {
-                            nextMin = timeMin.TotalMinutes;
-                            next = time;
-                        }
-                    }
-                    Config.ShutdownTime = next;
-                }
-                _ = _sapi.Event.RegisterGameTickListener(CheckRestart, 60000);
+                LoadRestartTime();
+                _restartListener = _sapi.Event.RegisterGameTickListener(CheckRestart, 60000);
             }
 
             CommandsLoader.Init(_sapi);
@@ -113,6 +101,7 @@ namespace Th3Essentials
                 {
                     _sapi.Event.PlayerChat += PlayerChatAsync;
                 }
+
                 _sapi.Logger.Debug("Discordbot needs to be configured, functionality disabled!!!");
             }
 
@@ -129,64 +118,88 @@ namespace Th3Essentials
 
             if (Config.AdminRoles?.Count > 0)
             {
-                _ = _sapi.RegisterCommand("admins", Lang.Get("th3essentials:slc-admins"), string.Empty,
-                 (IServerPlayer player, int groupId, CmdArgs args) =>
-                 {
-                     player.SendMessage(GlobalConstants.GeneralChatGroup, Th3Util.GetAdmins(_sapi), EnumChatType.CommandSuccess);
-                 }, Privilege.chat);
+                _sapi.ChatCommands.Create("admins")
+                    .WithDescription(Lang.Get("th3essentials:slc-admins"))
+                    .RequiresPrivilege(Privilege.chat)
+                    .HandleWith(args => TextCommandResult.Success(Th3Util.GetAdmins(_sapi)))
+                    .Validate();
             }
 
-            _ = _sapi.RegisterCommand("reloadth3config", Lang.Get("th3essentials:cd-reloadConfig"), string.Empty,
-                (IServerPlayer player, int groupId, CmdArgs args) =>
+            _sapi.ChatCommands.Create("reloadth3config")
+                .WithDescription(Lang.Get("th3essentials:slc-reloadConfig"))
+                .RequiresPrivilege(Privilege.chat)
+                .HandleWith(args =>
                 {
                     if (ReloadConfig())
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-reloadconfig-msg"), EnumChatType.CommandSuccess);
+                        LoadRestartTime();
+                        return TextCommandResult.Success(Lang.Get("th3essentials:cd-reloadconfig-msg"));
                     }
-                    else
-                    {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-reloadconfig-fail"), EnumChatType.CommandError);
-                    }
-                }, Privilege.controlserver);
+
+                    return TextCommandResult.Error(Lang.Get("th3essentials:cd-reloadconfig-fail"));
+                })
+                .Validate();
         }
 
-        internal void PlayerWithRewardJoin(IServerPlayer player, string discordRewardId){
+        private static void LoadRestartTime()
+        {
+            if (!(Config.ShutdownTimes?.Length > 0)) return;
+
+            var next = TimeSpan.Zero;
+            var nextMin = double.MaxValue;
+            foreach (var time in Config.ShutdownTimes)
+            {
+                var timeMin = Th3Util.GetTimeTillRestart(time, true);
+                if (!(timeMin.TotalSeconds < nextMin)) continue;
+                nextMin = timeMin.TotalSeconds;
+                next = time;
+            }
+
+            Config.ShutdownTime = next;
+        }
+
+        internal void PlayerWithRewardJoin(IServerPlayer player, string discordRewardId)
+        {
             OnPlayerWithRewardJoin?.Invoke(player, discordRewardId);
         }
 
-        private void PlayerChatAsync(IServerPlayer byPlayer, int channelId, ref string message, ref string data, BoolRef consumed)
+        private static void PlayerChatAsync(IServerPlayer byPlayer, int channelId, ref string message, ref string data,
+            BoolRef consumed)
         {
             message = string.Format(Config.RoleFormat, ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
         }
 
         private void CheckRestart(float t1)
         {
-            int TimeInMinutes = (int)Th3Util.GetTimeTillRestart(Config.ShutdownTime).TotalMinutes;
+            var timeTillRestart = Th3Util.GetTimeTillRestart(Config.ShutdownTime);
+            var timeInMinutes = (int)timeTillRestart.TotalMinutes;
             if (Config.ShutdownAnnounce != null)
             {
-                foreach (int time in Config.ShutdownAnnounce)
+                foreach (var time in Config.ShutdownAnnounce)
                 {
-                    if (time == TimeInMinutes)
-                    {
-                        string msg = TimeInMinutes == 1 ? Lang.Get("th3essentials:restart-in-min") : Lang.Get("th3essentials:restart-in-mins", TimeInMinutes);
-                        SendIngameServerMsg(msg);
-                        _th3Discord?.SendServerMessage(msg);
-                        _sapi.Logger.Event(msg);
-                    }
+                    if (time != timeInMinutes) continue;
+                    var msg = timeInMinutes == 1
+                        ? Lang.Get("th3essentials:restart-in-min")
+                        : Lang.Get("th3essentials:restart-in-mins", timeInMinutes);
+                    SendInGameServerMsg(msg);
+                    _th3Discord?.SendServerMessage(msg);
+                    _sapi.Logger.Event(msg);
                 }
             }
-            if (Config.ShutdownEnabled && TimeInMinutes < 1)
+            var totalSeconds = (int)timeTillRestart.TotalSeconds;
+            Mod.Logger.Notification($"restarttime: {totalSeconds}");
+            if (!Config.ShutdownEnabled || totalSeconds >= 5) return;
+
+            if (Config.BackupOnShutdown)
             {
-                if (Config.BackupOnShutdown)
-                {
-                    LockAndKick();
-                    CreateBackup();
-                }
-                _sapi.Server.ShutDown();
+                LockAndKick();
+                CreateBackup();
             }
+
+            _sapi.Server.ShutDown();
         }
 
-        private void SendIngameServerMsg(string msg)
+        private void SendInGameServerMsg(string msg)
         {
             _sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup,
                 !string.IsNullOrEmpty(Config.SystemMsgColor)
@@ -196,25 +209,27 @@ namespace Th3Essentials
 
         private void CreateBackup()
         {
-            ServerMain server = (ServerMain)_sapi.World;
-            GameDatabase gameDatabase = new GameDatabase(_sapi.Logger);
+            var server = (ServerMain)_sapi.World;
+            var gameDatabase = new GameDatabase(_sapi.Logger);
 
             _ = gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out _, out _, out _);
-            FileInfo fileInfo = new FileInfo(gameDatabase.DatabaseFilename);
-            long freeDiskSpace = ServerMain.xPlatInterface.GetFreeDiskSpace(fileInfo.DirectoryName);
+            var fileInfo = new FileInfo(gameDatabase.DatabaseFilename);
+            var freeDiskSpace = ServerMain.xPlatInterface.GetFreeDiskSpace(fileInfo.DirectoryName);
             if (freeDiskSpace <= fileInfo.Length)
             {
-                _sapi.Logger.Warning($"SaveFileSize: {fileInfo.Length / 1000000} MB, FreeDiskSpace: {freeDiskSpace / 1000000} MB");
+                _sapi.Logger.Warning(
+                    $"SaveFileSize: {fileInfo.Length / 1000000} MB, FreeDiskSpace: {freeDiskSpace / 1000000} MB");
                 _sapi.Logger.Error("Not enought disk space left to create a backup");
                 return;
             }
 
-            string worldName = Path.GetFileNameWithoutExtension(_sapi.WorldManager.CurrentWorldName);
+            var worldName = Path.GetFileNameWithoutExtension(_sapi.WorldManager.CurrentWorldName);
             if (worldName.Length == 0)
             {
                 worldName = "world";
             }
-            string backupFileName = $"{worldName}-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.vcdbs";
+
+            var backupFileName = $"{worldName}-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.vcdbs";
 
             _sapi.Logger.Event(Lang.Get("th3essentials:backup"));
             _th3Discord?.SendServerMessage(Lang.Get("th3essentials:backup-dc"));
@@ -226,7 +241,7 @@ namespace Th3Essentials
         {
             _sapi.Server.Config.Password = new Random().Next().ToString();
             _sapi.Logger.Event($"Temporary server password is: {_sapi.Server.Config.Password}");
-            foreach (IServerPlayer player in _sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
+            foreach (var player in _sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
             {
                 player.Disconnect();
             }
@@ -236,10 +251,10 @@ namespace Th3Essentials
         {
             if (!PlayerConfig.Players.TryGetValue(byPlayer.PlayerUID, out _))
             {
-                byte[] data = byPlayer.WorldData.GetModdata(Th3EssentialsModDataKey);
+                var data = byPlayer.WorldData.GetModdata(Th3EssentialsModDataKey);
                 if (data != null)
                 {
-                    Th3PlayerData playerData = SerializerUtil.Deserialize<Th3PlayerData>(data);
+                    var playerData = SerializerUtil.Deserialize<Th3PlayerData>(data);
                     PlayerConfig.Add(byPlayer.PlayerUID, playerData);
                 }
             }
@@ -251,7 +266,7 @@ namespace Th3Essentials
             if (damageSource != null)
             {
                 string key = null;
-                int numMax = 1;
+                var numMax = 1;
                 if (damageSource.SourceEntity != null)
                 {
                     key = damageSource.SourceEntity.Code.Path.Replace("-", "");
@@ -273,6 +288,7 @@ namespace Th3Essentials
                         {
                             key = "sheepbighornmale";
                         }
+
                         numMax = 3;
                     }
                     else if (key.Contains("locust"))
@@ -306,12 +322,12 @@ namespace Th3Essentials
 
                 if (key != null)
                 {
-                    Random rnd = new Random();
+                    var rnd = new Random();
 
                     msg = Lang.Get("deathmsg-" + key + "-" + rnd.Next(1, numMax), byPlayer.PlayerName);
                     if (msg.Contains("deathmsg"))
                     {
-                        string str = Lang.Get("prefixandcreature-" + key);
+                        var str = Lang.Get("prefixandcreature-" + key);
                         msg = Lang.Get("th3essentials:playerdeathby", byPlayer.PlayerName, str);
                     }
                 }
@@ -344,7 +360,7 @@ namespace Th3Essentials
         {
             try
             {
-                Th3Config configTemp = _sapi.LoadModConfig<Th3Config>(_configFile);
+                var configTemp = _sapi.LoadModConfig<Th3Config>(_configFile);
                 Config.Reload(configTemp);
             }
             catch (Exception e)
@@ -352,6 +368,7 @@ namespace Th3Essentials
                 _sapi.Logger.Error("Error reloading Th3Config: ", e.ToString());
                 return false;
             }
+
             return true;
         }
 
@@ -359,7 +376,11 @@ namespace Th3Essentials
         {
             _th3Influx?.Dispose();
             _th3Discord?.Dispose();
-            base.Dispose();
+            _sapi.Event.GameWorldSave -= GameWorldSave;
+            _sapi.Event.PlayerNowPlaying -= PlayerNowPlaying;
+            _sapi.Event.UnregisterGameTickListener(_restartListener);
+            _sapi.Event.PlayerChat -= PlayerChatAsync;
+            _sapi.Event.PlayerDeath -= PlayerDeathAsync;
         }
 
         public static string ToHex(Color c)
