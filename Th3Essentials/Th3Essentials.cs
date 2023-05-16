@@ -203,6 +203,7 @@ namespace Th3Essentials
             var totalSeconds = (int)timeTillRestart.TotalSeconds;
             if (!Config.ShutdownEnabled || totalSeconds >= 5) return;
 
+            _sapi.Event.UnregisterGameTickListener(_restartListener);
             if (Config.BackupOnShutdown)
             {
                 LockAndKick();

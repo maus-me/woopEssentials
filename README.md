@@ -30,7 +30,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - announce a message from discord to ingame
 - /warp [ add \<warp name\> | remove \<warp name\> | list |\<warp name\> ] to predfined locations (setup by admin, also respecting home cooldown time) [on/off]
 - automatic backup - will create a backup when using the shutdown feature [on/off]
-- /reloadth3config - reload the th3config.json and the restart timer
+- /reloadth3config - reload the th3config.json and the restart timer 
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
