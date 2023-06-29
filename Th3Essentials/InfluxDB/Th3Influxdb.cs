@@ -297,7 +297,7 @@ namespace Th3Essentials.Influxdb
 
         public class PatchFrameProfilerUtil
         {
-            public static bool Prefix(FrameProfilerUtil __instance, ProfileEntryRange ___rootEntry, ILogger ___logger)
+            public static bool Prefix(FrameProfilerUtil __instance, ProfileEntryRange ___rootEntry, Action<string> ___onLogoutputHandler)
             {
                 if (!__instance.Enabled && !__instance.PrintSlowTicks)
                 {
@@ -321,7 +321,7 @@ namespace Th3Essentials.Influxdb
                 var message = stringBuilder.ToString();
                 if (Instance?._config.InlfuxDBOverwriteLogTicks == false)
                 {
-                    ___logger.Notification(message);
+                    ___onLogoutputHandler(message);
                 }
 
                 var data = PointData.Measurement("logticks").Field("log", message).Field("ms", ms).Timestamp(WritePrecision.Ms);
