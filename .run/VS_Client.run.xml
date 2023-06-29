@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="VS_Client" type="RunExe" factoryName=".NET Executable">
-    <option name="EXE_PATH" value="$USER_HOME$/Applications/VintageStoryModding/Vintagestory.exe" />
+    <option name="EXE_PATH" value="$USER_HOME$/Applications/VintageStoryNet7/Vintagestory" />
     <option name="PROGRAM_PARAMETERS" value="--addModPath $PROJECT_DIR$/Th3Essentials/bin/packages/mods --dataPath $USER_HOME$/.config/VintagestoryDataModding" />
     <option name="WORKING_DIRECTORY" value="$USER_HOME$/Applications/VintageStoryModding" />
     <option name="PASS_PARENT_ENVS" value="1" />

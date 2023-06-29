@@ -1,3 +1,4 @@
+using System.Linq;
 using Cake.Common.IO;
 using Cake.Common.Tools.DotNet;
 using Cake.Common.Tools.DotNet.Build;
@@ -63,10 +64,8 @@ public sealed class PackageTask : FrostingTask<BuildContext>
         context.EnsureDirectoryExists(context.PackageFolder);
         context.EnsureDirectoryExists(context.PackageFolderOut);
         context.CleanDirectory(context.PackageFolderOut);
-        // 
-        context.CopyFiles($"../{context.Name}/bin/Release/*", $"{context.PackageFolder}/");
-        // var filePathCollection = context.GetFiles($"../{context.Name}/bin/Release/*").Where(f => !f.FullPath.Contains("Newtonsoft"));
-        // context.CopyFiles(filePathCollection, $"{context.PackageFolder}/");
+        var filePathCollection = context.GetFiles($"../{context.Name}/bin/Release/*").Where(f => !f.FullPath.Contains("Newtonsoft"));
+        context.CopyFiles(filePathCollection, $"{context.PackageFolder}/");
         context.CopyDirectory("../resources/", context.PackageFolder);
         context.Zip(context.PackageFolder, context.ZipFile);
     }
