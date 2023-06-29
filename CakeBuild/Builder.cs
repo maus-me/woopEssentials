@@ -63,6 +63,7 @@ public sealed class PackageTask : FrostingTask<BuildContext>
         context.EnsureDirectoryExists(context.Packages);
         context.EnsureDirectoryExists(context.PackageFolder);
         context.EnsureDirectoryExists(context.PackageFolderOut);
+        context.CleanDirectory(context.PackageFolder);
         context.CleanDirectory(context.PackageFolderOut);
         var filePathCollection = context.GetFiles($"../{context.Name}/bin/Release/*").Where(f => !f.FullPath.Contains("Newtonsoft"));
         context.CopyFiles(filePathCollection, $"{context.PackageFolder}/");
