@@ -2,11 +2,7 @@
 <project version="4">
   <component name="UserContentModel">
     <attachedFolders />
-    <explicitIncludes>
-      <Path>influx_grafana</Path>
-      <Path>resources/assets</Path>
-      <Path>resources/modinfo.json</Path>
-    </explicitIncludes>
+    <explicitIncludes />
     <explicitExcludes />
   </component>
 </project>

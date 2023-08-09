@@ -1,44 +1,52 @@
-<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
-		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
-	</PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<ItemGroup>
-		<Reference Include="VintagestoryAPI">
-			<HintPath>$(VINTAGE_STORY_MODDING_NET7)/VintagestoryAPI.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="VintagestoryLib">
-			<HintPath>$(VINTAGE_STORY_MODDING_NET7)/VintagestoryLib.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="protobuf-net">
-			<HintPath>$(VINTAGE_STORY_MODDING_NET7)\Lib\protobuf-net.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Newtonsoft.Json">
-			<HintPath>$(VINTAGE_STORY_MODDING_NET7)\Lib\Newtonsoft.Json.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="0Harmony">
-			<HintPath>$(VINTAGE_STORY_MODDING_NET7)\Lib\0Harmony.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-	</ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <OutputPath>bin\$(Configuration)\Mods\mod</OutputPath>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<Reference Include="VSSurvivalMod">
-			<HintPath>$(VINTAGE_STORY_PRE)/Mods/VSSurvivalMod.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-	</ItemGroup>
+    <ItemGroup>
+        <Reference Include="VintagestoryAPI">
+            <HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="VintagestoryLib">
+            <HintPath>$(VINTAGE_STORY)/VintagestoryLib.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="protobuf-net">
+            <HintPath>$(VINTAGE_STORY)\Lib\protobuf-net.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>$(VINTAGE_STORY)\Lib\Newtonsoft.Json.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="0Harmony">
+            <HintPath>$(VINTAGE_STORY)\Lib\0Harmony.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Discord.Net.WebSocket" Version="3.10.0" />
-		<PackageReference Include="System.Net.Http" Version="4.3.4" />
-	</ItemGroup>
+    <ItemGroup>
+        <Reference Include="VSSurvivalMod">
+            <HintPath>$(VINTAGE_STORY)/Mods/VSSurvivalMod.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Discord.Net.WebSocket" Version="3.10.0" />
+        <PackageReference Include="System.Net.Http" Version="4.3.4" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="..\resources\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
 </Project>
