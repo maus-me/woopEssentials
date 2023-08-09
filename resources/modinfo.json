@@ -6,7 +6,7 @@
         "Th3Dilli"
     ],
     "description": "Th3Dilli essentials mod",
-    "version": "2.3.2",
+    "version": "2.3.2-pre.1",
     "side": "server",
     "dependencies": {
         "game": "1.18.0-rc.8",
