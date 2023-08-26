@@ -1,20 +1,19 @@
 using System;
 using Discord;
-using Discord.WebSocket;
 using Vintagestory.API.Config;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class RestartTime
+    public abstract class RestartTime
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             SlashCommandBuilder restartTime = new SlashCommandBuilder
             {
                 Name = SlashCommands.RestartTime.ToString().ToLower(),
                 Description = Lang.Get("th3essentials:slc-restart")
             };
-            _ = _client.Rest.CreateGuildCommand(restartTime.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return restartTime.Build();
         }
 
         public static string HandleSlashCommand()

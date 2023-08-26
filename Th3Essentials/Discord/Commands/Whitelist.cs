@@ -12,45 +12,45 @@ using Vintagestory.Server;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class Whitelist
+    public abstract class Whitelist
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             List<SlashCommandOptionBuilder> whitelistOptions = new List<SlashCommandOptionBuilder>()
             {
-                new SlashCommandOptionBuilder()
+                new()
                 {
                     Name = "playername",
                     Description = Lang.Get("th3essentials:slc-whitelist-playername"),
                     Type = ApplicationCommandOptionType.String,
                     IsRequired = true
                 } ,
-                new SlashCommandOptionBuilder()
+                new()
                 {
                     Name = "mode",
                     Description = Lang.Get("th3essentials:slc-whitelist-mode"),
                     Type = ApplicationCommandOptionType.Boolean,
                     IsRequired = true
                 },
-                new SlashCommandOptionBuilder()
+                new()
                 {
                     Name = "time",
                     Description = Lang.Get("th3essentials:slc-whitelist-time"),
                     Type = ApplicationCommandOptionType.Integer,
                 },
-                new SlashCommandOptionBuilder()
+                new()
                 {
                     Name = "timetype",
                     Description = Lang.Get("th3essentials:slc-whitelist-timetype"),
                     Type = ApplicationCommandOptionType.String,
                     Choices = new List<ApplicationCommandOptionChoiceProperties>(){
-                        new ApplicationCommandOptionChoiceProperties(){Name = "hours", Value = "hours"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "days", Value = "days"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "months", Value = "months"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "years", Value = "years"}
+                        new(){Name = "hours", Value = "hours"},
+                        new(){Name = "days", Value = "days"},
+                        new(){Name = "months", Value = "months"},
+                        new(){Name = "years", Value = "years"}
                     }
                 },
-                new SlashCommandOptionBuilder()
+                new()
                 {
                     Name = "reason",
                     Description = Lang.Get("th3essentials:slc-whitelist-reason"),
@@ -64,7 +64,7 @@ namespace Th3Essentials.Discord.Commands
                 Description = Lang.Get("th3essentials:slc-whitelist"),
                 Options = whitelistOptions
             };
-            _ = _client.Rest.CreateGuildCommand(whitelist.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return whitelist.Build();
         }
 
         public async static Task<string> HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
@@ -149,7 +149,7 @@ namespace Th3Essentials.Discord.Commands
                                     }
                             }
                             var name = guildUser.DisplayName;
-                            var playerUid = await GetPlayerUid(discord.Sapi, targetPlayer);
+                            var playerUid = await GetPlayerUID(discord.Sapi, targetPlayer);
                             if (playerUid != null)
                             {
                                 ((ServerMain)discord.Sapi.World).PlayerDataManager.WhitelistPlayer(targetPlayer, playerUid, name, reason, datetime);
@@ -200,7 +200,7 @@ namespace Th3Essentials.Discord.Commands
                 {
                     List<KeyValuePair<string, string>> bodydata = new List<KeyValuePair<string, string>>
                     {
-                        new KeyValuePair<string, string>("playername", targetPlayer)
+                        new("playername", targetPlayer)
                     };
                     FormUrlEncodedContent body = new FormUrlEncodedContent(bodydata);
                     HttpResponseMessage result = await client.PostAsync("https://auth.vintagestory.at/resolveplayername", body);

@@ -12,16 +12,16 @@ using Vintagestory.Server;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class Stats
+    public abstract class Stats
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             SlashCommandBuilder stats = new SlashCommandBuilder
             {
                 Name = SlashCommands.Stats.ToString().ToLower(),
                 Description = Lang.Get("th3essentials:slc-stats")
             };
-            _ = _client.Rest.CreateGuildCommand(stats.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return stats.Build();
         }
 
         public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)

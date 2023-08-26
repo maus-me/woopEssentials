@@ -5,25 +5,25 @@ using Vintagestory.API.Config;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class ModifyPermissions
+    public abstract class ModifyPermissions
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             List<SlashCommandOptionBuilder> modifypermissionsOptions = new List<SlashCommandOptionBuilder>()
             {
-                new SlashCommandOptionBuilder()
+                new()
                 {
                     Name = "mode",
                     Description = Lang.Get("th3essentials:slc-modifypermissions-mode"),
                     Type = ApplicationCommandOptionType.String,
                     Choices = new List<ApplicationCommandOptionChoiceProperties>(){
-                        new ApplicationCommandOptionChoiceProperties(){Name = "add", Value = "add"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "remove", Value = "remove"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "clear", Value = "clear"}
+                        new(){Name = "add", Value = "add"},
+                        new(){Name = "remove", Value = "remove"},
+                        new(){Name = "clear", Value = "clear"}
                     },
                     IsRequired = true,
                 },
-                new SlashCommandOptionBuilder()
+                new()
                 {
                 Name = "role",
                 Description = Lang.Get("th3essentials:slc-modifypermissions"),
@@ -36,7 +36,7 @@ namespace Th3Essentials.Discord.Commands
                 Description = Lang.Get("th3essentials:slc-modifypermissions"),
                 Options = modifypermissionsOptions
             };
-            _ = _client.Rest.CreateGuildCommand(modifypermissions.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return modifypermissions.Build();
         }
 
         public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)

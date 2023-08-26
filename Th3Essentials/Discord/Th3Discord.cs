@@ -140,7 +140,7 @@ namespace Th3Essentials.Discord
                 case LogSeverity.Warning:
                     {
                         var logMessage = log.ToString(prependTimestamp: false);
-                        if (log.Exception is GatewayReconnectException || log.Exception.InnerException is WebSocketException)
+                        if (log.Exception is GatewayReconnectException || log.Exception?.InnerException is WebSocketException)
                         {
                             Sapi.Logger.VerboseDebug($"[Discord] {logMessage}");
                         }
@@ -225,10 +225,10 @@ namespace Th3Essentials.Discord
 
         private void CreateSlashCommands()
         {
-            DeleteCommands();
+            // DeleteCommands();
             try
             {
-                Th3SlashCommands.CreateGuildCommands(_client);
+                Th3SlashCommands.CreateGuildCommands(_client, Sapi);
             }
             catch (Exception exception)
             {

@@ -4,16 +4,16 @@ using Vintagestory.API.Config;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class Shutdown
+    public abstract class Shutdown
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             SlashCommandBuilder shutdown = new SlashCommandBuilder
             {
                 Name = SlashCommands.Shutdown.ToString().ToLower(),
                 Description = Lang.Get("th3essentials:slc-shutdown")
             };
-            _ = _client.Rest.CreateGuildCommand(shutdown.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return shutdown.Build();
         }
 
         public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction, ref MessageComponent components)

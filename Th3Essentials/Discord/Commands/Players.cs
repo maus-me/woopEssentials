@@ -7,13 +7,13 @@ using Vintagestory.API.Server;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class Players
+    public abstract class Players
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             List<SlashCommandOptionBuilder> playersOptions = new List<SlashCommandOptionBuilder>()
             {
-                new SlashCommandOptionBuilder()
+                new()
                 {
                     Name = "ping",
                     Description = Lang.Get("th3essentials:slc-players-ping"),
@@ -26,7 +26,7 @@ namespace Th3Essentials.Discord.Commands
                 Description = Lang.Get("th3essentials:slc-players"),
                 Options = playersOptions
             };
-            _ = _client.Rest.CreateGuildCommand(players.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return players.Build();
         }
 
         public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)

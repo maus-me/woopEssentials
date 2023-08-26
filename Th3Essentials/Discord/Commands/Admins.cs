@@ -1,19 +1,18 @@
 using Discord;
-using Discord.WebSocket;
 using Vintagestory.API.Config;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class Admins
+    public abstract class Admins
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             SlashCommandBuilder admins = new SlashCommandBuilder
             {
                 Name = SlashCommands.Admins.ToString().ToLower(),
                 Description = Lang.Get("th3essentials:slc-admins")
             };
-            _ = _client.Rest.CreateGuildCommand(admins.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return admins.Build();
         }
     }
 }

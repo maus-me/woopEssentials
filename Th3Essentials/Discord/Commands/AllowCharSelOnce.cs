@@ -9,13 +9,13 @@ using Vintagestory.API.Util;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class AllowCharSelOnce
+    public abstract class AllowCharSelOnce
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             List<SlashCommandOptionBuilder> charSelectOptions = new List<SlashCommandOptionBuilder>()
         {
-          new SlashCommandOptionBuilder()
+          new()
           {
             Name = "playername",
             Description = Lang.Get("th3essentials:slc-allowcharselonce-playername"),
@@ -29,7 +29,7 @@ namespace Th3Essentials.Discord.Commands
                 Description = Lang.Get("th3essentials:slc-allowcharselonce"),
                 Options = charSelectOptions
             };
-            _ = _client.Rest.CreateGuildCommand(allowcharselonce.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return allowcharselonce.Build();
         }
 
         public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)

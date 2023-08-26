@@ -6,21 +6,21 @@ using Vintagestory.API.Config;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class Auth
+    public abstract class Auth
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             List<SlashCommandOptionBuilder> authOptions = new List<SlashCommandOptionBuilder>()
             {
-                new SlashCommandOptionBuilder()
+                new()
                 {
                     Name = "mode",
                     Description = Lang.Get("th3essentials:slc-auth-mode"),
                     Type = ApplicationCommandOptionType.String,
                     IsRequired = true,
                     Choices = new List<ApplicationCommandOptionChoiceProperties>(){
-                        new ApplicationCommandOptionChoiceProperties(){Name = "connect", Value = "connect"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "disconnect", Value = "disconnect"}
+                        new(){Name = "connect", Value = "connect"},
+                        new(){Name = "disconnect", Value = "disconnect"}
                     },
                 }
             };
@@ -30,7 +30,7 @@ namespace Th3Essentials.Discord.Commands
                 Description = Lang.Get("th3essentials:slc-auth"),
                 Options = authOptions
             };
-            _ = _client.Rest.CreateGuildCommand(auth.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return auth.Build();
         }
 
         public static string HandleSlashCommand(SocketSlashCommand commandInteraction)

@@ -6,56 +6,56 @@ using Vintagestory.API.Config;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class Announce
+    public abstract class Announce
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             List<SlashCommandOptionBuilder> announceOptions = new List<SlashCommandOptionBuilder>()
             {
-                new SlashCommandOptionBuilder()
+                new()
                 {
                     Name = "message",
                     Description = Lang.Get("th3essentials:slc-announce-msg"),
                     Type = ApplicationCommandOptionType.String,
                     IsRequired = true
                 },
-                new SlashCommandOptionBuilder()
+                new()
                 {
                     Name = "show",
                     Description = Lang.Get("th3essentials:slc-announce-showindiscord"),
                     Type = ApplicationCommandOptionType.Boolean,
                     IsRequired = true
                 },
-                new SlashCommandOptionBuilder()
+                new()
                 {
                     Name = "color",
                     Description = Lang.Get("th3essentials:slc-announce-color"),
                     Type = ApplicationCommandOptionType.String,
                     Choices = new List<ApplicationCommandOptionChoiceProperties>(){
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Black", Value = "Black"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Blue", Value = "Blue"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "BlueViolet", Value = "BlueViolet"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Cyan", Value = "Cyan"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "DarkBlue", Value = "DarkBlue"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "DarkCyan", Value = "DarkCyan"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "DarkGray", Value = "DarkGray"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "DarkGreen", Value = "DarkGreen"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "DarkMagenta", Value = "DarkMagenta"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "DarkOrange", Value = "DarkOrange"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "DarkRed", Value = "DarkRed"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "DarkViolet", Value = "DarkViolet"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Gold", Value = "Gold"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Green", Value = "Green"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Lime", Value = "Lime"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Magenta", Value = "Magenta"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Orange", Value = "Orange"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Pink", Value = "Pink"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Purple", Value = "Purple"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Red", Value = "Red"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Silver", Value = "Silver"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Violet", Value = "Violet"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "White", Value = "White"},
-                        new ApplicationCommandOptionChoiceProperties(){Name = "Yellow", Value = "Yellow"},
+                        new(){Name = "Black", Value = "Black"},
+                        new(){Name = "Blue", Value = "Blue"},
+                        new(){Name = "BlueViolet", Value = "BlueViolet"},
+                        new(){Name = "Cyan", Value = "Cyan"},
+                        new(){Name = "DarkBlue", Value = "DarkBlue"},
+                        new(){Name = "DarkCyan", Value = "DarkCyan"},
+                        new(){Name = "DarkGray", Value = "DarkGray"},
+                        new(){Name = "DarkGreen", Value = "DarkGreen"},
+                        new(){Name = "DarkMagenta", Value = "DarkMagenta"},
+                        new(){Name = "DarkOrange", Value = "DarkOrange"},
+                        new(){Name = "DarkRed", Value = "DarkRed"},
+                        new(){Name = "DarkViolet", Value = "DarkViolet"},
+                        new(){Name = "Gold", Value = "Gold"},
+                        new(){Name = "Green", Value = "Green"},
+                        new(){Name = "Lime", Value = "Lime"},
+                        new(){Name = "Magenta", Value = "Magenta"},
+                        new(){Name = "Orange", Value = "Orange"},
+                        new(){Name = "Pink", Value = "Pink"},
+                        new(){Name = "Purple", Value = "Purple"},
+                        new(){Name = "Red", Value = "Red"},
+                        new(){Name = "Silver", Value = "Silver"},
+                        new(){Name = "Violet", Value = "Violet"},
+                        new(){Name = "White", Value = "White"},
+                        new(){Name = "Yellow", Value = "Yellow"},
                     }
                 }
             };
@@ -65,7 +65,7 @@ namespace Th3Essentials.Discord.Commands
                 Description = Lang.Get("th3essentials:slc-announce"),
                 Options = announceOptions
             };
-            _ = _client.Rest.CreateGuildCommand(announce.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return announce.Build();
         }
 
         public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction, ref bool ephemeral)

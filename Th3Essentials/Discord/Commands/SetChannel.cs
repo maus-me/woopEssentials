@@ -6,13 +6,13 @@ using Vintagestory.API.Config;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class SetChannel
+    public abstract class SetChannel
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             List<SlashCommandOptionBuilder> channelOptions = new List<SlashCommandOptionBuilder>()
             {
-                new SlashCommandOptionBuilder()
+                new()
                 {
                 Name = "channel",
                 Description = Lang.Get("th3essentials:slc-setchannel"),
@@ -26,7 +26,7 @@ namespace Th3Essentials.Discord.Commands
                 Description = Lang.Get("th3essentials:slc-setchannel"),
                 Options = channelOptions
             };
-            _ = _client.Rest.CreateGuildCommand(setchannel.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return setchannel.Build();
         }
 
         public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)

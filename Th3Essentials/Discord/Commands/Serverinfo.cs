@@ -7,16 +7,16 @@ using Vintagestory.API.Config;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class Serverinfo
+    public abstract class Serverinfo
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             SlashCommandBuilder serverinfo = new SlashCommandBuilder
             {
                 Name = SlashCommands.Serverinfo.ToString().ToLower(),
                 Description = Lang.Get("th3essentials:slc-serverinfo")
             };
-            _ = _client.Rest.CreateGuildCommand(serverinfo.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return serverinfo.Build();
         }
 
         public static List<string> HandleSlashCommand(Th3Discord discord, SocketSlashCommand _)

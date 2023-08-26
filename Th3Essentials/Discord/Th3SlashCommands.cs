@@ -5,33 +5,41 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Th3Essentials.Discord.Commands;
+using Vintagestory.API.Server;
 
 namespace Th3Essentials.Discord
 {
     public enum SlashCommands
     {
         Players, Date, RestartTime, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions, Shutdown, Serverinfo, Stats, Admins, Auth, Announce,
-        ReloadConfig
+        ReloadConfig, ChangeRole
     }
 
-    public class Th3SlashCommands
+    public abstract class Th3SlashCommands
     {
-        public static void CreateGuildCommands(DiscordSocketClient _client)
+        public static void CreateGuildCommands(DiscordSocketClient client, ICoreServerAPI sapi)
         {
-            Players.CreateCommand(_client);
-            Date.CreateCommand(_client);
-            RestartTime.CreateCommand(_client);
-            SetChannel.CreateCommand(_client);
-            Whitelist.CreateCommand(_client);
-            AllowCharSelOnce.CreateCommand(_client);
-            ModifyPermissions.CreateCommand(_client);
-            Shutdown.CreateCommand(_client);
-            Serverinfo.CreateCommand(_client);
-            Stats.CreateCommand(_client);
-            Admins.CreateCommand(_client);
-            Auth.CreateCommand(_client);
-            Announce.CreateCommand(_client);
-            ReloadConfig.CreateCommand(_client);
+            var commands = new ApplicationCommandProperties[]
+            {
+                Players.CreateCommand(),
+                Date.CreateCommand(),
+                RestartTime.CreateCommand(),
+                SetChannel.CreateCommand(),
+                Whitelist.CreateCommand(),
+                AllowCharSelOnce.CreateCommand(),
+                ModifyPermissions.CreateCommand(),
+                Shutdown.CreateCommand(),
+                Serverinfo.CreateCommand(),
+                Stats.CreateCommand(),
+                Admins.CreateCommand(),
+                Auth.CreateCommand(),
+                Announce.CreateCommand(),
+                ReloadConfig.CreateCommand(),
+                ChangeRole.CreateCommand(sapi)
+            };
+            var created = client.Rest.BulkOverwriteGuildCommands(commands, Th3Discord.Instance.Config.GuildId).GetAwaiter().GetResult();
+            
+            sapi.Logger.Notification($"Discord Slashcommands created: {string.Join(", ", created.Select(c => c.Name))}");
         }
 
         internal static void HandleButtonExecuted(Th3Discord discord, SocketMessageComponent component)
@@ -151,6 +159,11 @@ namespace Th3Essentials.Discord
                         response = ReloadConfig.HandleSlashCommand(discord, commandInteraction);
                         break;
                     }
+                    case SlashCommands.ChangeRole:
+                    {
+                        response = ChangeRole.HandleSlashCommand(discord, commandInteraction);
+                        break;
+                    }
                     default:
                         {
                             response = "Unknown SlashCommand";
@@ -168,7 +181,7 @@ namespace Th3Essentials.Discord
             }
             else
             {
-                if (responseMult.Count > 0)
+                if (responseMult?.Count > 0)
                 {
                     response = responseMult.FirstOrDefault();
                     responseMult.RemoveAt(0);

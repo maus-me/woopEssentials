@@ -6,16 +6,16 @@ using Vintagestory.API.Config;
 
 namespace Th3Essentials.Discord.Commands
 {
-    public class ReloadConfig
+    public abstract class ReloadConfig
     {
-        public static void CreateCommand(DiscordSocketClient _client)
+        public static SlashCommandProperties CreateCommand()
         {
             SlashCommandBuilder reloadConfig = new SlashCommandBuilder
             {
                 Name = SlashCommands.ReloadConfig.ToString().ToLower(),
                 Description = Lang.Get("th3essentials:slc-reload")
             };
-            _ = _client.Rest.CreateGuildCommand(reloadConfig.Build(), Th3Essentials.Config.DiscordConfig.GuildId);
+            return reloadConfig.Build();
         }
 
         public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)

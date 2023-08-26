@@ -9,7 +9,7 @@ namespace Th3Essentials.Commands
 {
     internal class Message : Command
     {
-        private readonly Dictionary<string, string> LastMsgFrom = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> LastMsgFrom = new();
         private ICoreServerAPI _sapi;
 
         internal override void Init(ICoreServerAPI sapi)

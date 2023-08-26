@@ -32,6 +32,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - automatic backup - will create a backup when using the shutdown feature [on/off]
 - /reloadth3config - reload the th3config.json and the restart timer 
 - In-game chat timestamps [on/off]
+- /changerole allows an admin or roles of ModerationRoles to change the role of a player through Discord
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -95,6 +96,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
   - /auth - start to link discord and ingame account for the reward system
   - /announce - announce a message from discord to ingame chat [Admin or Configured Role]
   - /reloadconfig - reload the th3config.json and the restart timer [Admin or Configured Role]
+  - /changerole allows to change the role of a player [Admin or Configured Role]
 
 - Shutdownsystem
 

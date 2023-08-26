@@ -2,7 +2,7 @@ using Vintagestory.API.Server;
 
 namespace Th3Essentials.Commands
 {
-    public class CommandsLoader
+    public abstract class CommandsLoader
     {
         internal static void Init(ICoreServerAPI sapi)
         {

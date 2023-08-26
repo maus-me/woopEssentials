@@ -8,7 +8,7 @@ namespace Th3Essentials.InfluxDB
 {
     public class PointData
     {
-        private static readonly DateTime EpochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime EpochStart = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         private string _measurement;
 
