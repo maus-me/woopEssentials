@@ -148,11 +148,11 @@ namespace Th3Essentials.Discord.Commands
                                         break;
                                     }
                             }
-                            string name = guildUser.Nickname ?? guildUser.Username;
-                            string playerUID = await GetPlayerUID(discord.Sapi, targetPlayer);
-                            if (playerUID != null)
+                            var name = guildUser.DisplayName;
+                            var playerUid = await GetPlayerUid(discord.Sapi, targetPlayer);
+                            if (playerUid != null)
                             {
-                                ((ServerMain)discord.Sapi.World).PlayerDataManager.WhitelistPlayer(targetPlayer, playerUID, name, reason, datetime);
+                                ((ServerMain)discord.Sapi.World).PlayerDataManager.WhitelistPlayer(targetPlayer, playerUid, name, reason, datetime);
                                 return $"{targetPlayer} is now whitelisted until {datetime}";
                             }
                             else

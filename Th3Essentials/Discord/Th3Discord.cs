@@ -171,7 +171,7 @@ namespace Th3Essentials.Discord
         {
             try
             {
-                Sapi.Server.LogVerboseDebug($"{_client.CurrentUser.Username} is connected!");
+                Sapi.Server.LogVerboseDebug($"{_client.CurrentUser.GlobalName} is connected!");
 
                 if (!GetDiscordChannel())
                 {
@@ -322,11 +322,11 @@ namespace Th3Essentials.Discord
 
                 if (message.Author is SocketGuildUser guildUser)
                 {
-                    name = guildUser.Nickname ?? guildUser.Username;
+                    name = guildUser.DisplayName;
                 }
                 else
                 {
-                    name = message.Author.Username;
+                    name = message.Author.GlobalName ?? message.Author.Username;
                 }
                 msg = message.Attachments.Count > 0
                     ? string.Format(format, Config.DiscordChatColor, name, $" [Attachments] {msg}")
@@ -357,12 +357,12 @@ namespace Th3Essentials.Discord
                         string name = "Unknown";
                         if (mUser is SocketGuildUser mGuildUser)
                         {
-                            name = mGuildUser.Nickname ?? mGuildUser.Username;
+                            name = mGuildUser.DisplayName;
                         }
                         else if (mUser is SocketUnknownUser)
                         {
-                            RestGuildUser rgUser = _client.Rest.GetGuildUserAsync(Config.GuildId, mUser.Id).GetAwaiter().GetResult();
-                            name = rgUser.Nickname ?? rgUser.Username;
+                            var rgUser = _client.Rest.GetGuildUserAsync(Config.GuildId, mUser.Id).GetAwaiter().GetResult();
+                            name = rgUser.DisplayName;
                         }
                         msg = Regex.Replace(msg, $"<@!?{user.Groups[1].Value}>", $"@{name}");
                         break;
