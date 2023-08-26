@@ -455,6 +455,12 @@ namespace Th3Essentials.Discord
                     message = string.Format(Config.RewardsFormat, Th3Essentials.ToHex(reward.SocketRole.Color), reward.Name, message);
                 }
             }
+
+            if (!string.IsNullOrEmpty(Th3Essentials.Config.ChatTimestampFormat))
+            {
+                var now = DateTime.Now;
+                message = $"{now.TimeOfDay.ToString(Th3Essentials.Config.ChatTimestampFormat)}: {message}";
+            }
         }
 
         private void PlayerDisconnectAsync(IServerPlayer byPlayer)

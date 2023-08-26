@@ -31,6 +31,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - /warp [ add \<warp name\> | remove \<warp name\> | list |\<warp name\> ] to predfined locations (setup by admin, also respecting home cooldown time) [on/off]
 - automatic backup - will create a backup when using the shutdown feature [on/off]
 - /reloadth3config - reload the th3config.json and the restart timer 
+- In-game chat timestamps [on/off]
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -351,6 +352,10 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // enable the ingame /warp command
   "WarpEnabled": false,
   // managed ingame with /warp add|remove name /warp name
-  "WarpLocations": null
+  "WarpLocations": null,
+  // enable in-game chat timestamps 
+  // here you can find possible format string values https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-timespan-format-strings
+  // "ChatTimestampFormat": "hh\\:mm"
+  "ChatTimestampFormat": null
 }
 ```

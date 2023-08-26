@@ -10,50 +10,52 @@ namespace Th3Essentials.Config
         [JsonIgnore]
         public bool IsDirty;
 
-        public Th3DiscordConfig DiscordConfig = null;
+        public Th3DiscordConfig DiscordConfig;
 
-        public Th3InfluxConfig InfluxConfig = null;
+        public Th3InfluxConfig InfluxConfig;
 
-        public string InfoMessage = null;
+        public string InfoMessage;
 
-        public List<string> AnnouncementMessages = null;
+        public List<string> AnnouncementMessages;
 
-        public int AnnouncementInterval = 0;
+        public int AnnouncementInterval;
 
-        public int HomeLimit = 0;
+        public int HomeLimit;
 
         public int HomeCooldown = 60;
 
-        public bool SpawnEnabled = false;
+        public bool SpawnEnabled;
 
-        public bool BackEnabled = false;
+        public bool BackEnabled;
 
-        public bool MessageEnabled = false;
+        public bool MessageEnabled;
 
-        public List<StarterkitItem> Items = null;
+        public List<StarterkitItem> Items;
 
-        public bool ShutdownEnabled = false;
+        public bool ShutdownEnabled;
 
         public bool BackupOnShutdown = false;
 
         public TimeSpan ShutdownTime = TimeSpan.Zero; // "00:00:00" in Th3Config.json
-        public TimeSpan[] ShutdownTimes = null;
+        public TimeSpan[] ShutdownTimes;
 
-        public int[] ShutdownAnnounce = null;
+        public int[] ShutdownAnnounce;
 
         public string MessageCmdColor = "ff9102";
         
         public string SystemMsgColor = "ff9102";
 
-        public bool ShowRole = false;
+        public bool ShowRole;
 
         public string RoleFormat = "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}";
 
-        public List<string> AdminRoles = null;
+        public List<string> AdminRoles;
 
-        public bool WarpEnabled = false;
+        public bool WarpEnabled;
 
-        public List<HomePoint> WarpLocations = null;
+        public List<HomePoint> WarpLocations;
+
+        public string ChatTimestampFormat;
 
         public void Init()
         {
@@ -146,6 +148,7 @@ namespace Th3Essentials.Config
 
             WarpEnabled = configTemp.WarpEnabled;
             WarpLocations = configTemp.WarpLocations;
+            ChatTimestampFormat = configTemp.ChatTimestampFormat;
 
             if (configTemp.DiscordConfig != null)
             {
