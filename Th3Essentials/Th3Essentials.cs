@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Th3Essentials.Commands;
 using Th3Essentials.Config;
@@ -224,9 +225,9 @@ namespace Th3Essentials
         private void CreateBackup()
         {
             var server = (ServerMain)_sapi.World;
-            var gameDatabase = new GameDatabase(_sapi.Logger);
-
-            _ = gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out _, out _, out _);
+            
+            var chunkThread = typeof(ServerMain).GetField("chunkThread", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(server) as ChunkServerThread;
+            var gameDatabase = typeof(ChunkServerThread).GetField("gameDatabase", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(chunkThread) as GameDatabase;
             var fileInfo = new FileInfo(gameDatabase.DatabaseFilename);
             var freeDiskSpace = ServerMain.xPlatInterface.GetFreeDiskSpace(fileInfo.DirectoryName);
             if (freeDiskSpace <= fileInfo.Length)

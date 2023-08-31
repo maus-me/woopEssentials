@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -78,11 +79,11 @@ namespace Th3Essentials.Systems
         {
                 if (args.Parsers[0].GetValue() is not string ok || ok != "confirm")
                     return TextCommandResult.Success(Lang.Get("th3essentials:cd-rst"));
-                var server = (ServerMain)_sapi.World;
-                var gameDatabase = new GameDatabase(_sapi.Logger);
-                _ = gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out _, out _, out _);
-                gameDatabase.UpgradeToWriteAccess();
 
+                var server = (ServerMain)_sapi.World;
+                var chunkThread = typeof(ServerMain).GetField("chunkThread", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(server) as ChunkServerThread;
+                var gameDatabase = typeof(ChunkServerThread).GetField("gameDatabase", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(chunkThread) as GameDatabase;
+                
                 foreach (var th3d in server.PlayerDataManager.PlayerDataByUid.Values)
                 {
                     var onwdata = _playerConfig.GetPlayerDataByUID(th3d.PlayerUID, false);
