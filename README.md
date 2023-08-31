@@ -33,6 +33,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - /reloadth3config - reload the th3config.json and the restart timer 
 - In-game chat timestamps [on/off]
 - /changerole allows an admin or roles of ModerationRoles to change the role of a player through Discord
+- /smite [optional <playername>] spawns a lightning at the player by <playername> or at the current block/entity selection if no name is specified [onf/off]
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -358,6 +359,8 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // enable in-game chat timestamps 
   // here you can find possible format string values https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-timespan-format-strings
   // "ChatTimestampFormat": "hh\\:mm"
-  "ChatTimestampFormat": null
+  "ChatTimestampFormat": null,
+  // Enable the /smite command in-game, needs "commandplayer" privilege
+  "EnableSmite": false
 }
 ```

@@ -57,6 +57,8 @@ namespace Th3Essentials.Config
 
         public string ChatTimestampFormat;
 
+        public bool EnableSmite;
+
         public void Init()
         {
             StringBuilder sb = new StringBuilder();
@@ -149,6 +151,7 @@ namespace Th3Essentials.Config
             WarpEnabled = configTemp.WarpEnabled;
             WarpLocations = configTemp.WarpLocations;
             ChatTimestampFormat = configTemp.ChatTimestampFormat;
+            EnableSmite = configTemp.EnableSmite;
 
             if (configTemp.DiscordConfig != null)
             {

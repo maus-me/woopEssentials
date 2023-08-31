@@ -10,6 +10,7 @@ namespace Th3Essentials.Commands
             new Message().Init(sapi);
             new Restart().Init(sapi);
             new Warp().Init(sapi);
+            new Smite().Init(sapi);
         }
     }
 }
