@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Th3Essentials.Config;
 using Th3Essentials.Systems;
 using Vintagestory.API.Common;
@@ -18,111 +20,107 @@ namespace Th3Essentials.Commands
             {
                 _playerConfig = Th3Essentials.PlayerConfig;
 
-                _ = sapi.RegisterCommand("warp", Lang.Get("th3essentials:cd-warp"), "[add|remove|list|&ltwarp name&gt]", OnWarp, Privilege.chat);
+                sapi.ChatCommands.Create("warp")
+                    .WithDescription(Lang.Get("th3essentials:cd-warp"))
+                    .RequiresPlayer()
+                    .RequiresPrivilege(Privilege.chat)
+                    .WithArgs(sapi.ChatCommands.Parsers.Word("action",
+                        new[] { "add", "remove", "list", "&ltwarp name&gt" }),
+                        sapi.ChatCommands.Parsers.OptionalWord("warp_name"))
+                    .HandleWith(OnWarp);
             }
         }
 
-        private void OnWarp(IServerPlayer player, int groupId, CmdArgs args)
+        private TextCommandResult OnWarp(TextCommandCallingArgs args)
         {
-            string cmd = args.PeekWord(string.Empty);
+            var cmd = args.Parsers[0].GetValue() as string;
+
+            var player = args.Caller.Player;
             switch (cmd)
             {
                 case "add":
+                {
+                    if (!player.HasPrivilege(Privilege.controlserver))
                     {
-                        if (!player.HasPrivilege(Privilege.controlserver))
-                        {
-                            break;
-                        }
-                        _ = args.PopWord();
-                        string warpName = args.PopAll();
-
-
-                        if (warpName == string.Empty)
-                        {
-                            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-no-name"), EnumChatType.CommandError);
-                            break;
-                        }
-
-                        if (Th3Essentials.Config.FindWarpByName(warpName) != null)
-                        {
-                            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-exists", warpName), EnumChatType.CommandError);
-                            break;
-                        }
-
-                        if (Th3Essentials.Config.WarpLocations == null)
-                        {
-                            Th3Essentials.Config.WarpLocations = new List<HomePoint>();
-                        }
-
-                        Th3Essentials.Config.WarpLocations.Add(new HomePoint(warpName, player.Entity.Pos.AsBlockPos));
-                        Th3Essentials.Config.MarkDirty();
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-added", warpName), EnumChatType.CommandSuccess);
-
                         break;
                     }
+
+                    var warpName = args.Parsers[1].GetValue() as string;
+
+                    if (warpName == string.Empty)
+                    {
+                        return TextCommandResult.Error(Lang.Get("th3essentials:wp-no-name"));
+                    }
+
+                    if (Th3Essentials.Config.FindWarpByName(warpName) != null)
+                    {
+                        return TextCommandResult.Error(Lang.Get("th3essentials:wp-exists", warpName));
+                    }
+
+                    Th3Essentials.Config.WarpLocations ??= new List<HomePoint>();
+
+                    Th3Essentials.Config.WarpLocations.Add(new HomePoint(warpName, player.Entity.Pos.AsBlockPos));
+                    Th3Essentials.Config.MarkDirty();
+                    return TextCommandResult.Success(Lang.Get("th3essentials:wp-added", warpName));
+                }
                 case "remove":
+                {
+                    if (!player.HasPrivilege(Privilege.controlserver))
                     {
-                        if (!player.HasPrivilege(Privilege.controlserver))
-                        {
-                            break;
-                        }
-                        _ = args.PopWord();
-                        string warpName = args.PopAll();
-                        if (Th3Essentials.Config.WarpLocations != null)
-                        {
-                            HomePoint warpPoint = Th3Essentials.Config.FindWarpByName(warpName);
-                            Th3Essentials.Config.WarpLocations.Remove(warpPoint);
-                            Th3Essentials.Config.MarkDirty();
-                        }
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-removed", warpName), EnumChatType.CommandSuccess);
                         break;
                     }
-                case "list":
-                    {
-                        string response = Lang.Get("th3essentials:wp-list") + "\n";
 
-                        if (Th3Essentials.Config.WarpLocations != null)
-                        {
-                            foreach (HomePoint warpPoint in Th3Essentials.Config.WarpLocations)
-                            {
-                                response += warpPoint.Name + "\n";
-                            }
-                        }
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, response, EnumChatType.CommandSuccess);
-                        break;
-                    }
-                default:
+                    var warpName = args.Parsers[1].GetValue() as string;
+
+                    if (Th3Essentials.Config.WarpLocations == null)
+                        return TextCommandResult.Success(Lang.Get("th3essentials:wp-removed", warpName));
+                    
+                    var warpPoint = Th3Essentials.Config.FindWarpByName(warpName);
+                    Th3Essentials.Config.WarpLocations.Remove(warpPoint);
+                    Th3Essentials.Config.MarkDirty();
+
+                    return TextCommandResult.Success(Lang.Get("th3essentials:wp-removed", warpName));
+                }
+                case "list":
+                {
+                    var response = Lang.Get("th3essentials:wp-list") + "\n";
+
+                    if (Th3Essentials.Config.WarpLocations != null)
                     {
-                        string warpName = args.PopAll();
-                        if (warpName != string.Empty)
-                        {
-                            Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
-                            if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || Homesystem.CanTravel(playerData))
-                            {
-                                HomePoint warpPoint = Th3Essentials.Config.FindWarpByName(warpName);
-                                if (warpPoint != null)
-                                {
-                                    Homesystem.TeleportTo(player, playerData, warpPoint.Position);
-                                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-to", warpName), EnumChatType.CommandSuccess);
-                                }
-                                else
-                                {
-                                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-notfound", warpName), EnumChatType.CommandSuccess);
-                                }
-                            }
-                            else
-                            {
-                                TimeSpan diff = playerData.HomeLastuseage.AddSeconds(Th3Essentials.Config.HomeCooldown) - DateTime.Now;
-                                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds), EnumChatType.CommandSuccess);
-                            }
-                        }
-                        else
-                        {
-                            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:wp-notfound", ""), EnumChatType.CommandError);
-                        }
-                        break;
+                        response = Th3Essentials.Config.WarpLocations.Aggregate(response, (current, warpPoint) => current + (warpPoint.Name + "\n"));
                     }
+
+                    return TextCommandResult.Success(response);
+                }
+                default:
+                {
+                    var warpName = args.Parsers[0].GetValue() as string;
+
+                    if (warpName == string.Empty)
+                        return TextCommandResult.Error(Lang.Get("th3essentials:wp-notfound", ""));
+                    
+                    var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
+                    if (player.WorldData.CurrentGameMode == EnumGameMode.Creative ||
+                        Homesystem.CanTravel(playerData))
+                    {
+                        var warpPoint = Th3Essentials.Config.FindWarpByName(warpName);
+                        if (warpPoint == null)
+                            return TextCommandResult.Success(Lang.Get("th3essentials:wp-notfound", warpName));
+                        
+                        Homesystem.TeleportTo(player, playerData, warpPoint.Position);
+                        return TextCommandResult.Success(Lang.Get("th3essentials:wp-to", warpName));
+
+                    }
+
+                    var diff = playerData.HomeLastuseage.AddSeconds(Th3Essentials.Config.HomeCooldown) -
+                               DateTime.Now;
+                    return TextCommandResult.Success(Lang.Get("th3essentials:hs-wait", diff.Minutes,
+                        diff.Seconds));
+
+                }
             }
+
+            throw new UnreachableException("Unknown warp command");
         }
     }
 }

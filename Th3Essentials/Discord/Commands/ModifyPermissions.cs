@@ -62,7 +62,6 @@ namespace Th3Essentials.Discord.Commands
                                     mode = option.Value as string;
                                     break;
                                 }
-                            default: { break; }
                         }
                     }
                     switch (mode)

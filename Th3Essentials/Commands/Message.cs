@@ -28,11 +28,11 @@ namespace Th3Essentials.Commands
                 .WithDescription(Lang.Get("th3essentials:cd-reply"))
                 .RequiresPrivilege(Privilege.chat)
                 .WithArgs(_sapi.ChatCommands.Parsers.All("message"))
-                .HandleWith(OnRComd)
+                .HandleWith(OnRCmd)
                 .Validate();
         }
 
-        private TextCommandResult OnRComd(TextCommandCallingArgs args)
+        private TextCommandResult OnRCmd(TextCommandCallingArgs args)
         {
             var player = (IServerPlayer)args.Caller.Player;
             var msgRaw = (string)args.Parsers[0].GetValue();
@@ -89,7 +89,7 @@ namespace Th3Essentials.Commands
 
             var otherPlayers = _sapi.Server.Players.Where((curPlayer) =>
                 curPlayer.ConnectionState == EnumClientState.Playing &&
-                curPlayer.PlayerName.Equals(playername.PlayerName, StringComparison.InvariantCultureIgnoreCase));
+                curPlayer.PlayerName.Equals(playername.PlayerName, StringComparison.InvariantCultureIgnoreCase)).ToList();
             switch (otherPlayers.LongCount())
             {
                 case 0:

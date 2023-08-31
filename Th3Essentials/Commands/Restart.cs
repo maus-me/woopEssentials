@@ -11,22 +11,23 @@ namespace Th3Essentials.Commands
         {
             if (Th3Essentials.Config.ShutdownEnabled)
             {
-                _ = sapi.RegisterCommand("restart", Lang.Get("th3essentials:cd-restart"), string.Empty,
-                    (IServerPlayer player, int groupId, CmdArgs args) =>
+                sapi.ChatCommands.Create("restart")
+                    .WithDescription(Lang.Get("th3essentials:cd-restart"))
+                    .RequiresPrivilege(Privilege.chat)
+                    .HandleWith(_ =>
                     {
                         if (Th3Essentials.Config.ShutdownEnabled)
                         {
                             var restart = Th3Essentials.ShutDownTime - DateTime.Now;
                             var response = Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"),
                                 restart.Minutes.ToString("D2"));
-                            player.SendMessage(GlobalConstants.GeneralChatGroup, response, EnumChatType.Notification);
+                            return TextCommandResult.Success(response);
                         }
                         else
                         {
-                            player.SendMessage(GlobalConstants.GeneralChatGroup,
-                                Lang.Get("th3essentials:slc-restart-disabled"), EnumChatType.Notification);
+                            return TextCommandResult.Success(Lang.Get("th3essentials:slc-restart-disabled"));
                         }
-                    }, Privilege.chat);
+                    });
             }
         }
     }

@@ -10,11 +10,11 @@ namespace Th3Essentials.Commands
         {
             if (Th3Essentials.Config.InfoMessage != null)
             {
-                _ = sapi.RegisterCommand("serverinfo", Lang.Get("th3essentials:cd-info"), string.Empty,
-                    (IServerPlayer player, int groupId, CmdArgs args) =>
-                    {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Th3Essentials.Config.InfoMessage, EnumChatType.Notification);
-                    }, Privilege.chat);
+                sapi.ChatCommands.Create("serverinfo")
+                    .WithDescription(Lang.Get("th3essentials:cd-info"))
+                    .RequiresPlayer()
+                    .RequiresPrivilege(Privilege.chat)
+                    .HandleWith(_ => TextCommandResult.Success(Th3Essentials.Config.InfoMessage));
             }
         }
     }

@@ -181,15 +181,14 @@ namespace Th3Essentials.Discord
             }
             else
             {
-                if (responseMult?.Count > 0)
+                if (!(responseMult?.Count > 0)) return;
+                
+                response = responseMult.FirstOrDefault();
+                responseMult.RemoveAt(0);
+                _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: ephemeral);
+                foreach (var res in responseMult)
                 {
-                    response = responseMult.FirstOrDefault();
-                    responseMult.RemoveAt(0);
-                    _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: ephemeral, components: components);
-                    foreach (string res in responseMult)
-                    {
-                        _ = commandInteraction.FollowupAsync(discord.ServerMsg(res), ephemeral: ephemeral, components: components);
-                    }
+                    _ = commandInteraction.FollowupAsync(discord.ServerMsg(res), ephemeral: ephemeral);
                 }
             }
         }

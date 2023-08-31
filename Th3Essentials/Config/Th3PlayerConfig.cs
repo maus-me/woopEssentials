@@ -18,6 +18,7 @@ namespace Th3Essentials.Config
         /// gets or creates a Th3PlayerData object with given UID
         /// </summary>
         /// <param name="playerUID"></param>
+        /// <param name="shouldCreate"></param>
         /// <returns>Th3PlayerData</returns>
         public Th3PlayerData GetPlayerDataByUID(string playerUID, bool shouldCreate = true)
         {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -16,6 +17,7 @@ namespace Th3Essentials.Systems
         private Th3Config _config;
 
         private Th3PlayerConfig _playerConfig;
+        private ICoreServerAPI _sapi;
 
         internal void Init(ICoreServerAPI sapi)
         {
@@ -26,15 +28,92 @@ namespace Th3Essentials.Systems
 
         private void RegisterCommands(ICoreServerAPI sapi)
         {
-            _ = sapi.RegisterCommand("starterkit", Lang.Get("th3essentials:cd-starterkit"), string.Empty,
-                (player, groupId, args) =>
-                {
-                    TryGiveItemStack(sapi, player);
-                }, Privilege.chat);
+            _sapi = sapi;
+            sapi.ChatCommands.Create("starterkit")
+                .WithDescription(Lang.Get("th3essentials:cd-starterkit"))
+                .RequiresPlayer()
+                .RequiresPrivilege(Privilege.chat)
+                .HandleWith(args => TryGiveItemStack(sapi, args.Caller.Player as IServerPlayer));
+            
+            sapi.ChatCommands.Create("setstarterkit")
+                .WithDescription(Lang.Get("th3essentials:cd-setstarterkit"))
+                .RequiresPlayer()
+                .RequiresPrivilege(Privilege.controlserver)
+                .HandleWith(OnSetStarterKit);
+            
+            sapi.ChatCommands.Create("resetstarterkitusageall")
+                .WithDescription(Lang.Get("th3essentials:cd-rstall"))
+                .RequiresPrivilege(Privilege.controlserver)
+                .WithArgs(sapi.ChatCommands.Parsers.OptionalWord("confirm"))
+                .HandleWith(OnResetAllKits);
 
-            _ = sapi.RegisterCommand("setstarterkit", Lang.Get("th3essentials:cd-setstarterkit"), string.Empty,
-            (player, groupId, args) =>
+            sapi.ChatCommands.Create("resetstarterkitusage")
+                .WithDescription(Lang.Get("th3essentials:cd-rstp"))
+                .RequiresPlayer()
+                .RequiresPrivilege(Privilege.controlserver)
+                .WithArgs(sapi.ChatCommands.Parsers.OnlinePlayer("player"))
+                .HandleWith(OnResetKit);
+            
+      
+        }
+
+        private TextCommandResult OnResetKit(TextCommandCallingArgs args)
+        {
+            if (args.Parsers[0].GetValue() is IPlayer foundPlayer)
             {
+                var playerData = _playerConfig.GetPlayerDataByUID(foundPlayer.PlayerUID, false);
+                if (playerData != null)
+                {
+                    playerData.StarterkitRecived = false;
+                    playerData.MarkDirty();
+                    return TextCommandResult.Success(Lang.Get("th3essentials:cd-rstp-done", foundPlayer.PlayerName));
+                }
+
+                return TextCommandResult.Error(Lang.Get("th3essentials:cd-rstp-npd"));
+            }
+            return TextCommandResult.Error(Lang.Get("th3essentials:cd-rstp-unknown"));
+        }
+
+        private TextCommandResult OnResetAllKits(TextCommandCallingArgs args)
+        {
+                if (args.Parsers[0].GetValue() is not string ok || ok != "confirm")
+                    return TextCommandResult.Success(Lang.Get("th3essentials:cd-rst"));
+                var server = (ServerMain)_sapi.World;
+                var gameDatabase = new GameDatabase(_sapi.Logger);
+                _ = gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out _, out _, out _);
+                gameDatabase.UpgradeToWriteAccess();
+
+                foreach (var th3d in server.PlayerDataManager.PlayerDataByUid.Values)
+                {
+                    var onwdata = _playerConfig.GetPlayerDataByUID(th3d.PlayerUID, false);
+                    if (onwdata != null)
+                    {
+                        onwdata.StarterkitRecived = false;
+                        onwdata.MarkDirty();
+                        _sapi.Logger.Debug("Starterkit for {0} was reset", th3d.LastKnownPlayername);
+                    }
+                    else
+                    {
+                        var swpdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID));
+                        var th3pdata = SerializerUtil.Deserialize<Th3PlayerData>(swpdata.GetModdata(Th3Essentials.Th3EssentialsModDataKey), null);
+                        if (th3pdata != null)
+                        {
+                            th3pdata.StarterkitRecived = false;
+                            swpdata.SetModdata(Th3Essentials.Th3EssentialsModDataKey, SerializerUtil.Serialize(th3pdata));
+                            gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swpdata));
+                        }
+                        else
+                        {
+                            _sapi.Logger.Debug("No Th3PlayerData for player {0} found", th3d.LastKnownPlayername);
+                        }
+                    }
+                }
+                gameDatabase.Dispose();
+                return  TextCommandResult.Success(Lang.Get("th3essentials:cd-rst-alldone"));
+        }
+
+        private TextCommandResult OnSetStarterKit(TextCommandCallingArgs args)
+        {
                 if (_config.Items == null)
                 {
                     _config.Items = new List<StarterkitItem>();
@@ -43,189 +122,96 @@ namespace Th3Essentials.Systems
                 {
                     _config.Items.Clear();
                 }
-                IInventory inventory = player.InventoryManager.GetHotbarInventory();
-                for (int i = 0; i < inventory.Count; i++)
+                var inventory = args.Caller.Player.InventoryManager.GetHotbarInventory();
+                foreach (var slot in inventory)
                 {
-                    if (inventory[i].GetType() == typeof(ItemSlotSurvival) && inventory[i].Itemstack != null)
-                    {
-                        EnumItemClass enumItemClass = inventory[i].Itemstack.Class;
-                        int stackSize = inventory[i].Itemstack.StackSize;
-                        AssetLocation code = inventory[i].Itemstack.Collectible.Code;
-                        TreeAttribute attributes = inventory[i].Itemstack.Attributes as TreeAttribute;
-                        // remove food persih data
-                        attributes.RemoveAttribute("transitionstate");
+                    if (slot.GetType() != typeof(ItemSlotSurvival) || slot.Itemstack == null) continue;
+                        
+                    var enumItemClass = slot.Itemstack.Class;
+                    var stackSize = slot.Itemstack.StackSize;
+                    var code = slot.Itemstack.Collectible.Code;
 
-                        _config.Items.Add(new StarterkitItem(enumItemClass, code, stackSize, attributes));
-                    }
+                    if (slot.Itemstack.Attributes is not TreeAttribute attributes) continue;
+                        
+                    // remove food perish data
+                    attributes.RemoveAttribute("transitionstate");
+
+                    _config.Items.Add(new StarterkitItem(enumItemClass, code, stackSize, attributes));
                 }
                 _config.MarkDirty();
-                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-setup"), EnumChatType.CommandSuccess);
-            }, Privilege.controlserver);
-
-            _ = sapi.RegisterCommand("resetstarterkitusageall", Lang.Get("th3essentials:cd-rstall"), string.Empty,
-            (player, groupId, args) =>
-            {
-                string ok = args.PopWord();
-                if (ok != null && ok == "confirm")
-                {
-                    ServerMain server = (ServerMain)sapi.World;
-                    GameDatabase gameDatabase = new GameDatabase(sapi.Logger);
-                    _ = gameDatabase.ProbeOpenConnection(server.GetSaveFilename(), true, out int foundVersion, out string errorMessage, out bool isReadonly);
-                    gameDatabase.UpgradeToWriteAccess();
-
-                    foreach (ServerPlayerData th3d in server.PlayerDataManager.PlayerDataByUid.Values)
-                    {
-                        Th3PlayerData onwdata = _playerConfig.GetPlayerDataByUID(th3d.PlayerUID, false);
-                        if (onwdata != null)
-                        {
-                            onwdata.StarterkitRecived = false;
-                            onwdata.MarkDirty();
-                            sapi.Logger.Debug("Starterkit for {0} was reset", th3d.LastKnownPlayername);
-                        }
-                        else
-                        {
-                            ServerWorldPlayerData swpdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID));
-                            Th3PlayerData th3pdata = SerializerUtil.Deserialize<Th3PlayerData>(swpdata.GetModdata(Th3Essentials.Th3EssentialsModDataKey), null);
-                            if (th3pdata != null)
-                            {
-                                th3pdata.StarterkitRecived = false;
-                                swpdata.SetModdata(Th3Essentials.Th3EssentialsModDataKey, SerializerUtil.Serialize(th3pdata));
-                                gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swpdata));
-                            }
-                            else
-                            {
-                                sapi.Logger.Debug("No Th3PlayerData for player {0} found", th3d.LastKnownPlayername);
-                            }
-                        }
-                    }
-                    gameDatabase.Dispose();
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-rst-alldone"), EnumChatType.CommandSuccess);
-                }
-                else
-                {
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-rst"), EnumChatType.CommandSuccess);
-                }
-            }, Privilege.controlserver);
-
-            _ = sapi.RegisterCommand("resetstarterkitusage", Lang.Get("th3essentials:cd-rstp"), "[Name]",
-            (player, groupId, args) =>
-            {
-                string name = args.PopWord();
-                if (name != null)
-                {
-                    IServerPlayerData foundPlayer = sapi.PlayerData.GetPlayerDataByLastKnownName(name);
-                    if (foundPlayer != null)
-                    {
-                        Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(foundPlayer.PlayerUID, false);
-                        if (playerData != null)
-                        {
-                            playerData.StarterkitRecived = false;
-                            playerData.MarkDirty();
-                            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-rstp-done", foundPlayer.LastKnownPlayername), EnumChatType.CommandSuccess);
-                        }
-                        else
-                        {
-                            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-rstp-npd"), EnumChatType.CommandError);
-                        }
-                    }
-                    else
-                    {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-rstp-unknown"), EnumChatType.CommandError);
-                    }
-                }
-                else
-                {
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, "/resetstarterkitusage [Name]", EnumChatType.CommandError);
-                }
-            }, Privilege.controlserver);
+                return TextCommandResult.Success(Lang.Get("th3essentials:st-setup"));
         }
 
-        private void TryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
+        private TextCommandResult TryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
         {
-            Th3PlayerData playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
+            var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
             if (playerData.StarterkitRecived)
             {
-                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-hasalready"), EnumChatType.CommandSuccess);
+                return TextCommandResult.Success(Lang.Get("th3essentials:st-hasalready"));
             }
-            else
+
+            if (_config.Items == null || _config.Items.Count == 0)
             {
-                if (_config.Items == null || _config.Items.Count == 0)
+                return TextCommandResult.Success(Lang.Get("th3essentials:st-notsetup"));
+            }
+            try
+            {
+                var inventory = player.InventoryManager.GetHotbarInventory();
+                var emptySlots = inventory.Count(slot => slot.GetType() == typeof(ItemSlotSurvival) && slot.Empty);
+                if (emptySlots < _config.Items.Count)
                 {
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-notsetup"), EnumChatType.CommandSuccess);
-                    return;
+                    return TextCommandResult.Success(Lang.Get("th3essentials:st-needspace", _config.Items.Count));
                 }
-                try
+                for (var i = 0; i < _config.Items.Count; i++)
                 {
-                    int emptySlots = 0;
-                    IInventory inventory = player.InventoryManager.GetHotbarInventory();
-                    for (int i = 0; i < inventory.Count; i++)
+                    var asset = new AssetLocation(_config.Items[i].Code.ToString());
+                    
+                    var received = false;
+                    switch (_config.Items[i].Itemclass)
                     {
-                        if (inventory[i].GetType() == typeof(ItemSlotSurvival) && inventory[i].Empty)
+                        case EnumItemClass.Item:
                         {
-                            emptySlots++;
+                            var item = api.World.GetItem(asset);
+
+                            if (item != null)
+                            {
+                                var itemStack = new ItemStack(item, _config.Items[i].Stacksize)
+                                {
+                                    Attributes = TreeAttribute.CreateFromBytes(_config.Items[i].Attributes)
+                                };
+
+                                received = player.Entity.TryGiveItemStack(itemStack);
+                            }
+                            break;
+                        }
+                        case EnumItemClass.Block:
+                        {
+                            var block = api.World.GetBlock(asset);
+                            if (block != null)
+                            {
+                                var itemStack = new ItemStack(block, _config.Items[i].Stacksize)
+                                {
+                                    Attributes = TreeAttribute.CreateFromBytes(_config.Items[i].Attributes)
+                                };
+
+                                received = player.Entity.TryGiveItemStack(itemStack);
+                            }
+                            break;
                         }
                     }
-                    if (emptySlots < _config.Items.Count)
+                    if (!received)
                     {
-                        player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-needspace", _config.Items.Count), EnumChatType.CommandSuccess);
-                        return;
+                        return TextCommandResult.Error(Lang.Get("th3essentials:st-wrong"));
                     }
-                    for (int i = 0; i < _config.Items.Count; i++)
-                    {
-                        AssetLocation asset = new AssetLocation(_config.Items[i].Code.ToString());
-                        if (asset != null)
-                        {
-                            bool recived = false;
-                            switch (_config.Items[i].Itemclass)
-                            {
-                                case EnumItemClass.Item:
-                                    {
-                                        Item item = api.World.GetItem(asset);
-
-                                        if (item != null)
-                                        {
-                                            ItemStack itemStack = new ItemStack(item, _config.Items[i].Stacksize)
-                                            {
-                                                Attributes = TreeAttribute.CreateFromBytes(_config.Items[i].Attributes)
-                                            };
-
-                                            recived = player.Entity.TryGiveItemStack(itemStack);
-                                        }
-                                        break;
-                                    }
-                                case EnumItemClass.Block:
-                                    {
-                                        Block block = api.World.GetBlock(asset);
-                                        if (block != null)
-                                        {
-                                            ItemStack itemStack = new ItemStack(block, _config.Items[i].Stacksize)
-                                            {
-                                                Attributes = TreeAttribute.CreateFromBytes(_config.Items[i].Attributes)
-                                            };
-
-                                            recived = player.Entity.TryGiveItemStack(itemStack);
-                                        }
-                                        break;
-                                    }
-
-                                default:
-                                    break;
-                            }
-                            if (!recived)
-                            {
-                                player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-wrong"), EnumChatType.CommandError);
-                                throw new Exception($"Could not give item/block: {_config.Items[i]}");
-                            }
-                        }
-                    }
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:st-recived"), EnumChatType.CommandSuccess);
-                    playerData.StarterkitRecived = true;
-                    playerData.MarkDirty();
                 }
-                catch (Exception e)
-                {
-                    api.Server.LogError(e.Message);
-                }
+                playerData.StarterkitRecived = true;
+                playerData.MarkDirty();
+                return TextCommandResult.Success(Lang.Get("th3essentials:st-recived"));
+            }
+            catch (Exception e)
+            {
+                api.Server.LogError(e.Message);
+                return TextCommandResult.Error(e.Message);
             }
         }
     }

@@ -18,23 +18,15 @@ namespace Th3Essentials.Discord.Commands
 
         public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction, ref MessageComponent components)
         {
-            if (commandInteraction.User is SocketGuildUser guildUser)
-            {
-                if (Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
-                {
-                    ComponentBuilder builder = new ComponentBuilder().WithButton("Confirm", "shutdown-confirm");
-                    components = builder.Build();
-                    return "Do you really want to shutdown the server?";
-                }
-                else
-                {
-                    return "You do not have permissions to do that";
-                }
-            }
-            else
-            {
+            if (commandInteraction.User is not SocketGuildUser guildUser)
                 return "Something went wrong: User was not a GuildUser";
-            }
+            
+            if (!Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
+                return "You do not have permissions to do that";
+                
+            var builder = new ComponentBuilder().WithButton("Confirm", "shutdown-confirm");
+            components = builder.Build();
+            return "Do you really want to shutdown the server?";
         }
     }
 }

@@ -141,7 +141,6 @@ namespace Th3Essentials.Discord.Commands
                                         datetime = datetime.AddMonths(timenew);
                                         break;
                                     }
-                                case "years":
                                 default:
                                     {
                                         datetime = datetime.AddYears(timenew);

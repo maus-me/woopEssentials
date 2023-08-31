@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
@@ -49,7 +48,7 @@ namespace Th3Essentials.Discord
         public Th3Discord()
         {
             _initialized = false;
-            TemporalStorm = new string[7]{
+            TemporalStorm = new[]{
                 Lang.Get("A light temporal storm is approaching"),
                 Lang.Get("A light temporal storm is imminent"),
                 Lang.Get("A medium temporal storm is approaching"),
@@ -90,37 +89,37 @@ namespace Th3Essentials.Discord
             if (Sapi.World.Config.GetBool("temporalStability", true))
             {
                 _harmony = new Harmony(_harmonyPatchkey);
-                MethodInfo original = AccessTools.Method(typeof(SystemTemporalStability), "onTempStormTick");
-                HarmonyMethod postfix = new HarmonyMethod(typeof(PatchSystemTemporalStability).GetMethod(nameof(PatchSystemTemporalStability.Postfix)));
+                var original = AccessTools.Method(typeof(SystemTemporalStability), "onTempStormTick");
+                var postfix = new HarmonyMethod(typeof(PatchSystemTemporalStability).GetMethod(nameof(PatchSystemTemporalStability.Postfix)));
                 _harmony.Patch(original, postfix: postfix);
             }
-
-            Sapi.RegisterCommand("dcauth", "Link ingame and discord account", string.Empty, OnDicordAuth, Privilege.chat);
+            
+            Sapi.ChatCommands.Create("dcauth")
+                .WithDescription("Link ingame and discord account")
+                .RequiresPlayer()
+                .RequiresPrivilege(Privilege.chat)
+                .WithArgs(Sapi.ChatCommands.Parsers.Word("token"))
+                .HandleWith(OnDiscordAuth);
 
             // start discord bot
             BotMainAsync();
             Instance = this;
         }
 
-        private void OnDicordAuth(IServerPlayer player, int groupId, CmdArgs args)
+        private TextCommandResult OnDiscordAuth(TextCommandCallingArgs args)
         {
-            string token = args.PopAll();
-            foreach (KeyValuePair<string, string> account in AccountsToLink)
+            var token = args.Parsers[0].GetValue() as string;
+            var player = args.Caller.Player;
+            foreach (var account in AccountsToLink.Where(account => account.Key.Equals(token)))
             {
-                if (account.Key.Equals(token))
-                {
-                    if (Config.LinkedAccounts == null)
-                    {
-                        Config.LinkedAccounts = new Dictionary<string, string>();
-                    }
-                    Config.LinkedAccounts.Add(player.PlayerUID, account.Value);
-                    player.SendMessage(GlobalConstants.GeneralChatGroup, "Discord - Vintagestory accounts linked", EnumChatType.CommandSuccess);
-                    AccountsToLink.Remove(account.Key);
-                    Th3Essentials.Config.MarkDirty();
-                    return;
-                }
+                Config.LinkedAccounts ??= new Dictionary<string, string>();
+                    
+                Config.LinkedAccounts.Add(player.PlayerUID, account.Value);
+                AccountsToLink.Remove(account.Key);
+                Th3Essentials.Config.MarkDirty();
+                return TextCommandResult.Success("Discord - Vintagestory accounts linked");
             }
-            player.SendMessage(GlobalConstants.GeneralChatGroup, "Could not find token", EnumChatType.CommandError);
+            return TextCommandResult.Error("Could not find token");
         }
 
         private Task DiscordLog(LogMessage log)
@@ -195,19 +194,21 @@ namespace Th3Essentials.Discord
 
                     if (Config.HelpRoleID != 0)
                     {
-                        _ = Sapi.RegisterCommand("requesthelp", Lang.Get("th3essentials:cd-help"), Lang.Get("th3essentials:cd-reply-param"), RequestingHelp);
+                        Sapi.ChatCommands.Create("requesthelp")
+                            .WithDescription(Lang.Get("th3essentials:cd-help"))
+                            .RequiresPlayer()
+                            .RequiresPrivilege(Privilege.chat)
+                            .WithArgs(Sapi.ChatCommands.Parsers.All("message"))
+                            .HandleWith(RequestingHelp);
                     }
 
                     if (Config.Rewards && Config.RewardIdToName != null)
                     {
-                        SocketGuild guild = _client.GetGuild(Config.GuildId);
-                        foreach (KeyValuePair<string, string> role in Config.RewardIdToName)
+                        var guild = _client.GetGuild(Config.GuildId);
+                        foreach (var role in Config.RewardIdToName)
                         {
-                            SocketRole socketRole = guild.Roles.First((r) => r.Id == ulong.Parse(role.Key));
-                            if (socketRole != null)
-                            {
-                                rewards.Add(role.Key, new Rewards(socketRole, role.Value));
-                            }
+                            var socketRole = guild.Roles.First((r) => r.Id == ulong.Parse(role.Key));
+                            rewards.Add(role.Key, new Rewards(socketRole, role.Value));
                         }
                     }
 
@@ -232,7 +233,7 @@ namespace Th3Essentials.Discord
             }
             catch (Exception exception)
             {
-                Sapi.Logger.Error("Slashcommand create:" + exception.ToString());
+                Sapi.Logger.Error("Slashcommand create:" + exception);
                 Sapi.Logger.Error("Maybe you forgot to add the applications.commands scope for your bot");
             }
         }
@@ -253,7 +254,7 @@ namespace Th3Essentials.Discord
             }
             catch (Exception exception)
             {
-                Sapi.Logger.Error("Slashcommand delete:" + exception.ToString());
+                Sapi.Logger.Error("Slashcommand delete:" + exception);
                 Sapi.Logger.Error("Maybe you forgot to add the applications.commands scope for your bot");
             }
         }
@@ -318,7 +319,7 @@ namespace Th3Essentials.Discord
                 // use blue font ingame for discord messages
                 // const string format = "<font color=\"#{0}\"><strong>{1}: </strong></font><font family=\"Twitter Color Emoji\">{2}</font>";
                 const string format = "<font color=\"#{0}\"><strong>{1}: </strong></font>{2}";
-                string name = null;
+                string name;
 
                 if (message.Author is SocketGuildUser guildUser)
                 {
@@ -398,10 +399,12 @@ namespace Th3Essentials.Discord
             return msg.Replace("<", "&lt;").Replace(">", "&gt;");
         }
 
-        private void RequestingHelp(IServerPlayer player, int groupId, CmdArgs args)
+        private TextCommandResult RequestingHelp(TextCommandCallingArgs args)
         {
-            SendServerMessage($"<@&{Config.HelpRoleID}> **{player.PlayerName}**: {args.PopAll()}");
-            player.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-help-response"), EnumChatType.CommandSuccess);
+            var player = args.Caller.Player;
+            var msg = args.Parsers[0].GetValue() as string;
+            SendServerMessage($"<@&{Config.HelpRoleID}> **{player.PlayerName}**: {msg}");
+            return TextCommandResult.Success(Lang.Get("th3essentials:cd-help-response"));
         }
 
         private void PlayerChatAsync(IServerPlayer byPlayer, int channelId, ref string message, ref string data, BoolRef consumed)
@@ -554,7 +557,7 @@ namespace Th3Essentials.Discord
         {
             private static TemporalStormRunTimeData data;
             private static ICoreAPI api;
-            private static int StormState = 0;
+            private static int StormState;
 
             private static void GetFields(SystemTemporalStability __instance)
             {
@@ -590,8 +593,6 @@ namespace Th3Essentials.Discord
                         case EnumTempStormStrength.Heavy:
                             i = 4;
                             break;
-                        default:
-                            break;
                     }
                     Instance.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + TemporalStorm[i]);
                 }
@@ -610,8 +611,6 @@ namespace Th3Essentials.Discord
                             break;
                         case EnumTempStormStrength.Heavy:
                             i = 5;
-                            break;
-                        default:
                             break;
                     }
                     Instance.SendServerMessage(Lang.Get("th3essentials:temporalStormPrefix") + TemporalStorm[i]);

@@ -146,8 +146,6 @@ namespace Th3Essentials.Influxdb
                 }
                 case EnumLogType.Audit:
                     break;
-                default:
-                    break;
             }
         }
 
@@ -312,7 +310,7 @@ namespace Th3Essentials.Influxdb
                 var ms = (double)___rootEntry.ElapsedTicks / Stopwatch.Frequency * 1000;
 
                 if (!__instance.PrintSlowTicks || !(ms > __instance.PrintSlowTicksThreshold)) return false;
-                StringBuilder stringBuilder = null;
+                StringBuilder stringBuilder;
                 stringBuilder = new StringBuilder();
                 stringBuilder.AppendLine($"A tick took {ms:0.##} ms");
 

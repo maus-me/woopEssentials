@@ -112,8 +112,6 @@ namespace Th3Essentials.InfluxDB
                             _ = sb.Append("\\");
                         }
                         break;
-                    default:
-                        break;
                 }
 
                 _ = sb.Append(c);
@@ -228,8 +226,6 @@ namespace Th3Essentials.InfluxDB
                     case '\\':
                     case '\"':
                         _ = sb.Append("\\");
-                        break;
-                    default:
                         break;
                 }
 

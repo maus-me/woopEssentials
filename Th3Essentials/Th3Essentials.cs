@@ -126,14 +126,14 @@ namespace Th3Essentials
                 _sapi.ChatCommands.Create("admins")
                     .WithDescription(Lang.Get("th3essentials:slc-admins"))
                     .RequiresPrivilege(Privilege.chat)
-                    .HandleWith(args => TextCommandResult.Success(Th3Util.GetAdmins(_sapi)))
+                    .HandleWith(_ => TextCommandResult.Success(Th3Util.GetAdmins(_sapi)))
                     .Validate();
             }
 
             _sapi.ChatCommands.Create("reloadth3config")
                 .WithDescription(Lang.Get("th3essentials:slc-reloadConfig"))
                 .RequiresPrivilege(Privilege.controlserver)
-                .HandleWith(args =>
+                .HandleWith(_ =>
                 {
                     if (ReloadConfig())
                     {
@@ -257,7 +257,7 @@ namespace Th3Essentials
             _sapi.Logger.Event($"Temporary server password is: {_sapi.Server.Config.Password}");
             foreach (var player in _sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
             {
-                player.Disconnect();
+                player.Disconnect("Scheduled Shutdown");
             }
         }
 
