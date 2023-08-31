@@ -32,7 +32,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - automatic backup - will create a backup when using the shutdown feature [on/off]
 - /reloadth3config - reload the th3config.json and the restart timer 
 - In-game chat timestamps [on/off]
-- /changerole allows an admin or roles of ModerationRoles to change the role of a player through Discord
+- /changerole allows an admin or roles of ModerationRoles to change the role of a player through Discord (will automatically add all roles to the selection in discord if there is 25 or less)
 - /smite [optional <playername>] spawns a lightning at the player by <playername> or at the current block/entity selection if no name is specified [onf/off]
 
 ![](preview/discord-chat2.png)
