@@ -83,6 +83,7 @@ namespace Th3Essentials
 
             _sapi.Event.GameWorldSave += GameWorldSave;
             _sapi.Event.PlayerNowPlaying += PlayerNowPlaying;
+            _sapi.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
 
             if (Config.IsShutdownConfigured())
             {
@@ -369,6 +370,11 @@ namespace Th3Essentials
             }
 
             PlayerConfig.GameWorldSave(_sapi);
+        }
+
+        private void Shutdown()
+        {
+            GameWorldSave();
         }
 
         private bool ReloadConfig()

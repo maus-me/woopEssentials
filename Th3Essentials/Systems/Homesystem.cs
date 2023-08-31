@@ -23,22 +23,58 @@ namespace Th3Essentials.Systems
             _config = Th3Essentials.Config;
             if (_config.HomeLimit > 0)
             {
+                _sapi.ChatCommands.Create("home")
+                    .WithDescription(Lang.Get("th3essentials:cd-home"))
+                    .RequiresPlayer()
+                    .RequiresPrivilege(Privilege.chat)
+                    .HandleWith(Home)
+                    
+                    .BeginSubCommand("delete")
+                        .WithAlias("del", "rm", "d", "r")
+                        .WithDescription(Lang.Get("th3essentials:cd-delhome"))
+                        .RequiresPlayer()
+                        .RequiresPrivilege(Privilege.chat)
+                        .WithArgs(_sapi.ChatCommands.Parsers.Word("name"))
+                        .HandleWith(DeleteHome)
+                    .EndSubCommand()
+                    
+                    .BeginSubCommand("set")
+                        .WithAlias("s","new","add")
+                        .WithDescription(Lang.Get("th3essentials:cd-sethome"))
+                        .RequiresPlayer()
+                        .RequiresPrivilege(Privilege.chat)
+                        .WithArgs(_sapi.ChatCommands.Parsers.Word("name"))
+                        .HandleWith(SetHome)
+                    .EndSubCommand()
+                    
+                    .BeginSubCommand("list")
+                    .WithAlias("ls","l")
+                    .WithDescription(Lang.Get("th3essentials:cd-lshome"))
+                    .RequiresPlayer()
+                    .RequiresPrivilege(Privilege.chat)
+                    .HandleWith(OnList)
+                    .EndSubCommand()
+                    
+                    .BeginSubCommand("limit")
+                        .WithDescription(Lang.Get("th3essentials:cd-limithome"))
+                        .RequiresPlayer()
+                        .RequiresPrivilege(Privilege.commandplayer)
+                        .WithArgs(_sapi.ChatCommands.Parsers.OnlinePlayer("player"),_sapi.ChatCommands.Parsers.Int("limit"))
+                        .HandleWith(ChangeLimit)
+                    .EndSubCommand()
+                    ;
+                
+                //TODO remove in next version
                 _sapi.ChatCommands.Create("sethome")
-                    .WithDescription(Lang.Get("th3essentials:cd-sethome"))
+                    .WithDescription(Lang.Get("th3essentials:cd-sethome") + " Deprecated: use /home set [name] instead")
                     .RequiresPlayer()
                     .RequiresPrivilege(Privilege.chat)
                     .WithArgs(_sapi.ChatCommands.Parsers.Word("name"))
                     .HandleWith(SetHome);
 
-                _sapi.ChatCommands.Create("home")
-                    .WithDescription(Lang.Get("th3essentials:cd-home"))
-                    .RequiresPlayer()
-                    .RequiresPrivilege(Privilege.chat)
-                    .WithArgs(_sapi.ChatCommands.Parsers.OptionalWord("name"))
-                    .HandleWith(Home);
-
+                //TODO remove in next version
                 _sapi.ChatCommands.Create("delhome")
-                    .WithDescription(Lang.Get("th3essentials:cd-delhome"))
+                    .WithDescription(Lang.Get("th3essentials:cd-delhome") + " Deprecated: use /home delete [name] instead")
                     .RequiresPlayer()
                     .RequiresPrivilege(Privilege.chat)
                     .WithArgs(_sapi.ChatCommands.Parsers.Word("name"))
@@ -63,6 +99,20 @@ namespace Th3Essentials.Systems
                     .HandleWith(TeleportBack);
                 _sapi.Event.PlayerDeath += PlayerDied;
             }
+        }
+
+        private TextCommandResult ChangeLimit(TextCommandCallingArgs args)
+        {
+            var player = args.Parsers[0].GetValue() as IPlayer;
+            
+            if (player == null) return TextCommandResult.Error("Could not get player data");
+            
+            var limit = (int)args.Parsers[1].GetValue();
+            var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID, false);
+            playerData.HomeLimit = limit;
+            playerData.MarkDirty();
+            
+            return TextCommandResult.Success($"Updated home point limit for player : {player.PlayerName} to {limit}");
         }
 
         private void PlayerDied(IServerPlayer byPlayer, DamageSource damageSource)
@@ -107,10 +157,10 @@ namespace Th3Essentials.Systems
 
         public TextCommandResult Home(TextCommandCallingArgs args)
         {
-            var name = args.Parsers[0].GetValue() as string;
+            var name = args.RawArgs.PopWord();
+            
             var player = args.Caller.Player;
             var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
-            var response = Lang.Get("th3essentials:hs-list", $"{playerData.HomePoints.Count}/{_config.HomeLimit}\n");
             if (string.IsNullOrEmpty(name))
             {
                 if (playerData.HomePoints.Count == 0)
@@ -118,9 +168,7 @@ namespace Th3Essentials.Systems
                     return TextCommandResult.Success(Lang.Get("th3essentials:hs-none"));
                 }
 
-                response = playerData.HomePoints.Aggregate(response, (current, t) => current + (t.Name + "\n"));
-
-                return TextCommandResult.Success(response);
+                return OnList(args);
             }
 
             var point = playerData.FindPointByName(name);
@@ -136,8 +184,25 @@ namespace Th3Essentials.Systems
             return TextCommandResult.Success(Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds));
         }
 
+        private TextCommandResult OnList(TextCommandCallingArgs args)
+        {
+            var player = args.Caller.Player;
+            var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
+            
+            var response = Lang.Get("th3essentials:hs-list", $"{playerData.HomePoints.Count}/{GetPlayerHomeLimit(args.Caller.Player)}\n");
+            response = playerData.HomePoints.Aggregate(response, (current, t) => current + (t.Name + "\n"));
+
+            return TextCommandResult.Success(response);
+        }
+
         public TextCommandResult DeleteHome(TextCommandCallingArgs args)
         {
+            
+            //TODO remove in next version
+            if (args.Command.Name.Equals("delhome"))
+            {
+                (args.Caller.Player as IServerPlayer)?.SendMessage(GlobalConstants.GeneralChatGroup, "Deprecated: use /home set [name] instead", EnumChatType.Notification);
+            }
             var name = args.Parsers[0].GetValue() as string;
             var player = args.Caller.Player;
             var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
@@ -152,6 +217,11 @@ namespace Th3Essentials.Systems
 
         public TextCommandResult SetHome(TextCommandCallingArgs args)
         {
+            //TODO remove in next version
+            if (args.Command.Name.Equals("sethome"))
+            {
+                (args.Caller.Player as IServerPlayer)?.SendMessage(GlobalConstants.GeneralChatGroup, "Deprecated: use /home set [name] instead", EnumChatType.Notification);
+            }
             var name = args.Parsers[0].GetValue() as string;
             var player = args.Caller.Player;
             if (string.IsNullOrWhiteSpace(name))
@@ -160,7 +230,7 @@ namespace Th3Essentials.Systems
             }
 
             var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
-            if (playerData.HomePoints.Count >= _config.HomeLimit)
+            if (playerData.HomePoints.Count >= GetPlayerHomeLimit(args.Caller.Player))
             {
                 return TextCommandResult.Success(Lang.Get("th3essentials:hs-max"));
             }
@@ -188,6 +258,12 @@ namespace Th3Essentials.Systems
         {
             var canTravel = playerData.HomeLastuseage.AddSeconds(Th3Essentials.Config.HomeCooldown);
             return canTravel <= DateTime.Now;
+        }
+
+        public int GetPlayerHomeLimit(IPlayer callerPlayer)
+        {
+            var playerDataByUid = _playerConfig.GetPlayerDataByUID(callerPlayer.PlayerUID, false);
+            return playerDataByUid.HomeLimit >= 0 ? playerDataByUid.HomeLimit : _config.HomeLimit;
         }
     }
 }

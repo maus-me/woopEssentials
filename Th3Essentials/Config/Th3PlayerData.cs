@@ -22,6 +22,9 @@ namespace Th3Essentials.Config
         [ProtoMember(4)]
         public List<HomePoint> HomePoints;
 
+        [ProtoMember(5)]
+        public int HomeLimit = -1;
+
         public Th3PlayerData()
         {
             HomePoints = new List<HomePoint>();

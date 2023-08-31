@@ -14,7 +14,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
   - display discord mentions (user/channel/role) correctly
 - Shutdown - Set a time when the server should shutdown (starting of the server needs to be handled externally!!!) [on/off]
   additionally warns the players about the restart x min before restart
-- Add homepoints to teleport to, limited by a configurable cooldown [on/off]
+- Add homepoints to teleport to, limited by a configurable cooldown, customizable limit per player [on/off]
 - starterkit - add a starterkit to be used only once (can be reset) [on/off]
   - starterkit can be set ingame by an admin
 - /spawn command to teleport to spawn also respecting cooldown [on/off]
@@ -296,6 +296,7 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   "AnnouncementInterval": 0,
 
   // number of homepoints a player can have
+  // use "/home limit <playername> 10" to customize it per player, to revert it set it to -1 again
   "HomeLimit": 0,
   // time in seconds between usage of the home/spawn/back commands
   "HomeCooldown": 60,
