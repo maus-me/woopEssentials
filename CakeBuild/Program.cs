@@ -25,7 +25,8 @@ public static class Program
     }
 }
 
-public abstract class BuildContext : FrostingContext
+// ReSharper disable once ClassNeverInstantiated.Global
+public class BuildContext : FrostingContext
 {
     public const string ProjectName = "Th3Essentials";
     public string BuildConfiguration { get; set; }

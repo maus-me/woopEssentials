@@ -27,6 +27,7 @@ namespace Th3Essentials.Systems
                     .WithDescription(Lang.Get("th3essentials:cd-home"))
                     .RequiresPlayer()
                     .RequiresPrivilege(Privilege.chat)
+                    .IgnoreAdditionalArgs()
                     .HandleWith(Home)
                     
                     .BeginSubCommand("delete")
@@ -48,11 +49,11 @@ namespace Th3Essentials.Systems
                     .EndSubCommand()
                     
                     .BeginSubCommand("list")
-                    .WithAlias("ls","l")
-                    .WithDescription(Lang.Get("th3essentials:cd-lshome"))
-                    .RequiresPlayer()
-                    .RequiresPrivilege(Privilege.chat)
-                    .HandleWith(OnList)
+                        .WithAlias("ls","l")
+                        .WithDescription(Lang.Get("th3essentials:cd-lshome"))
+                        .RequiresPlayer()
+                        .RequiresPrivilege(Privilege.chat)
+                        .HandleWith(OnList)
                     .EndSubCommand()
                     
                     .BeginSubCommand("limit")
