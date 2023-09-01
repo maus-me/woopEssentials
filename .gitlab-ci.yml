@@ -9,7 +9,7 @@ variables:
   # 3) A relative path to the source code from project repository root.
   # NOTE: Please edit this path so it matches the structure of your project!
   SOURCE_CODE_PATH: 'Th3Essentials/'
-  VINTAGE_STORY_MODDING: '/VintageStory'
+  VINTAGE_STORY: '/VintageStory'
   SERVER_TYPE: 'stable'
   SERVER_VERSION: '1.18.9'
 
@@ -40,9 +40,9 @@ build:
   only:
     - tags
   script:
-    - 'mkdir $VINTAGE_STORY_MODDING'
-    - 'curl -o $VINTAGE_STORY_MODDING/server.tar.gz https://cdn.vintagestory.at/gamefiles/${SERVER_TYPE}/vs_server_linux-x64_${SERVER_VERSION}.tar.gz'
-    - 'tar -xzf $VINTAGE_STORY_MODDING/server.tar.gz -C $VINTAGE_STORY_MODDING'
+    - 'mkdir $VINTAGE_STORY'
+    - 'curl -o $VINTAGE_STORY/server.tar.gz https://cdn.vintagestory.at/gamefiles/${SERVER_TYPE}/vs_server_linux-x64_${SERVER_VERSION}.tar.gz'
+    - 'tar -xzf $VINTAGE_STORY/server.tar.gz -C $VINTAGE_STORY'
     - 'dotnet run --project ./CakeBuild/CakeBuild.csproj'
 
 
