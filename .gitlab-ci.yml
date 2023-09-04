@@ -1,7 +1,13 @@
-image: mcr.microsoft.com/dotnet/sdk:7.0
+stages:
+  - build
+  - release
+ 
 
 # ### Define variables
-variables:
+variables:variables:
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}"
+  FILE_NAME: "Th3Essential_${CI_COMMIT_TAG}.zip"
+  URL_FILE: "${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/${FILE_NAME}"
   # 1) Name of directory where restore and build objects are stored.
   OBJECTS_DIRECTORY: 'obj'
   # 2) Name of directory used for keeping restored dependencies.
@@ -11,7 +17,7 @@ variables:
   SOURCE_CODE_PATH: 'Th3Essentials/'
   VINTAGE_STORY: '/VintageStory'
   SERVER_TYPE: 'stable'
-  SERVER_VERSION: '1.18.9'
+  SERVER_VERSION: '1.18.10'
 
 cache:
   # Per-stage and per-branch caching.
@@ -32,6 +38,7 @@ before_script:
 
 build:
   stage: build
+  image: mcr.microsoft.com/dotnet/sdk:7.0
   artifacts:
           when: on_success
           expire_in: 5 days
@@ -46,3 +53,18 @@ build:
     - 'dotnet run --project ./CakeBuild/CakeBuild.csproj'
 
 
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  dependencies:
+    - build
+  only:
+    - tags
+  script:
+    - apk add curl
+    - |
+      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file Releases/*.zip -uri $URL_FILE
+
+    - |
+      release-cli create --name "Release $CI_COMMIT_TAG" --tag-name $CI_COMMIT_TAG  \
+        --assets-link "{\"name\":\"th3essentials.zip\",\"url\":\"${URL_FILE}\"}" 
