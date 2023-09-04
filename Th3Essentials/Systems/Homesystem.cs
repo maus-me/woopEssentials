@@ -3,6 +3,7 @@ using System.Linq;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 
@@ -21,7 +22,7 @@ namespace Th3Essentials.Systems
             _sapi = sapi;
             _playerConfig = Th3Essentials.PlayerConfig;
             _config = Th3Essentials.Config;
-            if (_config.HomeLimit > 0)
+            if (_config.HomeLimit >= 0)
             {
                 _sapi.ChatCommands.Create("home")
                     .WithDescription(Lang.Get("th3essentials:cd-home"))
@@ -63,6 +64,20 @@ namespace Th3Essentials.Systems
                         .WithArgs(_sapi.ChatCommands.Parsers.OnlinePlayer("player"),_sapi.ChatCommands.Parsers.Int("limit"))
                         .HandleWith(ChangeLimit)
                     .EndSubCommand()
+                    
+                    .BeginSubCommand("item")
+                        .RequiresPrivilege(Privilege.controlserver)
+                        .RequiresPlayer()
+                        .WithDescription("Sets the current hotbar slot as the required item and quantity, use empty slot to unset")
+                        .HandleWith(SetItem)
+                    .EndSubCommand()
+                    
+                    .BeginSubCommand("setitem")
+                        .RequiresPrivilege(Privilege.controlserver)
+                        .RequiresPlayer()
+                        .WithDescription("Sets the current hotbar slot as the required item and quantity, use empty slot to unset")
+                        .HandleWith(SetSetItem)
+                    .EndSubCommand()
                     ;
                 
                 //TODO remove in next version
@@ -102,6 +117,30 @@ namespace Th3Essentials.Systems
             }
         }
 
+        private TextCommandResult SetSetItem(TextCommandCallingArgs args)
+        {
+            var slot = args.Caller.Player.InventoryManager.ActiveHotbarSlot;
+
+            if (slot.Itemstack == null)
+            {
+                _config.SetHomeItem = null;
+                return TextCommandResult.Success("Home Item unset");
+            }
+        
+            var enumItemClass = slot.Itemstack.Class;
+            var stackSize = slot.Itemstack.StackSize;
+            var code = slot.Itemstack.Collectible.Code;
+
+            if (slot.Itemstack.Attributes is not TreeAttribute attributes) return TextCommandResult.Success("error not a TreeAttribute");
+                        
+            // remove food perish data
+            attributes.RemoveAttribute("transitionstate");
+
+            _config.SetHomeItem = new StarterkitItem(enumItemClass, code, stackSize, attributes);
+            _config.MarkDirty();
+            return TextCommandResult.Success("Home Item set");
+        }
+
         private TextCommandResult ChangeLimit(TextCommandCallingArgs args)
         {
             var player = args.Parsers[0].GetValue() as IPlayer;
@@ -127,18 +166,26 @@ namespace Th3Essentials.Systems
         {
             var player = args.Caller.Player;
             var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
-            if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
+            if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData, _config.BackCooldown))
             {
                 if (playerData.LastPosition == null)
                 {
                     return TextCommandResult.Error(Lang.Get("th3essentials:hs-noBack"));
                 }
-
-                TeleportTo(player, playerData, playerData.LastPosition);
-                return TextCommandResult.Success(Lang.Get("th3essentials:hs-back"));
+                
+                var playerConfig = GetConfig(player, playerData, _config);
+                if (CheckPayment(_config.HomeItem, playerConfig.BackTeleportCost, player, out var canTeleport, out var success)) return success!;
+                if (canTeleport)
+                {
+                    PayIfNeeded(player, _config.HomeItem, playerConfig.BackTeleportCost);
+                    TeleportTo(player, playerData, playerData.LastPosition);
+                    return TextCommandResult.Success(Lang.Get("th3essentials:hs-back"));
+                }
+                
+                return TextCommandResult.Success("Could not teleport");
             }
 
-            var diff = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown) - DateTime.Now;
+            var diff = playerData.HomeLastuseage.AddSeconds(_config.BackCooldown) - DateTime.Now;
             return TextCommandResult.Success(Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds));
         }
 
@@ -147,9 +194,17 @@ namespace Th3Essentials.Systems
             var player = args.Caller.Player;
             var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
             if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
-            {
-                TeleportTo(player, playerData, _sapi.World.DefaultSpawnPosition.AsBlockPos);
-                return TextCommandResult.Success(Lang.Get("th3essentials:hs-tp-spawn"));
+            { 
+                var playerConfig = GetConfig(player, playerData, _config);
+                if (CheckPayment(_config.HomeItem, playerConfig.HomeTeleportCost, player, out var canTeleport, out var success)) return success!;
+                if (canTeleport)
+                {
+                    PayIfNeeded(player, _config.HomeItem, playerConfig.HomeTeleportCost);
+                    TeleportTo(player, playerData, _sapi.World.DefaultSpawnPosition.AsBlockPos);
+                    return TextCommandResult.Success(Lang.Get("th3essentials:hs-tp-spawn"));
+                }
+                
+                return TextCommandResult.Success("Could not teleport");
             }
 
             var diff = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown) - DateTime.Now;
@@ -175,14 +230,87 @@ namespace Th3Essentials.Systems
             var point = playerData.FindPointByName(name);
             if (point == null) return TextCommandResult.Success(Lang.Get("th3essentials:hs-404"));
 
+            var playerConfig = GetConfig(player, playerData, _config);
+            _sapi.Logger.Notification($"{_config.HomeItem.Stacksize} :: {playerConfig.HomeTeleportCost} ");
+            
             if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
             {
-                TeleportTo(player, playerData, point.Position);
-                return TextCommandResult.Success(Lang.Get("th3essentials:hs-tp-point", name));
+                if (CheckPayment(_config.HomeItem, playerConfig.HomeTeleportCost, player, out var canTeleport, out var success)) return success!;
+
+                if (canTeleport && player.InventoryManager.ActiveHotbarSlot != null)
+                {
+                    _sapi.Logger.Notification($"{_config.HomeItem} :: {playerConfig.HomeTeleportCost}");
+                    PayIfNeeded(player, _config.HomeItem, playerConfig.HomeTeleportCost);
+                    TeleportTo(player, playerData, point.Position, _config.ExcludeHomeFromBack);
+                    return TextCommandResult.Success(Lang.Get("th3essentials:hs-tp-point", name));
+                }
+
+                return TextCommandResult.Success("Could not teleport");
             }
 
             var diff = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown) - DateTime.Now;
             return TextCommandResult.Success(Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds));
+        }
+
+        internal static void PayIfNeeded(IPlayer player, StarterkitItem? item, int cost)
+        {
+            if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || item == null) return;
+            
+            player.InventoryManager.ActiveHotbarSlot.TakeOut(cost);
+            player.InventoryManager.ActiveHotbarSlot.MarkDirty();
+        }
+
+        public static bool CheckPayment(StarterkitItem? item, int cost, IPlayer player, out bool canTeleport, out TextCommandResult? success)
+        {
+            canTeleport = true;
+            if (item != null && cost > 0 &&
+                player.WorldData.CurrentGameMode != EnumGameMode.Creative)
+            {
+                canTeleport = false;
+                var itemStack = player.InventoryManager.ActiveHotbarSlot?.Itemstack;
+                switch (item.Itemclass)
+                {
+                    case EnumItemClass.Block:
+                    {
+                        if (Equals(item.Code, itemStack?.Block?.Code) &&
+                            itemStack.StackSize >= cost)
+                        {
+                            canTeleport = true;
+                        }
+                        else
+                        {
+                            {
+                                success = TextCommandResult.Success(
+                                    $"You are missing block {item.Code} x {cost}");
+                                return true;
+                            }
+                        }
+
+                        break;
+                    }
+                    case EnumItemClass.Item:
+                    {
+                        if (Equals(item.Code, itemStack?.Item?.Code) &&
+                            itemStack.StackSize >= cost)
+                        {
+                            canTeleport = true;
+                        }
+                        else
+                        {
+                            {
+                                success = TextCommandResult.Success(
+                                    $"You are missing item {item.Code} x {cost}");
+                                return true;
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            success = null;
+            return false;
         }
 
         private TextCommandResult OnList(TextCommandCallingArgs args)
@@ -190,7 +318,7 @@ namespace Th3Essentials.Systems
             var player = args.Caller.Player;
             var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
             
-            var response = Lang.Get("th3essentials:hs-list", $"{playerData.HomePoints.Count}/{GetPlayerHomeLimit(args.Caller.Player)}\n");
+            var response = Lang.Get("th3essentials:hs-list", $"{playerData.HomePoints.Count}/{GetPlayerHomeLimit(args.Caller.Player, playerData)}\n");
             response = playerData.HomePoints.Aggregate(response, (current, t) => current + (t.Name + "\n"));
 
             return TextCommandResult.Success(response);
@@ -231,40 +359,114 @@ namespace Th3Essentials.Systems
             }
 
             var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
-            if (playerData.HomePoints.Count >= GetPlayerHomeLimit(args.Caller.Player))
+            if (playerData.HomePoints.Count >= GetPlayerHomeLimit(args.Caller.Player, playerData))
             {
                 return TextCommandResult.Success(Lang.Get("th3essentials:hs-max"));
             }
 
             if (playerData.FindPointByName(name) == null)
             {
-                var newPoint = new HomePoint(name, player.Entity.Pos.XYZ.AsBlockPos);
-                playerData.HomePoints.Add(newPoint);
-                playerData.MarkDirty();
-                return TextCommandResult.Success(Lang.Get("th3essentials:hs-created", name));
+                
+                var playerConfig = Homesystem.GetConfig(player, playerData, _config);
+                if(CheckPayment(_config.SetHomeItem, playerConfig.SetHomeTeleportCost, player, out var canTeleport, out var success)) return success!;
+                if (canTeleport)
+                {
+                    PayIfNeeded(player, _config.SetHomeItem, playerConfig.SetHomeTeleportCost);
+                    var newPoint = new HomePoint(name, player.Entity.Pos.XYZ.AsBlockPos);
+                    playerData.HomePoints.Add(newPoint);
+                    playerData.MarkDirty();
+                    return TextCommandResult.Success(Lang.Get("th3essentials:hs-created", name));
+                }
+                return TextCommandResult.Error("Something went wrong");
             }
 
             return TextCommandResult.Success(Lang.Get("th3essentials:hs-exists"));
         }
-
-        public static void TeleportTo(IPlayer player, Th3PlayerData playerData, BlockPos location)
+        private TextCommandResult SetItem(TextCommandCallingArgs args)
         {
-            playerData.LastPosition = player.Entity.Pos.AsBlockPos;
-            player.Entity.TeleportTo(new Vec3d(location.X + 0.5,location.Y + 0.5,location.Z + 0.5));
+            var slot = args.Caller.Player.InventoryManager.ActiveHotbarSlot;
+
+            if (slot.Itemstack == null)
+            {
+                _config.HomeItem = null;
+                return TextCommandResult.Success("Home Item unset");
+            }
+        
+            var enumItemClass = slot.Itemstack.Class;
+            var stackSize = slot.Itemstack.StackSize;
+            var code = slot.Itemstack.Collectible.Code;
+
+            if (slot.Itemstack.Attributes is not TreeAttribute attributes) return TextCommandResult.Success("error not a TreeAttribute");
+                        
+            // remove food perish data
+            attributes.RemoveAttribute("transitionstate");
+
+            _config.HomeItem = new StarterkitItem(enumItemClass, code, stackSize, attributes);
+            _config.MarkDirty();
+            return TextCommandResult.Success("Home Item set");
+        }
+
+        public static void TeleportTo(IPlayer player, Th3PlayerData playerData, BlockPos location, bool excludeFromBack = false)
+        {
+            if (!excludeFromBack)
+            {
+                playerData.LastPosition = player.Entity.Pos.AsBlockPos;
+            }
+            player.Entity.TeleportTo(new Vec3d(location.X + 0.5,location.Y + 0.2,location.Z + 0.5));
             playerData.HomeLastuseage = DateTime.Now;
             playerData.MarkDirty();
         }
 
-        public static bool CanTravel(Th3PlayerData playerData)
+        public static bool CanTravel(Th3PlayerData playerData, int overrideCooldown = -1)
         {
-            var canTravel = playerData.HomeLastuseage.AddSeconds(Th3Essentials.Config.HomeCooldown);
+            var cooldown = overrideCooldown >= 0 ? overrideCooldown : Th3Essentials.Config.HomeCooldown;
+            var canTravel = playerData.HomeLastuseage.AddSeconds(cooldown);
             return canTravel <= DateTime.Now;
         }
 
-        public int GetPlayerHomeLimit(IPlayer callerPlayer)
+        public int GetPlayerHomeLimit(IPlayer callerPlayer, Th3PlayerData th3PlayerData)
         {
-            var playerDataByUid = _playerConfig.GetPlayerDataByUID(callerPlayer.PlayerUID, false);
-            return playerDataByUid.HomeLimit >= 0 ? playerDataByUid.HomeLimit : _config.HomeLimit;
+            if (_config.RoleConfig != null && _config.RoleConfig.TryGetValue(callerPlayer.Role.Code, out var config))
+            {
+                return th3PlayerData.HomeLimit >= 0 ? th3PlayerData.HomeLimit : config.HomeLimit >= 0 ? config.HomeLimit : _config.HomeLimit;
+            }
+            return th3PlayerData.HomeLimit >= 0 ? th3PlayerData.HomeLimit : _config.HomeLimit;
+        }
+
+        public static RoleConfig GetConfig(IPlayer player, Th3PlayerData th3PlayerData, Th3Config th3config)
+        {
+            if (th3config.RoleConfig != null && th3config.RoleConfig.TryGetValue(player.Role.Code, out var config))
+            {
+                config.HomeLimit = th3PlayerData.HomeLimit >= 0 ? th3PlayerData.HomeLimit : config.HomeLimit >= 0 ? config.HomeLimit : th3config.HomeLimit;
+                config.TeleportToPlayerCost = config.TeleportToPlayerCost >= 0
+                    ? config.TeleportToPlayerCost
+                    : th3config.TeleportToPlayerItem?.Stacksize ?? 0; 
+                config.RandomTeleportCost = config.RandomTeleportCost >= 0
+                    ? config.RandomTeleportCost
+                    : th3config.RandomTeleportItem?.Stacksize ?? 0; 
+                config.HomeTeleportCost = config.HomeTeleportCost >= 0
+                    ? config.HomeTeleportCost
+                    : th3config.HomeItem?.Stacksize ?? 0; 
+                config.BackTeleportCost =  config.BackTeleportCost >= 0
+                    ? config.BackTeleportCost
+                    : th3config.HomeItem?.Stacksize ?? 0; 
+                config.SetHomeTeleportCost =  config.SetHomeTeleportCost >= 0
+                    ? config.SetHomeTeleportCost
+                    : th3config.HomeItem?.Stacksize ?? 0;
+                return config;
+            }
+
+            return new RoleConfig
+            {
+                HomeLimit = th3PlayerData.HomeLimit >= 0 ? th3PlayerData.HomeLimit : th3config.HomeLimit,
+                TeleportToPlayerCost = th3config.TeleportToPlayerItem?.Stacksize ?? 0,
+                RandomTeleportCost = th3config.RandomTeleportItem?.Stacksize ?? 0,
+                HomeTeleportCost = th3config.HomeItem?.Stacksize ?? 0,
+                SetHomeTeleportCost = th3config.HomeItem?.Stacksize ?? 0,
+                BackTeleportCost = th3config.HomeItem?.Stacksize ?? 0,
+                RtpEnabled = th3config.RandomTeleportRadius >= 0,
+                TeleportToPlayerEnabled = th3config.TeleportToPlayerEnabled
+            };
         }
     }
 }

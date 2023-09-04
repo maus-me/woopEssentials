@@ -20,17 +20,18 @@ namespace Th3Essentials.Config
         public BlockPos LastPosition;
 
         [ProtoMember(4)]
-        public List<HomePoint> HomePoints;
+        public List<HomePoint> HomePoints = new();
 
         [ProtoMember(5)]
         public int HomeLimit = -1;
 
-        public Th3PlayerData()
-        {
-            HomePoints = new List<HomePoint>();
-        }
+        [ProtoMember(6)]
+        public DateTime RTPLastUsage;
 
-        public HomePoint FindPointByName(string name)
+        [ProtoMember(7)]
+        public DateTime T2PLastUsage;
+
+        public HomePoint? FindPointByName(string name)
         {
             return HomePoints.Find(point => point.Name == name);
         }

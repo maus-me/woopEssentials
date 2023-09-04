@@ -7,7 +7,6 @@ namespace Th3Essentials.Config
 {
     public class Th3Config
     {
-        [JsonIgnore]
         public bool IsDirty;
 
         public Th3DiscordConfig DiscordConfig;
@@ -20,9 +19,13 @@ namespace Th3Essentials.Config
 
         public int AnnouncementInterval;
 
-        public int HomeLimit;
+        public int HomeLimit = -1;
 
         public int HomeCooldown = 60;
+        public int BackCooldown = 60;
+        public bool ExcludeHomeFromBack = false;
+        public StarterkitItem? HomeItem;
+        public StarterkitItem? SetHomeItem;
 
         public bool SpawnEnabled;
 
@@ -59,6 +62,18 @@ namespace Th3Essentials.Config
         public string ChatTimestampFormat;
 
         public bool EnableSmite;
+        
+        public int RandomTeleportRadius = 0;
+        
+        public int RandomTeleportCooldown = 60;
+
+        public StarterkitItem? RandomTeleportItem;
+        
+        public int TeleportToPlayerCooldown = 60;
+        public bool TeleportToPlayerEnabled = false;
+        public StarterkitItem? TeleportToPlayerItem;
+
+        public Dictionary<string, RoleConfig>? RoleConfig;
 
         public void Init()
         {
@@ -131,6 +146,10 @@ namespace Th3Essentials.Config
 
             HomeCooldown = configTemp.HomeCooldown;
             HomeLimit = configTemp.HomeLimit;
+            SetHomeItem = configTemp.SetHomeItem;
+            HomeItem = configTemp.HomeItem;
+            BackCooldown = configTemp.BackCooldown;
+            ExcludeHomeFromBack = configTemp.ExcludeHomeFromBack;
 
             SpawnEnabled = configTemp.SpawnEnabled;
             BackEnabled = configTemp.BackEnabled;
@@ -154,6 +173,16 @@ namespace Th3Essentials.Config
             WarpLocations = configTemp.WarpLocations;
             ChatTimestampFormat = configTemp.ChatTimestampFormat;
             EnableSmite = configTemp.EnableSmite;
+            
+            RandomTeleportRadius = configTemp.RandomTeleportRadius;
+            RandomTeleportCooldown = configTemp.RandomTeleportCooldown;
+            RandomTeleportItem = configTemp.RandomTeleportItem;
+            
+            TeleportToPlayerCooldown = configTemp.TeleportToPlayerCooldown;
+            TeleportToPlayerEnabled = configTemp.TeleportToPlayerEnabled;
+            TeleportToPlayerItem = configTemp.TeleportToPlayerItem;
+
+            RoleConfig = configTemp.RoleConfig;
 
             if (configTemp.DiscordConfig != null)
             {

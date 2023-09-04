@@ -11,6 +11,9 @@ namespace Th3Essentials.Commands
             new Restart().Init(sapi);
             new Warp().Init(sapi);
             new Smite().Init(sapi);
+            new RandomTeleport().Init(sapi);
+            new TeleportRequest().Init(sapi);
+            new Th3ConfigCommands().Init(sapi);
         }
     }
 }
