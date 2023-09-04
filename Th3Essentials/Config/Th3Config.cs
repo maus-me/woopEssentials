@@ -46,6 +46,7 @@ namespace Th3Essentials.Config
         public string SystemMsgColor = "ff9102";
 
         public bool ShowRole;
+        public List<string>? ShowRoles;
 
         public string RoleFormat = "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}";
 
@@ -145,6 +146,7 @@ namespace Th3Essentials.Config
             SystemMsgColor = configTemp.SystemMsgColor;
 
             ShowRole = configTemp.ShowRole;
+            ShowRoles = configTemp.ShowRoles;
             RoleFormat = configTemp.RoleFormat;
             AdminRoles = configTemp.AdminRoles;
 

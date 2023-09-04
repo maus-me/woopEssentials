@@ -415,7 +415,7 @@ namespace Th3Essentials.Discord
                 string msg = playerMsg.Groups[1].Value;
                 msg = msg.Replace("&lt;", "<").Replace("&gt;", ">").Replace("@here", "@_here").Replace("@everyone", "@_everyone");
 
-                if (Th3Essentials.Config.ShowRole && byPlayer.Role.PrivilegeLevel > 0)
+                if (Th3Essentials.Config.ShowRole && (Th3Essentials.Config.ShowRoles == null || Th3Essentials.Config.ShowRoles.Contains(byPlayer.Role.Code)))
                 {
                     if (Config.Rewards && byPlayer.ServerData.CustomPlayerData.TryGetValue(REWARDS_SERVER_DATA_KEY, out string id) && rewards.TryGetValue(id, out Rewards reward))
                     {
@@ -440,7 +440,7 @@ namespace Th3Essentials.Discord
                 _ = _discordChannel.SendMessageAsync(msg);
             }
 
-            if (Th3Essentials.Config.ShowRole && byPlayer.Role.PrivilegeLevel > 0)
+            if (Th3Essentials.Config.ShowRole && (Th3Essentials.Config.ShowRoles == null || Th3Essentials.Config.ShowRoles.Contains(byPlayer.Role.Code)))
             {
                 if (Config.Rewards && byPlayer.ServerData.CustomPlayerData.TryGetValue(REWARDS_SERVER_DATA_KEY, out string id) && rewards.TryGetValue(id, out Rewards reward))
                 {

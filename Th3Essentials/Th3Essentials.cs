@@ -181,7 +181,10 @@ namespace Th3Essentials
         private static void PlayerChatAsync(IServerPlayer byPlayer, int channelId, ref string message, ref string data,
             BoolRef consumed)
         {
-            message = string.Format(Config.RoleFormat, ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
+            if (Config.ShowRoles == null || Config.ShowRoles.Contains(byPlayer.Role.Code))
+            {
+                message = string.Format(Config.RoleFormat, ToHex(byPlayer.Role.Color), byPlayer.Role.Name, message);
+            }
         }
 
         private void CheckRestart(float t1)
