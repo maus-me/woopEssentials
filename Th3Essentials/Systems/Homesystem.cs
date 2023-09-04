@@ -68,14 +68,14 @@ namespace Th3Essentials.Systems
                     .BeginSubCommand("item")
                         .RequiresPrivilege(Privilege.controlserver)
                         .RequiresPlayer()
-                        .WithDescription("Sets the current hotbar slot as the required item and quantity, use empty slot to unset")
+                        .WithDescription(Lang.Get("th3essentials:hs-item-desc"))
                         .HandleWith(SetItem)
                     .EndSubCommand()
                     
                     .BeginSubCommand("setitem")
                         .RequiresPrivilege(Privilege.controlserver)
                         .RequiresPlayer()
-                        .WithDescription("Sets the current hotbar slot as the required item and quantity, use empty slot to unset")
+                        .WithDescription(Lang.Get("th3essentials:hs-item-desc"))
                         .HandleWith(SetSetItem)
                     .EndSubCommand()
                     ;
@@ -124,7 +124,7 @@ namespace Th3Essentials.Systems
             if (slot.Itemstack == null)
             {
                 _config.SetHomeItem = null;
-                return TextCommandResult.Success("Home Item unset");
+                return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-unset"));
             }
         
             var enumItemClass = slot.Itemstack.Class;
@@ -138,7 +138,7 @@ namespace Th3Essentials.Systems
 
             _config.SetHomeItem = new StarterkitItem(enumItemClass, code, stackSize, attributes);
             _config.MarkDirty();
-            return TextCommandResult.Success("Home Item set");
+            return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-set"));
         }
 
         private TextCommandResult ChangeLimit(TextCommandCallingArgs args)
@@ -152,7 +152,7 @@ namespace Th3Essentials.Systems
             playerData.HomeLimit = limit;
             playerData.MarkDirty();
             
-            return TextCommandResult.Success($"Updated home point limit for player : {player.PlayerName} to {limit}");
+            return TextCommandResult.Success(Lang.Get("th3essentials:hs-changelim", player.PlayerName, limit));
         }
 
         private void PlayerDied(IServerPlayer byPlayer, DamageSource damageSource)
@@ -178,7 +178,7 @@ namespace Th3Essentials.Systems
                 if (canTeleport)
                 {
                     PayIfNeeded(player, _config.HomeItem, playerConfig.BackTeleportCost);
-                    TeleportTo(player, playerData, playerData.LastPosition);
+                    TeleportTo(player, playerData, playerData.LastPosition, _config.ExcludeBackFromBack);
                     return TextCommandResult.Success(Lang.Get("th3essentials:hs-back"));
                 }
                 
@@ -231,7 +231,6 @@ namespace Th3Essentials.Systems
             if (point == null) return TextCommandResult.Success(Lang.Get("th3essentials:hs-404"));
 
             var playerConfig = GetConfig(player, playerData, _config);
-            _sapi.Logger.Notification($"{_config.HomeItem.Stacksize} :: {playerConfig.HomeTeleportCost} ");
             
             if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
             {
@@ -239,7 +238,6 @@ namespace Th3Essentials.Systems
 
                 if (canTeleport && player.InventoryManager.ActiveHotbarSlot != null)
                 {
-                    _sapi.Logger.Notification($"{_config.HomeItem} :: {playerConfig.HomeTeleportCost}");
                     PayIfNeeded(player, _config.HomeItem, playerConfig.HomeTeleportCost);
                     TeleportTo(player, playerData, point.Position, _config.ExcludeHomeFromBack);
                     return TextCommandResult.Success(Lang.Get("th3essentials:hs-tp-point", name));
@@ -279,13 +277,12 @@ namespace Th3Essentials.Systems
                         }
                         else
                         {
-                            {
-                                success = TextCommandResult.Success(
-                                    $"You are missing block {item.Code} x {cost}");
-                                return true;
-                            }
+                            var itemName =
+                                Lang.Get(item.Itemclass.ToString().ToLowerInvariant() + "-" + item.Code.Path);
+                            success = TextCommandResult.Success(
+                                Lang.Get("th3essentials:hs-item-missing", cost, itemName));
+                            return true;
                         }
-
                         break;
                     }
                     case EnumItemClass.Item:
@@ -297,13 +294,12 @@ namespace Th3Essentials.Systems
                         }
                         else
                         {
-                            {
-                                success = TextCommandResult.Success(
-                                    $"You are missing item {item.Code} x {cost}");
-                                return true;
-                            }
+                            var itemName =
+                                Lang.Get(item.Itemclass.ToString().ToLowerInvariant() + "-" + item.Code.Path);
+                            success = TextCommandResult.Success(
+                                Lang.Get("th3essentials:hs-item-missing", cost, itemName));
+                            return true;
                         }
-
                         break;
                     }
                 }
@@ -367,11 +363,11 @@ namespace Th3Essentials.Systems
             if (playerData.FindPointByName(name) == null)
             {
                 
-                var playerConfig = Homesystem.GetConfig(player, playerData, _config);
-                if(CheckPayment(_config.SetHomeItem, playerConfig.SetHomeTeleportCost, player, out var canTeleport, out var success)) return success!;
+                var playerConfig = GetConfig(player, playerData, _config);
+                if(CheckPayment(_config.SetHomeItem, playerConfig.SetHomeCost, player, out var canTeleport, out var success)) return success!;
                 if (canTeleport)
                 {
-                    PayIfNeeded(player, _config.SetHomeItem, playerConfig.SetHomeTeleportCost);
+                    PayIfNeeded(player, _config.SetHomeItem, playerConfig.SetHomeCost);
                     var newPoint = new HomePoint(name, player.Entity.Pos.XYZ.AsBlockPos);
                     playerData.HomePoints.Add(newPoint);
                     playerData.MarkDirty();
@@ -389,7 +385,7 @@ namespace Th3Essentials.Systems
             if (slot.Itemstack == null)
             {
                 _config.HomeItem = null;
-                return TextCommandResult.Success("Home Item unset");
+                return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-unset"));
             }
         
             var enumItemClass = slot.Itemstack.Class;
@@ -403,7 +399,7 @@ namespace Th3Essentials.Systems
 
             _config.HomeItem = new StarterkitItem(enumItemClass, code, stackSize, attributes);
             _config.MarkDirty();
-            return TextCommandResult.Success("Home Item set");
+            return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-set"));
         }
 
         public static void TeleportTo(IPlayer player, Th3PlayerData playerData, BlockPos location, bool excludeFromBack = false)
@@ -450,8 +446,8 @@ namespace Th3Essentials.Systems
                 config.BackTeleportCost =  config.BackTeleportCost >= 0
                     ? config.BackTeleportCost
                     : th3config.HomeItem?.Stacksize ?? 0; 
-                config.SetHomeTeleportCost =  config.SetHomeTeleportCost >= 0
-                    ? config.SetHomeTeleportCost
+                config.SetHomeCost =  config.SetHomeCost >= 0
+                    ? config.SetHomeCost
                     : th3config.HomeItem?.Stacksize ?? 0;
                 return config;
             }
@@ -462,7 +458,7 @@ namespace Th3Essentials.Systems
                 TeleportToPlayerCost = th3config.TeleportToPlayerItem?.Stacksize ?? 0,
                 RandomTeleportCost = th3config.RandomTeleportItem?.Stacksize ?? 0,
                 HomeTeleportCost = th3config.HomeItem?.Stacksize ?? 0,
-                SetHomeTeleportCost = th3config.HomeItem?.Stacksize ?? 0,
+                SetHomeCost = th3config.SetHomeItem?.Stacksize ?? 0,
                 BackTeleportCost = th3config.HomeItem?.Stacksize ?? 0,
                 RtpEnabled = th3config.RandomTeleportRadius >= 0,
                 TeleportToPlayerEnabled = th3config.TeleportToPlayerEnabled

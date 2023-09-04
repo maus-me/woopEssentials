@@ -1,5 +1,6 @@
 using System.Linq;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
@@ -15,6 +16,7 @@ internal class Smite : Command
         
         _sapi = api;
         api.ChatCommands.Create("smite")
+            .WithDescription(Lang.Get("th3essentials:cd-smite-desc"))
             .RequiresPrivilege(Privilege.commandplayer)
             .RequiresPlayer()
             .WithArgs(api.ChatCommands.Parsers.OptionalWord("player"))
@@ -33,9 +35,9 @@ internal class Smite : Command
             if (player != null)
             {
                 weatherSystemServer.SpawnLightningFlash(new Vec3d(player.Entity.Pos));
-                return TextCommandResult.Success($"Spawned a lightning on {player.PlayerName}");
+                return TextCommandResult.Success(Lang.Get("th3essentials:cd-smite-spl", player.PlayerName));
             } 
-            return TextCommandResult.Error($"Could not find player: {playerName}");
+            return TextCommandResult.Error(Lang.Get("th3essentials:cd-smite-clfp",playerName));
         }
 
         if (args.Caller.Player.CurrentBlockSelection != null)
@@ -47,9 +49,9 @@ internal class Smite : Command
         if (args.Caller.Player.CurrentEntitySelection != null)
         {
             weatherSystemServer.SpawnLightningFlash(args.Caller.Player.CurrentEntitySelection.Position);
-            return TextCommandResult.Success($"Spawned a lightning on {args.Caller.Player.CurrentEntitySelection.Entity.GetName()}");
+            return TextCommandResult.Success(Lang.Get("th3essentials:cd-smite-sponen", args.Caller.Player.CurrentEntitySelection.Entity.GetName()));
         }
 
-        return TextCommandResult.Error("Unable to determine a target [playername, entity, current block selection]");
+        return TextCommandResult.Error(Lang.Get("th3essentials:cd-smite-unable"));
     }
 }

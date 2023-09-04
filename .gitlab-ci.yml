@@ -36,7 +36,7 @@ build:
           when: on_success
           expire_in: 5 days
           paths:
-              - Th3Essentials/bin/packages/mods/
+              - Releases/*.zip
   only:
     - tags
   script:

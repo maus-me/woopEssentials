@@ -39,7 +39,7 @@ internal class TeleportRequest : Command
                     .WithAlias("r")
                     .RequiresPrivilege(Privilege.chat)
                     .RequiresPlayer()
-                    .WithDescription("Request a teleport to a player")
+                    .WithDescription(Lang.Get("th3essentials:cd-t2pr-e"))
                     .WithArgs(_sapi.ChatCommands.Parsers.OnlinePlayer("player"))
                     .HandleWith(OnT2Pr)
                 .EndSubCommand()
@@ -47,7 +47,7 @@ internal class TeleportRequest : Command
                 .BeginSubCommand("abort")
                     .RequiresPrivilege(Privilege.chat)
                     .RequiresPlayer()
-                    .WithDescription("Abort request to teleport to a player")
+                    .WithDescription(Lang.Get("th3essentials:cd-t2pr-a"))
                     .WithArgs(_sapi.ChatCommands.Parsers.OnlinePlayer("player"))
                     .HandleWith(OnAbortT2p)
                 .EndSubCommand()
@@ -56,7 +56,7 @@ internal class TeleportRequest : Command
                     .WithAlias("a")
                     .RequiresPrivilege(Privilege.chat)
                     .RequiresPlayer()
-                    .WithDescription("Accept the TP request [yes/no] default is yes if noting is specified")
+                    .WithDescription(Lang.Get("th3essentials:cd-t2pr-ac"))
                     .WithArgs(_sapi.ChatCommands.Parsers.OptionalBool("accept"))
                     .HandleWith(AcceptTp)
                 .EndSubCommand()
@@ -64,7 +64,7 @@ internal class TeleportRequest : Command
                 .BeginSubCommand("item")
                     .RequiresPrivilege(Privilege.controlserver)
                     .RequiresPlayer()
-                    .WithDescription("Sets the current hotbar slot as the required item and quantity, use empty slot to unset")
+                    .WithDescription(Lang.Get("th3essentials:cd-t2pr-sc"))
                     .HandleWith(SetItem)
                 .EndSubCommand()
                 ;
@@ -77,9 +77,9 @@ internal class TeleportRequest : Command
         if (_tpRequests.ContainsKey(otherPlayer.PlayerUID))
         {
             _tpRequests.Remove(otherPlayer.PlayerUID);
-            return TextCommandResult.Success($"Teleport request to {otherPlayer.PlayerName} aborted");
+            return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-ra",otherPlayer.PlayerName));
         }
-        return TextCommandResult.Success($"No request for that player found");
+        return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-nr"));
     }
 
     private TextCommandResult AcceptTp(TextCommandCallingArgs args)
@@ -99,7 +99,7 @@ internal class TeleportRequest : Command
                 var requestingPlayer = _sapi.World.AllOnlinePlayers.FirstOrDefault(p => p.PlayerUID.Equals(requesterUID));
                 if (requestingPlayer == null)
                 {
-                    return TextCommandResult.Success("Player seems not online anymore");
+                    return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-no"));
                 }
                 var playerData = _playerConfig.GetPlayerDataByUID(requestingPlayer.PlayerUID);
 
@@ -107,10 +107,10 @@ internal class TeleportRequest : Command
             }
             else
             {
-                return TextCommandResult.Success("Maybe other player aborted the request");
+                return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-my"));
             }
         }
-        return TextCommandResult.Success("You declined the teleport request");
+        return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-de"));
     }
 
     private TextCommandResult SetItem(TextCommandCallingArgs args)
@@ -120,7 +120,7 @@ internal class TeleportRequest : Command
         if (slot.Itemstack == null)
         {
             _config.TeleportToPlayerItem = null;
-            return TextCommandResult.Success("T2PR Item unset");
+            return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-unset"));
         }
         
         var enumItemClass = slot.Itemstack.Class;
@@ -134,7 +134,7 @@ internal class TeleportRequest : Command
 
         _config.TeleportToPlayerItem = new StarterkitItem(enumItemClass, code, stackSize, attributes);
         _config.MarkDirty();
-        return TextCommandResult.Success("T2PR Item set");
+        return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-set"));
     }
 
 
@@ -144,7 +144,7 @@ internal class TeleportRequest : Command
         
         if (_tpRequests.ContainsKey(otherPlayer.PlayerUID))
         {
-            return TextCommandResult.Success("Player already has a pending t2p request");
+            return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-pr"));
         }
         
         var player = args.Caller.Player;
@@ -156,7 +156,7 @@ internal class TeleportRequest : Command
 
         if (!playerConfig.TeleportToPlayerEnabled)
         {
-            return TextCommandResult.Success("You are not allowed to use this command");
+            return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
         }
         
         if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
@@ -167,7 +167,7 @@ internal class TeleportRequest : Command
             {
                 Homesystem.PayIfNeeded(player, _config.TeleportToPlayerItem, playerConfig.TeleportToPlayerCost);
                 _tpRequests.Add(otherPlayer.PlayerUID, player.PlayerUID);
-                (otherPlayer as IServerPlayer)?.SendMessage(GlobalConstants.GeneralChatGroup, $"Player {player.PlayerName} reqested a teleport to you. \"/t2p a\" or \"/t2p a no\"",EnumChatType.Notification);
+                (otherPlayer as IServerPlayer)?.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-t2pr-prm", player.PlayerName),EnumChatType.Notification);
                 return TextCommandResult.Success(Lang.Get("th3essentials:t2p-success"));
             }
 

@@ -34,7 +34,7 @@ internal class RandomTeleport : Command
                 .BeginSubCommand("item")
                     .RequiresPrivilege(Privilege.controlserver)
                     .RequiresPlayer()
-                    .WithDescription("Sets the current hotbar slot as the required item and quantity, use empty slot to unset")
+                    .WithDescription(Lang.Get("th3essentials:cd-rtp-desc"))
                     .HandleWith(SetItem)
                 .EndSubCommand()
                 ;
@@ -48,7 +48,7 @@ internal class RandomTeleport : Command
         if (slot.Itemstack == null)
         {
             _config.TeleportToPlayerItem = null;
-            return TextCommandResult.Success("RTP Item unset");
+            return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-unset"));
         }
         var enumItemClass = slot.Itemstack.Class;
         var stackSize = slot.Itemstack.StackSize;
@@ -61,7 +61,7 @@ internal class RandomTeleport : Command
 
         _config.RandomTeleportItem = new StarterkitItem(enumItemClass, code, stackSize, attributes);
         _config.MarkDirty();
-        return TextCommandResult.Success("RTP Item set");
+        return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-set"));
     }
 
 
@@ -74,7 +74,7 @@ internal class RandomTeleport : Command
 
         if (!playerConfig.RtpEnabled)
         {
-            return TextCommandResult.Success("You are not allowed to use this command");
+            return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
         }
         
         if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))

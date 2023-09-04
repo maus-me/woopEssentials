@@ -8,7 +8,7 @@ public class RoleConfig
     
     public int BackTeleportCost = -1;
     
-    public int SetHomeTeleportCost = -1;
+    public int SetHomeCost = -1;
     
     public int RandomTeleportCost = -1;
 
@@ -28,7 +28,7 @@ public class RoleConfig
         HomeLimit = homelimit;
         HomeTeleportCost = homeCost;
         BackTeleportCost = backCost;
-        SetHomeTeleportCost = setHomeCost;
+        SetHomeCost = setHomeCost;
         RandomTeleportCost = rtpCost;
         TeleportToPlayerCost = teleportToPlayerCost;
         RtpEnabled = rtpEnabled;

@@ -300,6 +300,31 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   "HomeLimit": 0,
   // time in seconds between usage of the home/spawn/back commands
   "HomeCooldown": 60,
+  // excludes setting the last position when using /home
+  "ExcludeHomeFromBack": true,
+  // excludes setting the last position when using /back
+  "ExcludeBackFromBack": true,
+  
+  // charges ppl for using /home <name> a item, the amount can be overwritten by role see RoleConfig
+  // use /home item with the item and amount in your current active hotbar slot
+  // if set to null nothing will be consumed
+  // "HomeItem": null
+  "HomeItem": {
+    "Itemclass": 1,
+    "Code": "game:gear-rusty",
+    "Stacksize": 1,
+    "Attributes": "AA=="
+  },
+  // charges ppl for using /home set <name> a item, the amount can be overwritten by role see RoleConfig
+  // use /home setitem with the item and amount in your current active hotbar slot
+  // if set to null nothing will be consumed
+  // "SetHomeItem": null
+  "SetHomeItem": {
+    "Itemclass": 1,
+    "Code": "game:gear-rusty",
+    "Stacksize": 2,
+    "Attributes": "AA=="
+  },
 
   // if the /spawn command should be enabled [false, true]
   "SpawnEnabled": false,
@@ -362,6 +387,49 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // "ChatTimestampFormat": "hh\\:mm"
   "ChatTimestampFormat": null,
   // Enable the /smite command in-game, needs "commandplayer" privilege
-  "EnableSmite": false
+  "EnableSmite": false,
+
+  // if set to 0 or greater it will turn on the /rtp command to teleport you randomly within the radius (north south radius is half)
+  "RandomTeleportRadius": 10000,
+  // cooldown for using /rtp
+  "RandomTeleportCooldown": 60,
+  // item to consume when using /rtp, amount can be overwritten by role see RoleConfig
+  // set with /rtp item with the item and amount in the hotbar slot you have selected
+  // if set to null nothing will be consumed
+  "RandomTeleportItem": {
+    "Itemclass": 1,
+    "Code": "game:redmeat-vintage",
+    "Stacksize": 2,
+    "Attributes": "AA=="
+  },
+
+  // cooldown for using /t2p request
+  "TeleportToPlayerCooldown": 60,
+  // enable /t2p r <name> to send a teleport request to that player
+  "TeleportToPlayerEnabled": true,
+  // item to consume when using /rtp, amount can be overwritten by role see RoleConfig
+  // set with /rtp item with the item and amount in the hotbar slot you have selected
+  // if set to null nothing will be consumed
+  "TeleportToPlayerItem": {
+    "Itemclass": 1,
+    "Code": "game:redmeat-vintage",
+    "Stacksize": 1,
+    "Attributes": "AA=="
+  },
+  
+  // config to overwrite role specific cost and features enabled
+  // "crmod" is the code of the role from serverconfig.json
+  "RoleConfig": {
+    "crmod": {
+      "HomeLimit": 13,
+      "HomeTeleportCost": 1,
+      "BackTeleportCost": 5,
+      "SetHomeCost": 6,
+      "RandomTeleportCost": 7,
+      "RtpEnabled": false,
+      "TeleportToPlayerCost": 8,
+      "TeleportToPlayerEnabled": false
+    }
+  }
 }
 ```

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Newtonsoft.Json;
 
 namespace Th3Essentials.Config
 {
@@ -24,6 +23,7 @@ namespace Th3Essentials.Config
         public int HomeCooldown = 60;
         public int BackCooldown = 60;
         public bool ExcludeHomeFromBack = false;
+        public bool ExcludeBackFromBack = false;
         public StarterkitItem? HomeItem;
         public StarterkitItem? SetHomeItem;
 
@@ -150,6 +150,7 @@ namespace Th3Essentials.Config
             HomeItem = configTemp.HomeItem;
             BackCooldown = configTemp.BackCooldown;
             ExcludeHomeFromBack = configTemp.ExcludeHomeFromBack;
+            ExcludeBackFromBack = configTemp.ExcludeBackFromBack;
 
             SpawnEnabled = configTemp.SpawnEnabled;
             BackEnabled = configTemp.BackEnabled;
