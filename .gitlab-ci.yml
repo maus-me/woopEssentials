@@ -32,20 +32,21 @@ cache:
     - '$SOURCE_CODE_PATH$OBJECTS_DIRECTORY/*.csproj.nuget.*'
     # 3) Path to the directory where restored dependencies are kept.
     - '$NUGET_PACKAGES_DIRECTORY'
-before_script:
-  - 'dotnet tool restore'
-  - 'dotnet restore --packages $NUGET_PACKAGES_DIRECTORY'
+
 
 build:
   stage: build
   image: mcr.microsoft.com/dotnet/sdk:7.0
   artifacts:
-          when: on_success
-          expire_in: 5 days
-          paths:
-              - Releases/*.zip
+    when: on_success
+    expire_in: 5 days
+    paths:
+        - Releases/*.zip
   only:
     - tags
+  before_script:
+   - 'dotnet tool restore'
+   - 'dotnet restore --packages $NUGET_PACKAGES_DIRECTORY'
   script:
     - 'mkdir $VINTAGE_STORY'
     - 'curl -o $VINTAGE_STORY/server.tar.gz https://cdn.vintagestory.at/gamefiles/${SERVER_TYPE}/vs_server_linux-x64_${SERVER_VERSION}.tar.gz'
