@@ -34,6 +34,11 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - In-game chat timestamps [on/off]
 - /changerole allows an admin or roles of ModerationRoles to change the role of a player through Discord (will automatically add all roles to the selection in discord if there is 25 or less)
 - /smite [optional <playername>] spawns a lightning at the player by <playername> or at the current block/entity selection if no name is specified [onf/off]
+- /rtp randomly teleports a player within a radius from themselves [on/off]
+- /t2p send requests for teleport to players [on/off]
+- /th3config addRole/removeRole to modify item usage per role for "/home", "/back", "/home set" "/rtp", "/rtp request"
+- 
+
 
 ![](preview/discord-chat2.png)
 ![](preview/discord-chat.png)
@@ -119,6 +124,15 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
   `"HomeCooldown" : 60` will set a cooldown for teleportation using the /home name command as well as the /back and /spawn commands.
   The /spawn and /back commands can be enabled with `"SpawnEnabled" : true` and `"BackEnabled" : true`.
+
+  The homesystem now has the option to consume a item when using /home <name> and when using /home set <name>.
+  The cost for it can be overwritten by the role in serverconfig.json using `/th3config addRole`.
+  For the home system you can now also customize the number of homepoints per player if roles are not enough.
+  The order for how things are applied is First if a player overwrite is set using `/home limit <playername> 5`, then it looks for a overwrite using the `"RoleConfig"` set by `/th3config addRole` and last is the default from the `HomeLimit` in the config.
+  You can set any of the values to -1 to fallbakc to the next one. So if The RoleConfig has HomeLimit -1 it uses the global one from `HomeLimit`. 
+ 
+  Similar do the new itemcosts work for the homesystem and the rtp and t2p where it first check if there is a value in the `RolesConfig` and then it take the one from `/home item` command (the value in `HomeItem` -> `Stacksize`).
+
 
 - private messages
 
@@ -300,31 +314,33 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   "HomeLimit": 0,
   // time in seconds between usage of the home/spawn/back commands
   "HomeCooldown": 60,
+  // cooldown for /back
+  "BackCooldown": 120,
   // excludes setting the last position when using /home
-  "ExcludeHomeFromBack": true,
+  "ExcludeHomeFromBack": false,
   // excludes setting the last position when using /back
-  "ExcludeBackFromBack": true,
+  "ExcludeBackFromBack": false,
   
   // charges ppl for using /home <name> a item, the amount can be overwritten by role see RoleConfig
   // use /home item with the item and amount in your current active hotbar slot
   // if set to null nothing will be consumed
-  // "HomeItem": null
-  "HomeItem": {
-    "Itemclass": 1,
-    "Code": "game:gear-rusty",
-    "Stacksize": 1,
-    "Attributes": "AA=="
-  },
+  //  "HomeItem": {
+  //    "Itemclass": 1,
+  //    "Code": "game:gear-rusty",
+  //    "Stacksize": 1,
+  //    "Attributes": "AA=="
+  //  },
+  "HomeItem": null,
   // charges ppl for using /home set <name> a item, the amount can be overwritten by role see RoleConfig
   // use /home setitem with the item and amount in your current active hotbar slot
   // if set to null nothing will be consumed
-  // "SetHomeItem": null
-  "SetHomeItem": {
-    "Itemclass": 1,
-    "Code": "game:gear-rusty",
-    "Stacksize": 2,
-    "Attributes": "AA=="
-  },
+  //  "SetHomeItem": {
+  //    "Itemclass": 1,
+  //    "Code": "game:gear-rusty",
+  //    "Stacksize": 2,
+  //    "Attributes": "AA=="
+  //  },
+  "SetHomeItem": null,
 
   // if the /spawn command should be enabled [false, true]
   "SpawnEnabled": false,
@@ -393,15 +409,17 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   "RandomTeleportRadius": 10000,
   // cooldown for using /rtp
   "RandomTeleportCooldown": 60,
+  
   // item to consume when using /rtp, amount can be overwritten by role see RoleConfig
   // set with /rtp item with the item and amount in the hotbar slot you have selected
   // if set to null nothing will be consumed
-  "RandomTeleportItem": {
-    "Itemclass": 1,
-    "Code": "game:redmeat-vintage",
-    "Stacksize": 2,
-    "Attributes": "AA=="
-  },
+  //  "RandomTeleportItem": {
+  //    "Itemclass": 1,
+  //    "Code": "game:redmeat-vintage",
+  //    "Stacksize": 2,
+  //    "Attributes": "AA=="
+  //  },
+  "RandomTeleportItem": null,
 
   // cooldown for using /t2p request
   "TeleportToPlayerCooldown": 60,
@@ -410,26 +428,29 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // item to consume when using /rtp, amount can be overwritten by role see RoleConfig
   // set with /rtp item with the item and amount in the hotbar slot you have selected
   // if set to null nothing will be consumed
-  "TeleportToPlayerItem": {
-    "Itemclass": 1,
-    "Code": "game:redmeat-vintage",
-    "Stacksize": 1,
-    "Attributes": "AA=="
-  },
+  "TeleportToPlayerItem": null,
+  //"TeleportToPlayerItem": {
+  //  "Itemclass": 1,
+  //  "Code": "game:redmeat-vintage",
+  //  "Stacksize": 1,
+  //  "Attributes": "AA=="
+  //},
   
   // config to overwrite role specific cost and features enabled
   // "crmod" is the code of the role from serverconfig.json
-  "RoleConfig": {
-    "crmod": {
-      "HomeLimit": 13,
-      "HomeTeleportCost": 1,
-      "BackTeleportCost": 5,
-      "SetHomeCost": 6,
-      "RandomTeleportCost": 7,
-      "RtpEnabled": false,
-      "TeleportToPlayerCost": 8,
-      "TeleportToPlayerEnabled": false
-    }
-  }
+  // /th3config addRole to add a new role, /th3config removeRole <name>
+  //  "RoleConfig": {
+  //    "crmod": {
+  //      "HomeLimit": 13,
+  //      "HomeTeleportCost": 1,
+  //      "BackTeleportCost": 5,
+  //      "SetHomeCost": 6,
+  //      "RandomTeleportCost": 7,
+  //      "RtpEnabled": false,
+  //      "TeleportToPlayerCost": 8,
+  //      "TeleportToPlayerEnabled": false
+  //    }
+  //  }
+  "RoleConfig": null,
 }
 ```
