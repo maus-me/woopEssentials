@@ -34,7 +34,7 @@
     "cd-t2pr-pr": "Player already has a pending t2p request",
     "cd-t2pr-prm": "Player {0} requested a teleport to you. \"/t2p a\" or \"/t2p a no\"",
     "t2p-success": "Teleport request was send to player",
-    "cd-all-notallow":"You are not allowed to use this command",
+    "cd-all-notallow": "You are not allowed to use this command",
     "cd-rtp-desc": "Sets the current hotbar slot as the required item and quantity, use empty slot to unset",
     "cd-starterkit": "get a onetime starterkit",
     "cd-setstarterkit": "set starterkit to items on your hotbar",
