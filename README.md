@@ -381,7 +381,6 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // each role has a Name which is used to display and a Color that the role name will be colored in
   // it wont print roles with PrivilegeLevel less then 1
   // color names for serverconfig.json [hex color value] https://colorpicker.me/ or https://docs.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0#properties
-  "ShowRole": false,
   // specify what roles should show the role name before using the RoleFormat in the game chat and discord
   // use the role code from the serverconfig.json
   // "ShowRoles": ["admin"], 
