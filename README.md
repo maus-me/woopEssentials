@@ -382,6 +382,10 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // it wont print roles with PrivilegeLevel less then 1
   // color names for serverconfig.json [hex color value] https://colorpicker.me/ or https://docs.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0#properties
   "ShowRole": false,
+  // specify what roles should show the role name before using the RoleFormat in the game chat and discord
+  // use the role code from the serverconfig.json
+  // "ShowRoles": ["admin"], 
+  "ShowRoles": null,
   // allows to format the ingame role information to your likeing
   // {0} will be the color specified in the serverconfig.json
   // {1} will be the role name specified in the serverconfig.json
@@ -391,13 +395,16 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // [Admin] Th3Dilli: message
   // info since fonts are different on windows and linux this may look different depending on the operating system
   "RoleFormat": "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}",
+  
   // roles from serverconfig.json to be liste with the /admins ingame and discord command (enter the "Code" of a role for example Admin has Code admin or Creative Moderator has Code crmod)
   // ["admin","crmod"]
   "AdminRoles": null,
+  
   // enable the ingame /warp command
   "WarpEnabled": false,
   // managed ingame with /warp add|remove name /warp name
   "WarpLocations": null,
+  
   // enable in-game chat timestamps 
   // here you can find possible format string values https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-timespan-format-strings
   // "ChatTimestampFormat": "hh\\:mm"
