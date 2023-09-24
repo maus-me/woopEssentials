@@ -11,7 +11,7 @@ services:
         - ${INFLUXDB_CONFIG}:/etc/influxdb2
   grafana:
     container_name: th3essentials-grafana
-    image: grafana/grafana:9.4.7
+    image: grafana/grafana:10.1.2
     restart: unless-stopped
 # add this and make sure that your default user has write access to the grafana folder
     user: "1000"
