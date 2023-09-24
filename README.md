@@ -37,7 +37,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - /rtp randomly teleports a player within a radius from themselves [on/off]
 - /t2p send requests for teleport to players [on/off]
 - /th3config addRole/removeRole to modify item usage per role for "/home", "/back", "/home set" "/rtp", "/rtp request"
-- 
+- log admin actions to a discord channel - only works if influxdb is setup atm [on/off]
 
 
 ![](preview/discord-chat2.png)
@@ -249,6 +249,15 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
     "ChannelId": 0,
     // Discord GuildID to link all discord features to
     "GuildId": 0,
+    
+    // discord channel where admin logs go to, only works if influxdb is setup as well
+    // if set to 0 it will be disabled
+    "AdminLogChannelId": 0,
+    // privileges of commands that will trigger a log in the admin log for discord
+    // also item spawning from creative will be logged to discord +  gamemode changes
+    "AdminPrivilegeToMonitor": ["gamemode", "pickingrange", "kick", "ban", "whitelist",
+      "give", "controlserver", "tp", "time", "grantrevoke", "root", "commandplayer"],
+    
     // Roles that are allowd to use whitelist/allowcharselonce - use the /modifypermissions slashcommand to add/remove roles
     "ModerationRoles": null,
     // if true only the user that uses a discord slashcommand will see the response from the bot

@@ -29,7 +29,8 @@ namespace Th3Essentials.Discord
 
         private DiscordSocketClient _client;
 
-        private IMessageChannel _discordChannel;
+        private IMessageChannel? _discordChannel;
+        private IMessageChannel? _adminLogChannel;
 
         internal ICoreServerAPI Sapi;
 
@@ -276,6 +277,11 @@ namespace Th3Essentials.Discord
             _ = _discordChannel?.SendMessageAsync(ServerMsg(msg));
         }
 
+        internal void SendAdminLog(string msg)
+        {
+            _ = _adminLogChannel?.SendMessageAsync(msg);
+        }
+
         private Task MessageReceivedAsync(SocketMessage messageParam)
         {
             if (messageParam.Author.Id == _client.CurrentUser.Id)
@@ -341,6 +347,10 @@ namespace Th3Essentials.Discord
         internal bool GetDiscordChannel()
         {
             _discordChannel = _client.GetChannel(Config.ChannelId) as IMessageChannel;
+            if (Config.AdminLogChannelId != 0)
+            {
+                _adminLogChannel = _client.GetChannel(Config.AdminLogChannelId) as IMessageChannel;
+            }
             return _discordChannel != null;
         }
 

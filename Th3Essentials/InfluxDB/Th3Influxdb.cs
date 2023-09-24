@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using HarmonyLib;
 using Th3Essentials.Config;
+using Th3Essentials.Discord;
 using Th3Essentials.InfluxDB;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
@@ -21,7 +22,7 @@ namespace Th3Essentials.Influxdb
 
         private long _writeDataListenerId;
 
-        public static Th3Influxdb Instance { get; set; }
+        public static Th3Influxdb? Instance { get; set; }
 
         private const string HarmonyPatchKey = "Th3Essentials.InfluxDB.Patch";
 
@@ -242,6 +243,24 @@ namespace Th3Essentials.Influxdb
                 var pointData = PointData.Measurement("playerlog").Tag("player", player.PlayerName.ToLower())
                     .Tag("playerUID", player.PlayerUID).Field("value", $"{commandName} {args}");
                 Instance?.WritePoint(pointData);
+                try
+                {
+                    
+                    var cmd = Instance?._sapi.ChatCommands.Get(commandName) as ChatCommandImpl;
+                    var priv = cmd?.GetType().GetField("privilege", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(cmd);
+                    
+                    if (Th3Essentials.Config.DiscordConfig.AdminPrivilegeToMonitor?.Contains(priv) == true)
+                    {
+                            Th3Discord.Instance.SendAdminLog($"**{player.PlayerName}** executed: {commandName} {args}");
+                    }
+                    else if(Equals("gamemode", commandName)) { 
+                        Th3Discord.Instance.SendAdminLog($"**{player.PlayerName}** executed @ ({player.Entity.Pos.AsBlockPos}): {commandName} {args}");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e); // TODO
+                }
             }
 
             public static void ActivateSlot(InventoryPlayerCreative __instance, int slotId, ItemSlot sourceSlot,
@@ -256,6 +275,7 @@ namespace Th3Essentials.Influxdb
                         .Tag("playerUID", op.ActingPlayer?.PlayerUID).Field("value",
                             $"{op.MovedQuantity} {itemSlot.Itemstack?.Collectible?.Code}");
                     Instance?.WritePoint(pointData);
+                    Th3Discord.Instance.SendAdminLog($"**{op.ActingPlayer?.PlayerName}** spawned: {op.MovedQuantity} {itemSlot.Itemstack?.Collectible?.Code}");
                 }
                 else
                 {
@@ -264,6 +284,7 @@ namespace Th3Essentials.Influxdb
                         .Tag("playerUID", op.ActingPlayer?.PlayerUID).Field("value",
                             $"{op.MovedQuantity} {sourceSlot.Itemstack?.Collectible?.Code}");
                     Instance?.WritePoint(pointData);
+                    Th3Discord.Instance.SendAdminLog($"**{op.ActingPlayer?.PlayerName}** spawned: {op.MovedQuantity} {sourceSlot.Itemstack?.Collectible?.Code}");
                 }
             }
 
@@ -289,6 +310,7 @@ namespace Th3Essentials.Influxdb
                         .Tag("playerUID", player.PlayerUID).Field("value",
                             $"1 {slot.Itemstack?.Collectible?.Code}");
                     Instance?.WritePoint(pointData);
+                    Th3Discord.Instance.SendAdminLog($"**{player.PlayerName}** spawned: 1 {slot.Itemstack?.Collectible?.Code}");
                 }
             }
         }

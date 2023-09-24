@@ -203,6 +203,8 @@ namespace Th3Essentials.Config
                 DiscordConfig.RewardIdToName = configTemp.DiscordConfig.RewardIdToName;
                 DiscordConfig.Rewards = configTemp.DiscordConfig.Rewards;
                 DiscordConfig.DiscordChatRelay = configTemp.DiscordConfig.DiscordChatRelay;
+                DiscordConfig.AdminLogChannelId = configTemp.DiscordConfig.AdminLogChannelId;
+                DiscordConfig.AdminPrivilegeToMonitor = configTemp.DiscordConfig.AdminPrivilegeToMonitor;
             }
 
             if (configTemp.InfluxConfig != null)
