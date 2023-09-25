@@ -240,8 +240,16 @@ namespace Th3Essentials.Influxdb
             public static void TriggerChatCommand(string commandName, IServerPlayer player, int groupId, string args,
                 Action<TextCommandResult> onCommandComplete)
             {
-                var pointData = PointData.Measurement("playerlog").Tag("player", player.PlayerName.ToLower())
+                PointData pointData;
+                if(Equals("gamemode", commandName)) { 
+                    pointData = PointData.Measurement("playerlog").Tag("player", player.PlayerName.ToLower())
+                        .Tag("playerUID", player.PlayerUID).Tag("position", player.Entity.Pos.AsBlockPos.ToString() ?? "null").Field("value", $"{commandName} {args}");
+                }
+                else
+                {
+                    pointData = PointData.Measurement("playerlog").Tag("player", player.PlayerName.ToLower())
                     .Tag("playerUID", player.PlayerUID).Field("value", $"{commandName} {args}");
+                }
                 Instance?.WritePoint(pointData);
                 try
                 {
