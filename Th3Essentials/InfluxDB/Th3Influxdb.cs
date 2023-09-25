@@ -241,7 +241,7 @@ namespace Th3Essentials.Influxdb
                 Action<TextCommandResult> onCommandComplete)
             {
                 PointData pointData;
-                if(Equals("gamemode", commandName)) { 
+                if(Equals("gamemode", commandName) || Equals("gm", commandName)) { 
                     pointData = PointData.Measurement("playerlog").Tag("player", player.PlayerName.ToLower())
                         .Tag("playerUID", player.PlayerUID).Tag("position", player.Entity.Pos.AsBlockPos.ToString() ?? "null").Field("value", $"{commandName} {args}");
                 }
@@ -261,7 +261,7 @@ namespace Th3Essentials.Influxdb
                     {
                             Th3Discord.Instance.SendAdminLog($"**{player.PlayerName}** executed: {commandName} {args}");
                     }
-                    else if(Equals("gamemode", commandName)) { 
+                    else if(Equals("gamemode", commandName) || Equals("gm", commandName)) { 
                         Th3Discord.Instance.SendAdminLog($"**{player.PlayerName}** executed @ ({player.Entity.Pos.AsBlockPos}): {commandName} {args}");
                     }
                 }
