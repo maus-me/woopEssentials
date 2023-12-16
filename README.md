@@ -22,7 +22,6 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - Announcements messages (a list of messages that are send in an configurable interval) [on/off]
 - /msg playername message - to send private messages ingame (customizable color) [on/off]
 - /r message - to send private messages ingame to last messaging player (enabled if /msg is on)
-- Server Metrics, logs metrics (/stats and more) to InfluxDB and visualize it with influxDB or **grafana**
 - /requesthelp [message] , pings the `HelpRoleID` in Discord with the message [on/off]
 - show role information infront of ingame chatname [on/off]
 - /admin ingame/discord command , lists all roles specified by "AdminRoles" [on/off]
@@ -37,7 +36,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - /rtp randomly teleports a player within a radius from themselves [on/off]
 - /t2p send requests for teleport to players [on/off]
 - /th3config addRole/removeRole to modify item usage per role for "/home", "/back", "/home set" "/rtp", "/rtp request"
-- log admin actions to a discord channel - only works if influxdb is setup atm [on/off]
+- log admin actions to a discord channel [on/off]
 
 
 ![](preview/discord-chat2.png)
@@ -48,19 +47,6 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 
 ![](preview/setchannel-cmds.png)
 ![](preview/setchannel-cmd.png)
-
-## InfluxDB / Grafana Dashboard
-
-![](preview/grafana1.png)
-
-<details>
-  <summary>More pictures</summary>
-
-![](preview/grafana2.png)
-![](preview/grafana3-logticks.png)
-![](preview/grafana4-logticks.png)
-
-</details>
 
 ## Installation
 
@@ -206,26 +192,6 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
     yay you should have your bot now on your discord server :)
 
-## InfluxDB / Grafana
-
-The InfluxDB logger logs every 10 seconds to influxDB except player deaths, login/logout and warning/erros those are logged as they are encountered. Since the general server metrics are only logged every 10 seconds it might miss some spikes or dips in the metrics, keep that in mind.
-
-For an exmple install using docker you can use the docker-compose.yaml. Check this [README.md](./influx_grafana/README.md) for more details.
-
-- [Docker Engine Install](https://docs.docker.com/engine/install/)
-- [Docker-Compose Install](https://docs.docker.com/compose/install/)
-- [docker-compose.yaml](https://gitlab.com/th3dilli_vintagestory/th3essentials/-/tree/main/influx_grafana)
-  change the path to the volumes if you wish so
-
-if you wanna use docker and run the vs server in pterodactyl they need to be on the same network see [docker-compose.yaml](https://gitlab.com/th3dilli_vintagestory/th3essentials/-/tree/main/influx_grafana)
-
-Both InfluxDB and Grafana allow you to configure it thorugh the Webinterface when not initilized yet.
-
-If you need help or want to manually here are some useful links.\
-Make sure to persist your influxdb data with docker volumes/mounts.
-
-- [InfluxDB Docs](https://docs.influxdata.com/influxdb/v2.1/)
-- [Grafana Docs](https://grafana.com/docs/grafana/latest/installation/?pg=docs)
 
 ## Updating
 
@@ -250,7 +216,7 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
     // Discord GuildID to link all discord features to
     "GuildId": 0,
     
-    // discord channel where admin logs go to, only works if influxdb is setup as well
+    // discord channel where admin logs go to
     // if set to 0 it will be disabled
     "AdminLogChannelId": 0,
     // privileges of commands that will trigger a log in the admin log for discord
@@ -286,26 +252,6 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
     "RewardsFormat": "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}",
     // allows to disable the chat relay function Discord <-> ingame chat and only show the system messages in discord if setup
     "DiscordChatRelay": true
-  },
-
-  "InfluxConfig": {
-    // URL to the database including port
-    // example value: "InlfuxDBURL": "http://localhost:8086",
-    "InlfuxDBURL": null,
-    // influx api token, https://docs.influxdata.com/influxdb/v2.1/security/tokens/
-    "InlfuxDBToken": null,
-    // the name of the bucket you setup where you wanna store your data
-    "InlfuxDBBucket": null,
-    // the name of the org you setup
-    "InlfuxDBOrg": null,
-    // if logticks is enabled (/debug logitcks 200) it will not log to the server-main.txt if set to true
-    "InlfuxDBOverwriteLogTicks": true,
-    // only systems from logticks with that threshold will be loged to influx
-    "InlfuxDBLogtickThreshold": 20,
-    // intervall in wich the data like logticks, ticktime, generating/active chunks, memory, entities will be collected (value in milliseconds)
-    "DataCollectInterval": 10000,
-    // enable some debug output for influx connection (mybeusefull if you have issues setting it up connection/token)
-    "Debug": false
   },
 
   // text displayed when using /serverinfo

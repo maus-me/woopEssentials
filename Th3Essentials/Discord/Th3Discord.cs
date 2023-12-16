@@ -94,6 +94,11 @@ namespace Th3Essentials.Discord
                 var postfix = new HarmonyMethod(typeof(PatchSystemTemporalStability).GetMethod(nameof(PatchSystemTemporalStability.Postfix)));
                 _harmony.Patch(original, postfix: postfix);
             }
+
+            if (Config.AdminLogChannelId != 0)
+            {
+                PatchAdminLogging.Patch(_harmony);
+            }
             
             Sapi.ChatCommands.Create("dcauth")
                 .WithDescription("Link ingame and discord account")

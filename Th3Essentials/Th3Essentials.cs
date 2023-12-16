@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using Th3Essentials.Commands;
 using Th3Essentials.Config;
 using Th3Essentials.Discord;
-using Th3Essentials.Influxdb;
 using Th3Essentials.Systems;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -44,7 +43,6 @@ namespace Th3Essentials
 
         private Th3Discord _th3Discord;
 
-        private Th3Influxdb _th3Influx;
         private long _restartListener;
 
         public event PlayerWithRewardJoin OnPlayerWithRewardJoin;
@@ -112,13 +110,7 @@ namespace Th3Essentials
                 _sapi.Logger.Debug("Discordbot needs to be configured, functionality disabled!!!");
             }
 
-            if (Config.IsInlfuxDBConfigured())
-            {
-                _th3Influx = new Th3Influxdb();
-                _th3Influx.Init(_sapi);
-            }
-
-            if (Config.IsInlfuxDBConfigured() || Config.IsDiscordConfigured())
+            if (Config.IsDiscordConfigured())
             {
                 _sapi.Event.PlayerDeath += PlayerDeathAsync;
             }
@@ -360,7 +352,6 @@ namespace Th3Essentials
                 msg = Lang.Get("th3essentials:playerdeath", byPlayer.PlayerName);
             }
 
-            Th3Influxdb.Instance?.PlayerDied(byPlayer, msg);
             _th3Discord?.SendServerMessage(msg);
         }
 
@@ -398,7 +389,6 @@ namespace Th3Essentials
 
         public override void Dispose()
         {
-            _th3Influx?.Dispose();
             _th3Discord?.Dispose();
             _sapi.Event.GameWorldSave -= GameWorldSave;
             _sapi.Event.PlayerNowPlaying -= PlayerNowPlaying;

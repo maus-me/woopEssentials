@@ -10,8 +10,6 @@ namespace Th3Essentials.Config
 
         public Th3DiscordConfig DiscordConfig;
 
-        public Th3InfluxConfig InfluxConfig;
-
         public string InfoMessage;
 
         public List<string> AnnouncementMessages;
@@ -96,7 +94,6 @@ namespace Th3Essentials.Config
             InfoMessage = sb.ToString();
 
             DiscordConfig = new Th3DiscordConfig();
-            InfluxConfig = new Th3InfluxConfig();
         }
 
         internal double GetAnnouncementInterval()
@@ -108,15 +105,6 @@ namespace Th3Essentials.Config
         {
             return DiscordConfig != null &&
                     DiscordConfig.Token?.Length > 0;
-        }
-
-        internal bool IsInlfuxDBConfigured()
-        {
-            return InfluxConfig != null &&
-                    InfluxConfig.InlfuxDBURL?.Length > 0 &&
-                    InfluxConfig.InlfuxDBToken?.Length > 0 &&
-                    InfluxConfig.InlfuxDBBucket?.Length > 0 &&
-                    InfluxConfig.InlfuxDBOrg?.Length > 0;
         }
 
         internal bool IsShutdownConfigured()
@@ -205,21 +193,6 @@ namespace Th3Essentials.Config
                 DiscordConfig.DiscordChatRelay = configTemp.DiscordConfig.DiscordChatRelay;
                 DiscordConfig.AdminLogChannelId = configTemp.DiscordConfig.AdminLogChannelId;
                 DiscordConfig.AdminPrivilegeToMonitor = configTemp.DiscordConfig.AdminPrivilegeToMonitor;
-            }
-
-            if (configTemp.InfluxConfig != null)
-            {
-                if (InfluxConfig == null)
-                {
-                    InfluxConfig = new Th3InfluxConfig();
-                }
-
-                InfluxConfig.InlfuxDBURL = configTemp.InfluxConfig.InlfuxDBURL;
-                InfluxConfig.InlfuxDBToken = configTemp.InfluxConfig.InlfuxDBToken;
-                InfluxConfig.InlfuxDBBucket = configTemp.InfluxConfig.InlfuxDBBucket;
-                InfluxConfig.InlfuxDBOrg = configTemp.InfluxConfig.InlfuxDBOrg;
-                InfluxConfig.InlfuxDBOverwriteLogTicks = configTemp.InfluxConfig.InlfuxDBOverwriteLogTicks;
-                InfluxConfig.DataCollectInterval = configTemp.InfluxConfig.DataCollectInterval;
             }
         }
     }
