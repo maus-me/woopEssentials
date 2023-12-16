@@ -97,7 +97,7 @@
     "slc-whitelist": "Cambia lo stato di whitelist di un giocatore",
     "slc-whitelist-playername": "Il nome del giocatore",
     "slc-whitelist-mode": "La modalità, whitelist o unwhitelist",
-    "slc-whitelist-time": "Il tempo in cui il giocatore dovrebbe essere whitelisted, non fa nulla sulla whitelist [default = 50]",
+    "slc-whitelist-time": "Il tempo in cui il giocatore dovrebbe essere whitelisted, non fa nulla sulla whitelist [default=50]",
     "slc-whitelist-reason": "Il motivo per cui il giocatore è stato whitlisted",
     "slc-whitelist-timetype": "In che modo il parametro del tempo deve essere interpretato [hour,day,month,year] [default = year]",
     "slc-allowcharselonce": "Consente al giocatore di ri-selezionare la propria classe dopo averlo già fatto",

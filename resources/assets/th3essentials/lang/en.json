@@ -103,7 +103,7 @@
     "slc-allowcharselonce": "Allows the player to re-select their class after doing so already",
     "slc-allowcharselonce-playername": "The name of the player",
     "slc-setchannel": "Set the channel to send to/from ingame chat",
-    "slc-modifypermissions": "Set the role that can use moderation commands whitelist/allowcharselonce",
+    "slc-modifypermissions": "Set the role that can use moderation commands like whitelist,allowcharselonce,..",
     "slc-modifypermissions-mode": "The operation to modify a role add/remove/clear",
     "slc-shutdown": "Shutdown the Vintage Story server (will restart if configured)",
     "slc-serverinfo": "Show information about the server (gameversion, mods)",
