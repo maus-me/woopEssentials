@@ -11,9 +11,8 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.Common;
 using Vintagestory.Server;
+
 // ReSharper disable InconsistentNaming
-
-
 public class PatchAdminLogging
 {
     public static void Patch(Harmony harmony)
@@ -24,8 +23,9 @@ public class PatchAdminLogging
         var executePrefix =
             new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(TriggerChatCommand)));
         harmony.Patch(executeMethod, prefix: executePrefix);
-        
-        var activateSlotMethod = typeof(InventoryPlayerCreative).GetMethod(nameof(InventoryPlayerCreative.ActivateSlot));
+
+        var activateSlotMethod =
+            typeof(InventoryPlayerCreative).GetMethod(nameof(InventoryPlayerCreative.ActivateSlot));
         var activateSlotPostfix =
             new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(ActivateSlot)));
         harmony.Patch(activateSlotMethod, postfix: activateSlotPostfix);
@@ -36,27 +36,34 @@ public class PatchAdminLogging
             new HarmonyMethod(typeof(PatchAdminLogging).GetMethod(nameof(HandleCreateItemstack)));
         harmony.Patch(handleCreateItemstack, postfix: handleCreateItemstackPostfix);
     }
-    
-    
+
+
     [SuppressMessage("ReSharper", "UnusedParameter.Global")]
-    public static void TriggerChatCommand(string commandName, IServerPlayer player, int groupId, string args, Action<TextCommandResult> onCommandComplete)
+    public static void TriggerChatCommand(string commandName, IServerPlayer player, int groupId, string args,
+        Action<TextCommandResult> onCommandComplete)
     {
         try
         {
             var cmd = Th3Discord.Instance.Sapi.ChatCommands.Get(commandName) as ChatCommandImpl;
-            var priv = cmd?.GetType().GetField("privilege", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(cmd);
-                    
+            var priv = cmd?.GetType().GetField("privilege", BindingFlags.Instance | BindingFlags.NonPublic)
+                ?.GetValue(cmd);
+
+            // if (priv is string s && player.HasPrivilege(s))
+            // {
             if (Th3Essentials.Config.DiscordConfig.AdminPrivilegeToMonitor?.Contains(priv) == true)
             {
                 Th3Discord.Instance.SendAdminLog($"**{player.PlayerName}** executed: {commandName} {args}");
             }
-            else if(Equals("gamemode", commandName) || Equals("gm", commandName)) { 
-                Th3Discord.Instance.SendAdminLog($"**{player.PlayerName}** executed @ ({player.Entity.Pos.AsBlockPos}): {commandName} {args}");
+            else if (Equals("gamemode", commandName) || Equals("gm", commandName))
+            {
+                Th3Discord.Instance.SendAdminLog(
+                    $"**{player.PlayerName}** executed @ ({player.Entity.Pos.AsBlockPos}): {commandName} {args}");
             }
+            // }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e); // TODO
+            Th3Discord.Instance.Sapi.Logger.Error(e);
         }
     }
 
@@ -67,11 +74,13 @@ public class PatchAdminLogging
         if (op.ShiftDown)
         {
             var itemSlot = __instance[slotId];
-            Th3Discord.Instance.SendAdminLog($"**{op.ActingPlayer?.PlayerName}** spawned: {op.MovedQuantity} {itemSlot.Itemstack?.Collectible?.Code}");
+            Th3Discord.Instance.SendAdminLog(
+                $"**{op.ActingPlayer?.PlayerName}** spawned: {op.MovedQuantity} {itemSlot.Itemstack?.Collectible?.Code}");
         }
         else
         {
-            Th3Discord.Instance.SendAdminLog($"**{op.ActingPlayer?.PlayerName}** spawned: {op.MovedQuantity} {sourceSlot.Itemstack?.Collectible?.Code}");
+            Th3Discord.Instance.SendAdminLog(
+                $"**{op.ActingPlayer?.PlayerName}** spawned: {op.MovedQuantity} {sourceSlot.Itemstack?.Collectible?.Code}");
         }
     }
 
@@ -100,7 +109,8 @@ public class PatchAdminLogging
 
             if (player.WorldData.CurrentGameMode == EnumGameMode.Creative && slot?.Itemstack != null)
             {
-                Th3Discord.Instance.SendAdminLog($"**{player.PlayerName}** spawned: 1 {slot.Itemstack?.Collectible?.Code}");
+                Th3Discord.Instance.SendAdminLog(
+                    $"**{player.PlayerName}** spawned: 1 {slot.Itemstack?.Collectible?.Code}");
             }
         }
         catch (NullReferenceException)
