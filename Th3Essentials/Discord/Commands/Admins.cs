@@ -1,18 +1,17 @@
 using Discord;
 using Vintagestory.API.Config;
 
-namespace Th3Essentials.Discord.Commands
+namespace Th3Essentials.Discord.Commands;
+
+public abstract class Admins
 {
-    public abstract class Admins
+    public static SlashCommandProperties CreateCommand()
     {
-        public static SlashCommandProperties CreateCommand()
+        SlashCommandBuilder admins = new SlashCommandBuilder
         {
-            SlashCommandBuilder admins = new SlashCommandBuilder
-            {
-                Name = SlashCommands.Admins.ToString().ToLower(),
-                Description = Lang.Get("th3essentials:slc-admins")
-            };
-            return admins.Build();
-        }
+            Name = SlashCommands.Admins.ToString().ToLower(),
+            Description = Lang.Get("th3essentials:slc-admins")
+        };
+        return admins.Build();
     }
 }

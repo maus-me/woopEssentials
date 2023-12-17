@@ -3,51 +3,50 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 
-namespace Th3Essentials.Config
+namespace Th3Essentials.Config;
+
+public class Th3PlayerConfig
 {
-    public class Th3PlayerConfig
+    public Dictionary<string, Th3PlayerData> Players;
+
+    public Th3PlayerConfig()
     {
-        public Dictionary<string, Th3PlayerData> Players;
+        Players = new Dictionary<string, Th3PlayerData>();
+    }
 
-        public Th3PlayerConfig()
+    /// <summary>
+    /// gets or creates a Th3PlayerData object with given UID
+    /// </summary>
+    /// <param name="playerUID"></param>
+    /// <param name="shouldCreate"></param>
+    /// <returns>Th3PlayerData</returns>
+    public Th3PlayerData GetPlayerDataByUID(string playerUID, bool shouldCreate = true)
+    {
+        if (!Players.TryGetValue(playerUID, out Th3PlayerData playerData) && shouldCreate)
         {
-            Players = new Dictionary<string, Th3PlayerData>();
+            playerData = new Th3PlayerData();
+            playerData.MarkDirty();
+            Add(playerUID, playerData);
         }
+        return playerData;
+    }
 
-        /// <summary>
-        /// gets or creates a Th3PlayerData object with given UID
-        /// </summary>
-        /// <param name="playerUID"></param>
-        /// <param name="shouldCreate"></param>
-        /// <returns>Th3PlayerData</returns>
-        public Th3PlayerData GetPlayerDataByUID(string playerUID, bool shouldCreate = true)
+    internal void GameWorldSave(ICoreServerAPI api)
+    {
+        foreach (KeyValuePair<string, Th3PlayerData> playerData in Players)
         {
-            if (!Players.TryGetValue(playerUID, out Th3PlayerData playerData) && shouldCreate)
+            if (playerData.Value.IsDirty)
             {
-                playerData = new Th3PlayerData();
-                playerData.MarkDirty();
-                Add(playerUID, playerData);
-            }
-            return playerData;
-        }
-
-        internal void GameWorldSave(ICoreServerAPI api)
-        {
-            foreach (KeyValuePair<string, Th3PlayerData> playerData in Players)
-            {
-                if (playerData.Value.IsDirty)
-                {
-                    playerData.Value.IsDirty = false;
-                    byte[] data = SerializerUtil.Serialize(playerData.Value);
-                    IPlayer player = api.World.PlayerByUid(playerData.Key);
-                    player.WorldData.SetModdata(Th3Essentials.Th3EssentialsModDataKey, data);
-                }
+                playerData.Value.IsDirty = false;
+                byte[] data = SerializerUtil.Serialize(playerData.Value);
+                IPlayer player = api.World.PlayerByUid(playerData.Key);
+                player.WorldData.SetModdata(Th3Essentials.Th3EssentialsModDataKey, data);
             }
         }
+    }
 
-        public void Add(string PlayerUID, Th3PlayerData playerData)
-        {
-            Players.Add(PlayerUID, playerData);
-        }
+    public void Add(string PlayerUID, Th3PlayerData playerData)
+    {
+        Players.Add(PlayerUID, playerData);
     }
 }

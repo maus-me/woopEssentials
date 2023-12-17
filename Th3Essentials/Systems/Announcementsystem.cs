@@ -4,50 +4,49 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 
-namespace Th3Essentials.Systems
+namespace Th3Essentials.Systems;
+
+internal class Announcementsystem
 {
-    internal class Announcementsystem
+    private ICoreServerAPI _sapi;
+
+    private Th3Config _config;
+
+    private int _currentMsg;
+
+    private Timer _announcer;
+
+    public Announcementsystem()
     {
-        private ICoreServerAPI _sapi;
+        _currentMsg = 0;
+    }
 
-        private Th3Config _config;
+    public void Init(ICoreServerAPI sapi)
+    {
+        _sapi = sapi;
+        _config = Th3Essentials.Config;
 
-        private int _currentMsg;
+        if (_config.AnnouncementMessages != null && _config.AnnouncementMessages.Count != 0 && _config.AnnouncementInterval > 0)
+        {
+            _announcer = new Timer(_config.GetAnnouncementInterval());
+            _announcer.Elapsed += AnnounceMsg;
+            _announcer.AutoReset = true;
+            _announcer.Enabled = true;
+        }
+    }
 
-        private Timer _announcer;
-
-        public Announcementsystem()
+    private void AnnounceMsg(object source, ElapsedEventArgs args)
+    {
+        if (_config.AnnouncementMessages == null)
+        {
+            _announcer.Elapsed -= AnnounceMsg;
+            return;
+        }
+        if (_currentMsg >= _config.AnnouncementMessages.Count)
         {
             _currentMsg = 0;
         }
-
-        public void Init(ICoreServerAPI sapi)
-        {
-            _sapi = sapi;
-            _config = Th3Essentials.Config;
-
-            if (_config.AnnouncementMessages != null && _config.AnnouncementMessages.Count != 0 && _config.AnnouncementInterval > 0)
-            {
-                _announcer = new Timer(_config.GetAnnouncementInterval());
-                _announcer.Elapsed += AnnounceMsg;
-                _announcer.AutoReset = true;
-                _announcer.Enabled = true;
-            }
-        }
-
-        private void AnnounceMsg(object source, ElapsedEventArgs args)
-        {
-            if (_config.AnnouncementMessages == null)
-            {
-                _announcer.Elapsed -= AnnounceMsg;
-                return;
-            }
-            if (_currentMsg >= _config.AnnouncementMessages.Count)
-            {
-                _currentMsg = 0;
-            }
-            _sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup, $"<strong>[Info]</strong> {_config.AnnouncementMessages[_currentMsg]}", EnumChatType.Notification);
-            _currentMsg++;
-        }
+        _sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup, $"<strong>[Info]</strong> {_config.AnnouncementMessages[_currentMsg]}", EnumChatType.Notification);
+        _currentMsg++;
     }
 }
