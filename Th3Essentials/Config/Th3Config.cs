@@ -8,11 +8,11 @@ public class Th3Config
 {
     public bool IsDirty;
 
-    public Th3DiscordConfig DiscordConfig;
+    public Th3DiscordConfig? DiscordConfig;
 
-    public string InfoMessage;
+    public string? InfoMessage;
 
-    public List<string> AnnouncementMessages;
+    public List<string>? AnnouncementMessages;
 
     public int AnnouncementInterval;
 
@@ -20,8 +20,8 @@ public class Th3Config
 
     public int HomeCooldown = 60;
     public int BackCooldown = 60;
-    public bool ExcludeHomeFromBack = false;
-    public bool ExcludeBackFromBack = false;
+    public bool ExcludeHomeFromBack;
+    public bool ExcludeBackFromBack;
     public StarterkitItem? HomeItem;
     public StarterkitItem? SetHomeItem;
 
@@ -31,16 +31,16 @@ public class Th3Config
 
     public bool MessageEnabled;
 
-    public List<StarterkitItem> Items;
+    public List<StarterkitItem>? Items;
 
     public bool ShutdownEnabled;
 
     public bool BackupOnShutdown = false;
 
     public TimeSpan ShutdownTime = TimeSpan.Zero; // "00:00:00" in Th3Config.json
-    public TimeSpan[] ShutdownTimes;
+    public TimeSpan[]? ShutdownTimes;
 
-    public int[] ShutdownAnnounce;
+    public int[]? ShutdownAnnounce;
 
     public string MessageCmdColor = "ff9102";
         
@@ -51,31 +51,31 @@ public class Th3Config
 
     public string RoleFormat = "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}";
 
-    public List<string> AdminRoles;
+    public List<string>? AdminRoles;
 
     public bool WarpEnabled;
 
-    public List<HomePoint> WarpLocations;
+    public List<HomePoint>? WarpLocations;
 
-    public string ChatTimestampFormat;
+    public string? ChatTimestampFormat;
 
     public bool EnableSmite;
         
-    public int RandomTeleportRadius = 0;
+    public int RandomTeleportRadius;
         
     public int RandomTeleportCooldown = 60;
 
     public StarterkitItem? RandomTeleportItem;
         
     public int TeleportToPlayerCooldown = 60;
-    public bool TeleportToPlayerEnabled = false;
+    public bool TeleportToPlayerEnabled;
     public StarterkitItem? TeleportToPlayerItem;
 
     public Dictionary<string, RoleConfig>? RoleConfig;
 
     public void Init()
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         _ = sb.AppendLine("--------------------");
         _ = sb.AppendLine("<a href=\"https://discord.gg/\">Discord</a>");
         _ = sb.AppendLine("<strong>Important Commands:</strong>");
@@ -112,7 +112,7 @@ public class Th3Config
         return ShutdownAnnounce?.Length > 0 || ShutdownEnabled;
     }
 
-    public HomePoint FindWarpByName(string name)
+    public HomePoint? FindWarpByName(string name)
     {
         return WarpLocations?.Find(point => point.Name == name);
     }
@@ -175,10 +175,7 @@ public class Th3Config
 
         if (configTemp.DiscordConfig != null)
         {
-            if (DiscordConfig == null)
-            {
-                DiscordConfig = new Th3DiscordConfig();
-            }
+            DiscordConfig ??= new Th3DiscordConfig();
 
             DiscordConfig.DiscordChatColor = configTemp.DiscordConfig.DiscordChatColor;
             DiscordConfig.UseEphermalCmdResponse = configTemp.DiscordConfig.UseEphermalCmdResponse;

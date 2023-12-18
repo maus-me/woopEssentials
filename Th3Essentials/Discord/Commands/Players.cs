@@ -20,7 +20,7 @@ public abstract class Players
                 Type = ApplicationCommandOptionType.Boolean
             }
         };
-        SlashCommandBuilder players = new SlashCommandBuilder
+        var players = new SlashCommandBuilder
         {
             Name = SlashCommands.Players.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-players"),
@@ -32,7 +32,7 @@ public abstract class Players
     public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
     {
         bool? ping = null;
-        foreach (SocketSlashCommandDataOption option in commandInteraction.Data.Options)
+        foreach (var option in commandInteraction.Data.Options)
         {
             if (option.Name.Equals("ping"))
             {
@@ -40,7 +40,7 @@ public abstract class Players
             }
         }
         List<string> names = new List<string>();
-        foreach (IServerPlayer player in discord.Sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
+        foreach (var player in discord.Sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
         {
             if (ping == true)
             {

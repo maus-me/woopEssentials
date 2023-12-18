@@ -16,12 +16,13 @@ public static class Th3Util
     {
         var fieldInfo = typeof(GameVersion).GetField(nameof(GameVersion.OverallVersion),
             BindingFlags.Public | BindingFlags.Static);
-        if (fieldInfo == null)
+        var value = fieldInfo?.GetValue(null) as string;
+        if (value == null)
         {
             throw new Exception("Cannot read 'GameVersion.OverallVersion'");
         }
 
-        return fieldInfo.GetValue(null) as string;
+        return value;
     }
 
     public static DateTime GetRestartDate(TimeSpan time, DateTime now)
@@ -38,7 +39,7 @@ public static class Th3Util
 
     public static string GetAdmins(ICoreServerAPI sapi)
     {
-        List<string> admins = Th3Essentials.Config.AdminRoles;
+        var admins = Th3Essentials.Config.AdminRoles;
 
         if (!(admins?.Count > 0))
         {
@@ -48,7 +49,7 @@ public static class Th3Util
         Dictionary<string, List<string>> online = new Dictionary<string, List<string>>();
         Dictionary<string, List<string>> offline = new Dictionary<string, List<string>>();
 
-        foreach (string adminRole in admins)
+        foreach (var adminRole in admins)
         {
             online.Add(adminRole, new List<string>());
             offline.Add(adminRole, new List<string>());
@@ -70,17 +71,17 @@ public static class Th3Util
             }
         }
 
-        foreach (string adminRole in admins)
+        foreach (var adminRole in admins)
         {
             online[adminRole].Sort();
             offline[adminRole].Sort();
         }
 
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.Append("Online:");
-        foreach (string adminRole in admins)
+        foreach (var adminRole in admins)
         {
-            if (online[adminRole]?.Count > 0)
+            if (online[adminRole].Count > 0)
             {
                 sb.AppendLine();
                 sb.Append($"   Role: {adminRole}");
@@ -92,9 +93,9 @@ public static class Th3Util
 
         sb.AppendLine();
         sb.Append("Offline:");
-        foreach (string adminRole in admins)
+        foreach (var adminRole in admins)
         {
-            if (offline[adminRole]?.Count > 0)
+            if (offline[adminRole].Count > 0)
             {
                 sb.AppendLine();
                 sb.Append($"   Role: {adminRole}");
@@ -107,12 +108,12 @@ public static class Th3Util
         return sb.ToString();
     }
 
-    public static string ExtractDeathMessage(IServerPlayer byPlayer, DamageSource damageSource)
+    public static string ExtractDeathMessage(IServerPlayer byPlayer, DamageSource? damageSource)
     {
         string msg;
         if (damageSource != null)
         {
-            string key = null;
+            string? key = null;
             var numMax = 1;
             if (damageSource.SourceEntity != null)
             {

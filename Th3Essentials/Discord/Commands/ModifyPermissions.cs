@@ -30,7 +30,7 @@ public abstract class ModifyPermissions
                 Type = ApplicationCommandOptionType.Role
             }
         };
-        SlashCommandBuilder modifypermissions = new SlashCommandBuilder
+        var modifypermissions = new SlashCommandBuilder
         {
             Name = SlashCommands.ModifyPermissions.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-modifypermissions"),
@@ -46,9 +46,9 @@ public abstract class ModifyPermissions
         {
             if (guildUser.GuildPermissions.Administrator)
             {
-                SocketRole role = null;
-                string mode = null;
-                foreach (SocketSlashCommandDataOption option in commandInteraction.Data.Options)
+                SocketRole? role = null;
+                string? mode = null;
+                foreach (var option in commandInteraction.Data.Options)
                 {
                     switch (option.Name)
                     {
@@ -70,10 +70,7 @@ public abstract class ModifyPermissions
                     {
                         if (role != null)
                         {
-                            if (discord.Config.ModerationRoles == null)
-                            {
-                                discord.Config.ModerationRoles = new List<ulong>();
-                            }
+                            discord.Config.ModerationRoles ??= new List<ulong>();
                             discord.Config.ModerationRoles.Add(role.Id);
                             Th3Essentials.Config.MarkDirty();
                             response = $"Added role: {role.Name}";

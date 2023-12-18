@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 
@@ -7,28 +6,28 @@ namespace Th3Essentials.Config;
 
 public class Th3PlayerConfig
 {
-    public Dictionary<string, Th3PlayerData> Players;
-
-    public Th3PlayerConfig()
-    {
-        Players = new Dictionary<string, Th3PlayerData>();
-    }
+    public Dictionary<string, Th3PlayerData> Players = new();
 
     /// <summary>
     /// gets or creates a Th3PlayerData object with given UID
     /// </summary>
-    /// <param name="playerUID"></param>
+    /// <param name="playerUid"></param>
     /// <param name="shouldCreate"></param>
     /// <returns>Th3PlayerData</returns>
-    public Th3PlayerData GetPlayerDataByUID(string playerUID, bool shouldCreate = true)
+    public Th3PlayerData? GetPlayerDataByUid(string playerUid, bool shouldCreate)
     {
-        if (!Players.TryGetValue(playerUID, out Th3PlayerData playerData) && shouldCreate)
+        if (!Players.TryGetValue(playerUid, out var playerData) && shouldCreate)
         {
             playerData = new Th3PlayerData();
             playerData.MarkDirty();
-            Add(playerUID, playerData);
+            Add(playerUid, playerData);
         }
         return playerData;
+    }
+
+    public Th3PlayerData GetPlayerDataByUid(string playerUid)
+    {
+        return GetPlayerDataByUid(playerUid, true)!;
     }
 
     internal void GameWorldSave(ICoreServerAPI api)
@@ -38,15 +37,15 @@ public class Th3PlayerConfig
             if (playerData.Value.IsDirty)
             {
                 playerData.Value.IsDirty = false;
-                byte[] data = SerializerUtil.Serialize(playerData.Value);
-                IPlayer player = api.World.PlayerByUid(playerData.Key);
+                var data = SerializerUtil.Serialize(playerData.Value);
+                var player = api.World.PlayerByUid(playerData.Key);
                 player.WorldData.SetModdata(Th3Essentials.Th3EssentialsModDataKey, data);
             }
         }
     }
 
-    public void Add(string PlayerUID, Th3PlayerData playerData)
+    public void Add(string playerUid, Th3PlayerData playerData)
     {
-        Players.Add(PlayerUID, playerData);
+        Players.Add(playerUid, playerData);
     }
 }

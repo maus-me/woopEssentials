@@ -12,7 +12,7 @@ namespace Th3Essentials.Commands;
 
 internal class Warp : Command
 {
-    private Th3PlayerConfig _playerConfig;
+    private Th3PlayerConfig _playerConfig = null!;
 
     internal override void Init(ICoreServerAPI sapi)
     {
@@ -45,7 +45,7 @@ internal class Warp : Command
                     break;
                 }
 
-                var warpName = args.Parsers[1].GetValue() as string;
+                var warpName = (string)args.Parsers[1].GetValue();
 
                 if (warpName == string.Empty)
                 {
@@ -70,13 +70,13 @@ internal class Warp : Command
                     break;
                 }
 
-                var warpName = args.Parsers[1].GetValue() as string;
+                var warpName = (string)args.Parsers[1].GetValue();
 
                 if (Th3Essentials.Config.WarpLocations == null)
                     return TextCommandResult.Success(Lang.Get("th3essentials:wp-removed", warpName));
                     
                 var warpPoint = Th3Essentials.Config.FindWarpByName(warpName);
-                Th3Essentials.Config.WarpLocations.Remove(warpPoint);
+                if (warpPoint != null) Th3Essentials.Config.WarpLocations.Remove(warpPoint);
                 Th3Essentials.Config.MarkDirty();
 
                 return TextCommandResult.Success(Lang.Get("th3essentials:wp-removed", warpName));
@@ -94,12 +94,12 @@ internal class Warp : Command
             }
             default:
             {
-                var warpName = args.Parsers[0].GetValue() as string;
+                var warpName = (string)args.Parsers[0].GetValue();
 
                 if (warpName == string.Empty)
                     return TextCommandResult.Error(Lang.Get("th3essentials:wp-notfound", ""));
                     
-                var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
+                var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
                 if (player.WorldData.CurrentGameMode == EnumGameMode.Creative ||
                     Homesystem.CanTravel(playerData))
                 {

@@ -7,7 +7,7 @@ public abstract class Admins
 {
     public static SlashCommandProperties CreateCommand()
     {
-        SlashCommandBuilder admins = new SlashCommandBuilder
+        var admins = new SlashCommandBuilder
         {
             Name = SlashCommands.Admins.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-admins")

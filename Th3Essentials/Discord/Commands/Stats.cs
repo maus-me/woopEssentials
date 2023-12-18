@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Discord;
 using Discord.WebSocket;
@@ -16,7 +15,7 @@ public abstract class Stats
 {
     public static SlashCommandProperties CreateCommand()
     {
-        SlashCommandBuilder stats = new SlashCommandBuilder
+        var stats = new SlashCommandBuilder
         {
             Name = SlashCommands.Stats.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-stats")
@@ -30,12 +29,12 @@ public abstract class Stats
         {
             if (Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
             {
-                StringBuilder stringBuilder = new StringBuilder();
-                ServerMain server = (ServerMain)discord.Sapi.World;
-                long upSeconds = server.totalUpTime.ElapsedMilliseconds / 1000;
-                int upMinutes = 0;
-                int upHours = 0;
-                int upDays = 0;
+                var stringBuilder = new StringBuilder();
+                var server = (ServerMain)discord.Sapi.World;
+                var upSeconds = server.totalUpTime.ElapsedMilliseconds / 1000;
+                var upMinutes = 0;
+                var upHours = 0;
+                var upDays = 0;
                 if (upSeconds > 60)
                 {
                     upMinutes = (int)(upSeconds / 60);
@@ -56,7 +55,7 @@ public abstract class Stats
                 stringBuilder.AppendLine($"Uptime: {upDays} days, {upHours} hours, {upMinutes} minutes, {upSeconds} seconds");
                 stringBuilder.AppendLine($"Players online: {server.Clients.Count} / {server.Config.MaxClients}");
 
-                int activeEntities = 0;
+                var activeEntities = 0;
                 foreach (KeyValuePair<long, Entity> loadedEntity in discord.Sapi.World.LoadedEntities)
                 {
                     if (loadedEntity.Value.State != EnumEntityState.Inactive)
@@ -64,8 +63,8 @@ public abstract class Stats
                         activeEntities++;
                     }
                 }
-                stringBuilder.AppendLine($"Memory usage: {decimal.Round(GC.GetTotalMemory(forceFullCollection: false) / 1048576, 2)} Mb");
-                StatsCollection statsCollection = server.StatsCollector[GameMath.Mod(server.StatsCollectorIndex - 1, server.StatsCollector.Length)];
+                stringBuilder.AppendLine($"Memory usage: {decimal.Round(GC.GetTotalMemory(forceFullCollection: false) / (decimal)1048576, 2)} Mb");
+                var statsCollection = server.StatsCollector[GameMath.Mod(server.StatsCollectorIndex - 1, server.StatsCollector.Length)];
 
                 if (statsCollection.ticksTotal > 0)
                 {
@@ -73,7 +72,7 @@ public abstract class Stats
                     stringBuilder.AppendLine($"Last 2s Ticks/s: {decimal.Round((decimal)(statsCollection.ticksTotal / 2.0), 2)}");
                     stringBuilder.AppendLine($"Last 10 ticks (ms): {string.Join(", ", statsCollection.tickTimes)}");
                 }
-                stringBuilder.AppendLine($"Loaded chunks: {discord.Sapi.World.LoadedChunkIndices.Count()}");
+                stringBuilder.AppendLine($"Loaded chunks: {discord.Sapi.World.LoadedChunkIndices.Length}");
                 stringBuilder.AppendLine($"Loaded entities: {discord.Sapi.World.LoadedEntities.Count} ({activeEntities} active)");
                 stringBuilder.Append($"Network: {decimal.Round((decimal)(statsCollection.statTotalPackets / 2.0), 2)} Packets/s or {decimal.Round((decimal)(statsCollection.statTotalPacketsLength / 2048.0), 2, MidpointRounding.AwayFromZero)} Kb/s");
                 return stringBuilder.ToString();

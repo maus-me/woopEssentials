@@ -10,7 +10,7 @@ public abstract class ReloadConfig
 {
     public static SlashCommandProperties CreateCommand()
     {
-        SlashCommandBuilder reloadConfig = new SlashCommandBuilder
+        var reloadConfig = new SlashCommandBuilder
         {
             Name = SlashCommands.ReloadConfig.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-reload")
@@ -32,7 +32,7 @@ public abstract class ReloadConfig
 
         try
         {
-            var configTemp = discord.Sapi.LoadModConfig<Th3Config>(Th3Essentials._configFile);
+            var configTemp = discord.Sapi.LoadModConfig<Th3Config>(Th3Essentials.ConfigFile);
             Th3Essentials.Config.Reload(configTemp);
             Th3Essentials.LoadRestartTime(DateTime.Now);
             return "Config reloaded";

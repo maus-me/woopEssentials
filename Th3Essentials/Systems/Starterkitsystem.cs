@@ -15,26 +15,26 @@ namespace Th3Essentials.Systems;
 
 internal class Starterkitsystem
 {
-    private Th3Config _config;
+    private Th3Config _config = null!;
 
-    private Th3PlayerConfig _playerConfig;
-    private ICoreServerAPI _sapi;
+    private Th3PlayerConfig _playerConfig = null!;
+    private ICoreServerAPI _sapi = null!;
 
     internal void Init(ICoreServerAPI sapi)
     {
         _config = Th3Essentials.Config;
         _playerConfig = Th3Essentials.PlayerConfig;
+        _sapi = sapi;
         RegisterCommands(sapi);
     }
 
     private void RegisterCommands(ICoreServerAPI sapi)
     {
-        _sapi = sapi;
         sapi.ChatCommands.Create("starterkit")
             .WithDescription(Lang.Get("th3essentials:cd-starterkit"))
             .RequiresPlayer()
             .RequiresPrivilege(Privilege.chat)
-            .HandleWith(args => TryGiveItemStack(sapi, args.Caller.Player as IServerPlayer));
+            .HandleWith(args => TryGiveItemStack(sapi, (IServerPlayer)args.Caller.Player));
             
         sapi.ChatCommands.Create("setstarterkit")
             .WithDescription(Lang.Get("th3essentials:cd-setstarterkit"))
@@ -54,15 +54,13 @@ internal class Starterkitsystem
             .RequiresPrivilege(Privilege.controlserver)
             .WithArgs(sapi.ChatCommands.Parsers.OnlinePlayer("player"))
             .HandleWith(OnResetKit);
-            
-      
     }
 
     private TextCommandResult OnResetKit(TextCommandCallingArgs args)
     {
         if (args.Parsers[0].GetValue() is IPlayer foundPlayer)
         {
-            var playerData = _playerConfig.GetPlayerDataByUID(foundPlayer.PlayerUID, false);
+            var playerData = _playerConfig.GetPlayerDataByUid(foundPlayer.PlayerUID, false);
             if (playerData != null)
             {
                 playerData.StarterkitRecived = false;
@@ -82,11 +80,11 @@ internal class Starterkitsystem
 
         var server = (ServerMain)_sapi.World;
         var chunkThread = typeof(ServerMain).GetField("chunkThread", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(server) as ChunkServerThread;
-        var gameDatabase = typeof(ChunkServerThread).GetField("gameDatabase", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(chunkThread) as GameDatabase;
+        var gameDatabase = (GameDatabase)typeof(ChunkServerThread).GetField("gameDatabase", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(chunkThread)!;
                 
         foreach (var th3d in server.PlayerDataManager.PlayerDataByUid.Values)
         {
-            var onwdata = _playerConfig.GetPlayerDataByUID(th3d.PlayerUID, false);
+            var onwdata = _playerConfig.GetPlayerDataByUid(th3d.PlayerUID, false);
             if (onwdata != null)
             {
                 onwdata.StarterkitRecived = false;
@@ -95,13 +93,13 @@ internal class Starterkitsystem
             }
             else
             {
-                var swpdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID));
-                var th3pdata = SerializerUtil.Deserialize<Th3PlayerData>(swpdata.GetModdata(Th3Essentials.Th3EssentialsModDataKey), null);
-                if (th3pdata != null)
+                var swPdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID));
+                var th3Pdata = SerializerUtil.Deserialize<Th3PlayerData?>(swPdata.GetModdata(Th3Essentials.Th3EssentialsModDataKey), null);
+                if (th3Pdata != null)
                 {
-                    th3pdata.StarterkitRecived = false;
-                    swpdata.SetModdata(Th3Essentials.Th3EssentialsModDataKey, SerializerUtil.Serialize(th3pdata));
-                    gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swpdata));
+                    th3Pdata.StarterkitRecived = false;
+                    swPdata.SetModdata(Th3Essentials.Th3EssentialsModDataKey, SerializerUtil.Serialize(th3Pdata));
+                    gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swPdata));
                 }
                 else
                 {
@@ -145,7 +143,7 @@ internal class Starterkitsystem
 
     private TextCommandResult TryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
     {
-        var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
+        var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
         if (playerData.StarterkitRecived)
         {
             return TextCommandResult.Success(Lang.Get("th3essentials:st-hasalready"));

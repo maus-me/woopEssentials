@@ -20,7 +20,7 @@ public abstract class SetChannel
                 IsRequired = true
             }
         };
-        SlashCommandBuilder setchannel = new SlashCommandBuilder
+        var setchannel = new SlashCommandBuilder
         {
             Name = SlashCommands.SetChannel.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-setchannel"),
@@ -35,7 +35,7 @@ public abstract class SetChannel
         {
             if (guildUser.GuildPermissions.Administrator)
             {
-                SocketSlashCommandDataOption option = commandInteraction.Data.Options.First();
+                var option = commandInteraction.Data.Options.First();
                 if (option.Value is SocketTextChannel channel)
                 {
                     discord.Config.ChannelId = channel.Id;

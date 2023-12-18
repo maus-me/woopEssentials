@@ -16,7 +16,7 @@ public abstract class Whitelist
 {
     public static SlashCommandProperties CreateCommand()
     {
-        List<SlashCommandOptionBuilder> whitelistOptions = new List<SlashCommandOptionBuilder>()
+        var whitelistOptions = new List<SlashCommandOptionBuilder>()
         {
             new()
             {
@@ -58,7 +58,7 @@ public abstract class Whitelist
             }
         };
 
-        SlashCommandBuilder whitelist = new SlashCommandBuilder
+        var whitelist = new SlashCommandBuilder
         {
             Name = SlashCommands.Whitelist.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-whitelist"),
@@ -67,19 +67,19 @@ public abstract class Whitelist
         return whitelist.Build();
     }
 
-    public async static Task<string> HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+    public static async Task<string> HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
     {
         if (commandInteraction.User is SocketGuildUser guildUser)
         {
             if (Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
             {
-                string targetPlayer = null;
+                string? targetPlayer = null;
                 bool? mode = null;
                 long? time = null;
-                string timetype = null;
-                string reason = null;
+                string? timetype = null;
+                string? reason = null;
 
-                foreach (SocketSlashCommandDataOption option in commandInteraction.Data.Options)
+                foreach (var option in commandInteraction.Data.Options)
                 {
                     switch (option.Name)
                     {
@@ -120,10 +120,10 @@ public abstract class Whitelist
                 {
                     if (mode == true)
                     {
-                        reason = reason ?? "";
-                        timetype = timetype ?? "years";
-                        int timenew = (int?)time ?? 50;
-                        DateTime datetime = DateTime.Now.ToLocalTime();
+                        reason ??= "";
+                        timetype ??= "years";
+                        var timenew = (int?)time ?? 50;
+                        var datetime = DateTime.Now.ToLocalTime();
                         switch (timetype)
                         {
                             case "hours":
@@ -148,76 +148,58 @@ public abstract class Whitelist
                             }
                         }
                         var name = guildUser.DisplayName;
-                        var playerUid = await GetPlayerUID(discord.Sapi, targetPlayer);
+                        var playerUid = await GetPlayerUid(discord.Sapi, targetPlayer);
                         if (playerUid != null)
                         {
                             ((ServerMain)discord.Sapi.World).PlayerDataManager.WhitelistPlayer(targetPlayer, playerUid, name, reason, datetime);
                             return $"{targetPlayer} is now whitelisted until {datetime}";
                         }
-                        else
-                        {
-                            return $"Could not find player with name: {targetPlayer}";
-                        }
+
+                        return $"Could not find player with name: {targetPlayer}";
                     }
                     else
                     {
-                        string playerUID = await GetPlayerUID(discord.Sapi, targetPlayer);
-                        if (playerUID != null)
+                        var playerUid = await GetPlayerUid(discord.Sapi, targetPlayer);
+                        if (playerUid != null)
                         {
-                            _ = ((ServerMain)discord.Sapi.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, playerUID);
+                            _ = ((ServerMain)discord.Sapi.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, playerUid);
                             return $"{targetPlayer} is now removed from whitelist";
                         }
-                        else
-                        {
-                            return $"Could not find player with name: {targetPlayer}";
-                        }
+
+                        return $"Could not find player with name: {targetPlayer}";
                     }
                 }
-                else
-                {
-                    return "Playername or mode missing";
-                }
+
+                return "Playername or mode missing";
             }
-            else
-            {
-                return "You do not have permissions to do that";
-            }
+
+            return "You do not have permissions to do that";
         }
-        else
-        {
-            return "Something went wrong: User was not a GuildUser";
-        }
+
+        return "Something went wrong: User was not a GuildUser";
     }
 
 
-    private async static Task<string> GetPlayerUID(ICoreServerAPI Sapi, string targetPlayer)
+    private static async Task<string?> GetPlayerUid(ICoreServerAPI sapi, string targetPlayer)
     {
-        IServerPlayerData player = Sapi.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
-        if (player == null)
+        var player = sapi.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
+        
+        if (player != null) return player.PlayerUID;
+        
+        using var client = new HttpClient();
+        var bodydata = new List<KeyValuePair<string, string>>
         {
-            using (HttpClient client = new HttpClient())
-            {
-                List<KeyValuePair<string, string>> bodydata = new List<KeyValuePair<string, string>>
-                {
-                    new("playername", targetPlayer)
-                };
-                FormUrlEncodedContent body = new FormUrlEncodedContent(bodydata);
-                HttpResponseMessage result = await client.PostAsync("https://auth.vintagestory.at/resolveplayername", body);
-                if (result.StatusCode == HttpStatusCode.OK)
-                {
-                    string responseData = await result.Content.ReadAsStringAsync();
-                    ResolveResponse resolveResponse = JsonConvert.DeserializeObject<ResolveResponse>(responseData);
-                    return resolveResponse.playeruid;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-        else
-        {
-            return player.PlayerUID;
-        }
+            new("playername", targetPlayer)
+        };
+        
+        var body = new FormUrlEncodedContent(bodydata);
+        var result = await client.PostAsync("https://auth.vintagestory.at/resolveplayername", body);
+        
+        if (result.StatusCode != HttpStatusCode.OK) return null;
+        
+        var responseData = await result.Content.ReadAsStringAsync();
+        var resolveResponse = JsonConvert.DeserializeObject<ResolveResponse>(responseData);
+        return resolveResponse?.playeruid;
+
     }
 }

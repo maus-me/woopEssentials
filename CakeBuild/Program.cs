@@ -13,6 +13,7 @@ using Cake.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Vintagestory.API.Common;
+// ReSharper disable UnusedType.Global
 
 namespace CakeBuild;
 
@@ -30,10 +31,10 @@ public static class Program
 public class BuildContext : FrostingContext
 {
     public const string ProjectName = "Th3Essentials";
-    public string BuildConfiguration { get; set; }
+    public string BuildConfiguration { get; }
     public string Version { get; }
     public string Name { get; }
-    public bool SkipJsonValidation { get; set; }
+    public bool SkipJsonValidation { get; }
 
     public BuildContext(ICakeContext context)
         : base(context)
@@ -90,7 +91,7 @@ public sealed class ValidateTranslationsTask : FrostingTask<BuildContext>
                 var enumerable = jToken.Where((s)=>s.Path.StartsWith("slc-"));
                 foreach (var entry in enumerable)
                 {
-                    if (entry.First.Value<string>().Length > 100)
+                    if (entry.First?.Value<string>().Length > 100)
                     {
                         context.Log.Information($"Translation: {Path.GetFileName(file.FullPath)} : {entry.Path} is longer then 100 chars");
                     }

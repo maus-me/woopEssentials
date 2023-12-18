@@ -8,7 +8,7 @@ public abstract class Shutdown
 {
     public static SlashCommandProperties CreateCommand()
     {
-        SlashCommandBuilder shutdown = new SlashCommandBuilder
+        var shutdown = new SlashCommandBuilder
         {
             Name = SlashCommands.Shutdown.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-shutdown")
@@ -16,7 +16,7 @@ public abstract class Shutdown
         return shutdown.Build();
     }
 
-    public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction, ref MessageComponent components)
+    public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction, ref MessageComponent? components)
     {
         if (commandInteraction.User is not SocketGuildUser guildUser)
             return "Something went wrong: User was not a GuildUser";

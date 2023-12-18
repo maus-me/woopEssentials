@@ -24,7 +24,7 @@ public abstract class Auth
                 },
             }
         };
-        SlashCommandBuilder auth = new SlashCommandBuilder
+        var auth = new SlashCommandBuilder
         {
             Name = SlashCommands.Auth.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-auth"),
@@ -37,8 +37,8 @@ public abstract class Auth
     {
         if (commandInteraction.User is SocketGuildUser guildUser)
         {
-            string mode = null;
-            foreach (SocketSlashCommandDataOption option in commandInteraction.Data.Options)
+            string? mode = null;
+            foreach (var option in commandInteraction.Data.Options)
             {
                 switch (option.Name)
                 {
@@ -53,9 +53,9 @@ public abstract class Auth
             {
                 case "connect":
                 {
-                    if (Th3Essentials.Config.DiscordConfig.LinkedAccounts == null || !Th3Essentials.Config.DiscordConfig.LinkedAccounts.ContainsValue(guildUser.Id.ToString()))
+                    if (Th3Essentials.Config.DiscordConfig?.LinkedAccounts == null || !Th3Essentials.Config.DiscordConfig.LinkedAccounts.ContainsValue(guildUser.Id.ToString()))
                     {
-                        string token = Guid.NewGuid().ToString();
+                        var token = Guid.NewGuid().ToString();
                         Th3Discord.AccountsToLink.Add(token, guildUser.Id.ToString());
                         return $"Type `/dcauth {token}` ingame then relog.";
                     }
@@ -63,7 +63,7 @@ public abstract class Auth
                 }
                 case "disconnect":
                 {
-                    if (Th3Essentials.Config.DiscordConfig.LinkedAccounts != null)
+                    if (Th3Essentials.Config.DiscordConfig?.LinkedAccounts != null)
                     {
                         foreach (KeyValuePair<string, string> account in Th3Essentials.Config.DiscordConfig.LinkedAccounts)
                         {

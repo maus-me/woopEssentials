@@ -9,7 +9,7 @@ namespace Th3Essentials.Commands;
 
 internal class Smite : Command
 {
-    private ICoreServerAPI _sapi;
+    private ICoreServerAPI _sapi = null!;
     internal override void Init(ICoreServerAPI api)
     {
         if (!Th3Essentials.Config.EnableSmite) return;

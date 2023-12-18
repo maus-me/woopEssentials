@@ -9,8 +9,8 @@ namespace Th3Essentials.Commands;
 
 internal class Message : Command
 {
-    private readonly Dictionary<string, string> LastMsgFrom = new();
-    private ICoreServerAPI _sapi;
+    private readonly Dictionary<string, string> _lastMsgFrom = new();
+    private ICoreServerAPI _sapi = null!;
 
     internal override void Init(ICoreServerAPI sapi)
     {
@@ -44,14 +44,14 @@ internal class Message : Command
         msgRaw = msgRaw.Replace("<", "&lt;").Replace(">", "&gt;");
         var msg =
             $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>{player.PlayerName} whispers:</strong></font> {msgRaw}";
-        if (!LastMsgFrom.TryGetValue(player.PlayerUID, out var otherPlayerUID))
+        if (!_lastMsgFrom.TryGetValue(player.PlayerUID, out var otherPlayerUid))
         {
             return TextCommandResult.Error(Lang.Get("th3essentials:cd-reply-fail"));
         }
 
         var otherPlayers = _sapi.Server.Players.Where((curPlayer) =>
             curPlayer.ConnectionState == EnumClientState.Playing &&
-            curPlayer.PlayerUID.Equals(otherPlayerUID));
+            curPlayer.PlayerUID.Equals(otherPlayerUid));
         var serverPlayers = otherPlayers as IServerPlayer[] ?? otherPlayers.ToArray();
         if (serverPlayers.Length != 1)
         {
@@ -67,7 +67,7 @@ internal class Message : Command
             
         _sapi.Logger.Chat($"{player.PlayerName} -> {otherPlayer.PlayerName}: {msg}");
 
-        LastMsgFrom[otherPlayer.PlayerUID] = player.PlayerUID;
+        _lastMsgFrom[otherPlayer.PlayerUID] = player.PlayerUID;
 
         return TextCommandResult.Success(msgSelf);
     }
@@ -100,7 +100,7 @@ internal class Message : Command
             {
                 var otherPlayer = otherPlayers.First();
 
-                LastMsgFrom[otherPlayer.PlayerUID] = player.PlayerUID;
+                _lastMsgFrom[otherPlayer.PlayerUID] = player.PlayerUID;
                 _sapi.Logger.Chat($"{player.PlayerName} -> {otherPlayer.PlayerName}: {msg}");
 
                 otherPlayer.SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);

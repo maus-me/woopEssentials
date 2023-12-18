@@ -50,7 +50,7 @@ public class PatchAdminLogging
 
             // if (priv is string s && player.HasPrivilege(s))
             // {
-            if (Th3Essentials.Config.DiscordConfig.AdminPrivilegeToMonitor?.Contains(priv) == true)
+            if (Th3Essentials.Config.DiscordConfig?.AdminPrivilegeToMonitor?.Contains(priv) == true)
             {
                 Th3Discord.Instance.SendAdminLog($"**{player.PlayerName}** executed: {commandName} {args}");
             }

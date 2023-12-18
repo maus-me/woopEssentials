@@ -13,13 +13,13 @@ namespace Th3Essentials.Commands;
 
 internal class TeleportRequest : Command
 {
-    private Th3PlayerConfig _playerConfig;
+    private Th3PlayerConfig _playerConfig = null!;
 
-    private Th3Config _config;
+    private Th3Config _config = null!;
 
-    private ICoreServerAPI _sapi;
+    private ICoreServerAPI _sapi = null!;
 
-    private Dictionary<string, string> _tpRequests;
+    private Dictionary<string, string> _tpRequests = null!;
 
     internal override void Init(ICoreServerAPI api)
     {
@@ -73,7 +73,7 @@ internal class TeleportRequest : Command
 
     private TextCommandResult OnAbortT2p(TextCommandCallingArgs args)
     {
-        var otherPlayer = args.Parsers[0].GetValue() as IPlayer;
+        var otherPlayer = (IPlayer)args.Parsers[0].GetValue();
         if (_tpRequests.ContainsKey(otherPlayer.PlayerUID))
         {
             _tpRequests.Remove(otherPlayer.PlayerUID);
@@ -86,22 +86,18 @@ internal class TeleportRequest : Command
     {
         var accept = args.Parsers[0].IsMissing || (bool)args.Parsers[0].GetValue();
 
-        string? requesterUID;
-        if (_tpRequests.TryGetValue(args.Caller.Player.PlayerUID, out requesterUID))
-        {
-            _tpRequests.Remove(args.Caller.Player.PlayerUID);
-        }
+        _tpRequests.Remove(args.Caller.Player.PlayerUID, out var requesterUid);
         
         if (accept)
         {
-            if (requesterUID != null)
+            if (requesterUid != null)
             {
-                var requestingPlayer = _sapi.World.AllOnlinePlayers.FirstOrDefault(p => p.PlayerUID.Equals(requesterUID));
+                var requestingPlayer = _sapi.World.AllOnlinePlayers.FirstOrDefault(p => p.PlayerUID.Equals(requesterUid));
                 if (requestingPlayer == null)
                 {
                     return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-no"));
                 }
-                var playerData = _playerConfig.GetPlayerDataByUID(requestingPlayer.PlayerUID);
+                var playerData = _playerConfig.GetPlayerDataByUid(requestingPlayer.PlayerUID);
 
                 TeleportTo(requestingPlayer, playerData ,args.Caller.Player.Entity.Pos);
             }
@@ -140,7 +136,7 @@ internal class TeleportRequest : Command
 
     private TextCommandResult OnT2Pr(TextCommandCallingArgs args)
     {
-        var otherPlayer = args.Parsers[0].GetValue() as IPlayer;
+        var otherPlayer = (IPlayer)args.Parsers[0].GetValue();
         
         if (_tpRequests.ContainsKey(otherPlayer.PlayerUID))
         {
@@ -148,7 +144,7 @@ internal class TeleportRequest : Command
         }
         
         var player = args.Caller.Player;
-        var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
+        var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
 
         var playerConfig = Homesystem.GetConfig(player, playerData, _config);
         

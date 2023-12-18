@@ -9,8 +9,8 @@ namespace Th3Essentials.Commands;
 internal class Th3ConfigCommands : Command
 {
 
-    private Th3Config _config;
-    private ICoreServerAPI _sapi;
+    private Th3Config _config = null!;
+    private ICoreServerAPI _sapi = null!;
 
     internal override void Init(ICoreServerAPI api)
     {
@@ -51,16 +51,13 @@ internal class Th3ConfigCommands : Command
         var backCost = (int)args.Parsers[3].GetValue();
         var setHomeCost = (int)args.Parsers[4].GetValue();
         var rtpCost = (int)args.Parsers[5].GetValue();
-        var t2pCost = (int)args.Parsers[6].GetValue();
+        var teleportToPlayerCost = (int)args.Parsers[6].GetValue();
         var rtpEnabled = (bool)args.Parsers[7].GetValue();
-        var t2pEnabled = (bool)args.Parsers[8].GetValue();
+        var t2PEnabled = (bool)args.Parsers[8].GetValue();
 
-        if (_config.RoleConfig == null)
-        {
-            _config.RoleConfig = new Dictionary<string, RoleConfig>();
-        }
+        _config.RoleConfig ??= new Dictionary<string, RoleConfig>();
 
-        _config.RoleConfig[code!] = new RoleConfig(homeLimit,homeCost, backCost, setHomeCost, rtpCost, t2pCost , rtpEnabled, t2pEnabled);
+        _config.RoleConfig[code!] = new RoleConfig(homeLimit,homeCost, backCost, setHomeCost, rtpCost, teleportToPlayerCost , rtpEnabled, t2PEnabled);
         _config.MarkDirty();
         return TextCommandResult.Success("added config for role");
     }
