@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Discord;
 using Discord.WebSocket;
-using Vintagestory.API.Common;
 using Vintagestory.API.Config;
-using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 
 namespace Th3Essentials.Discord.Commands;
@@ -23,7 +21,7 @@ public abstract class AllowCharSelOnce
                 IsRequired = true
             }
         };
-        SlashCommandBuilder allowcharselonce = new SlashCommandBuilder
+        var allowcharselonce = new SlashCommandBuilder
         {
             Name = SlashCommands.AllowCharSelOnce.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-allowcharselonce"),
@@ -38,13 +36,13 @@ public abstract class AllowCharSelOnce
         {
             if (Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
             {
-                SocketSlashCommandDataOption option = commandInteraction.Data.Options.First();
+                var option = commandInteraction.Data.Options.First();
                 if (option.Value is string playername)
                 {
-                    IServerPlayerData player = discord.Sapi.PlayerData.GetPlayerDataByLastKnownName(playername);
+                    var player = discord.Sapi.PlayerData.GetPlayerDataByLastKnownName(playername);
                     if (player != null)
                     {
-                        IPlayer playerWoldData = discord.Sapi.World.PlayerByUid(player.PlayerUID);
+                        var playerWoldData = discord.Sapi.World.PlayerByUid(player.PlayerUID);
                         if (playerWoldData != null && SerializerUtil.Deserialize(playerWoldData.WorldData.GetModdata("createCharacter"), false))
                         {
                             playerWoldData.WorldData.SetModdata("createCharacter", SerializerUtil.Serialize(false));

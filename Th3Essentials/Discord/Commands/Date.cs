@@ -7,7 +7,7 @@ public abstract class Date
 {
     public static SlashCommandProperties CreateCommand()
     {
-        SlashCommandBuilder date = new SlashCommandBuilder
+        var date = new SlashCommandBuilder
         {
             Name = SlashCommands.Date.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-date")

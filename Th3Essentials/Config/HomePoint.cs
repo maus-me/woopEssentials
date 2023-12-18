@@ -7,11 +7,12 @@ namespace Th3Essentials.Config;
 public class HomePoint
 {
     [ProtoMember(1)]
-    public string Name;
+    public string Name = null!;
 
     [ProtoMember(2)]
-    public BlockPos Position;
+    public BlockPos Position = null!;
 
+    // ReSharper disable once UnusedMember.Global
     public HomePoint()
     { }
 

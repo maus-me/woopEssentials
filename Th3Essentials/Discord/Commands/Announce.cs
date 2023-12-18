@@ -59,7 +59,7 @@ public abstract class Announce
                 }
             }
         };
-        SlashCommandBuilder announce = new SlashCommandBuilder
+        var announce = new SlashCommandBuilder
         {
             Name = SlashCommands.Announce.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-announce"),
@@ -74,10 +74,10 @@ public abstract class Announce
         {
             if (Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
             {
-                string message = null;
+                string? message = null;
                 bool? show = null;
-                string color = "orange";
-                foreach (SocketSlashCommandDataOption option in commandInteraction.Data.Options)
+                var color = "orange";
+                foreach (var option in commandInteraction.Data.Options)
                 {
                     switch (option.Name)
                     {

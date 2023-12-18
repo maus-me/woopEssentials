@@ -8,13 +8,13 @@ namespace Th3Essentials.Systems;
 
 internal class Announcementsystem
 {
-    private ICoreServerAPI _sapi;
+    private ICoreServerAPI _sapi = null!;
 
-    private Th3Config _config;
+    private Th3Config _config = null!;
 
     private int _currentMsg;
 
-    private Timer _announcer;
+    private Timer _announcer = null!;
 
     public Announcementsystem()
     {
@@ -35,7 +35,7 @@ internal class Announcementsystem
         }
     }
 
-    private void AnnounceMsg(object source, ElapsedEventArgs args)
+    private void AnnounceMsg(object? source, ElapsedEventArgs args)
     {
         if (_config.AnnouncementMessages == null)
         {

@@ -8,7 +8,7 @@ public abstract class RestartTime
 {
     public static SlashCommandProperties CreateCommand()
     {
-        SlashCommandBuilder restartTime = new SlashCommandBuilder
+        var restartTime = new SlashCommandBuilder
         {
             Name = SlashCommands.RestartTime.ToString().ToLower(),
             Description = Lang.Get("th3essentials:slc-restart")

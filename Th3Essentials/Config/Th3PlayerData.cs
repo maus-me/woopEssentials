@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ProtoBuf;
 using Vintagestory.API.MathTools;
+// ReSharper disable FieldCanBeMadeReadOnly.Global
 
 namespace Th3Essentials.Config;
 
@@ -17,7 +18,7 @@ public class Th3PlayerData
     public bool StarterkitRecived;
 
     [ProtoMember(3)]
-    public BlockPos LastPosition;
+    public BlockPos? LastPosition;
 
     [ProtoMember(4)]
     public List<HomePoint> HomePoints = new();
@@ -26,6 +27,7 @@ public class Th3PlayerData
     public int HomeLimit = -1;
 
     [ProtoMember(6)]
+    // ReSharper disable once InconsistentNaming
     public DateTime RTPLastUsage;
 
     [ProtoMember(7)]

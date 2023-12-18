@@ -11,11 +11,11 @@ namespace Th3Essentials.Commands;
 
 internal class RandomTeleport : Command
 {
-    private Th3PlayerConfig _playerConfig;
+    private Th3PlayerConfig _playerConfig = null!;
 
-    private Th3Config _config;
+    private Th3Config _config = null!;
 
-    private ICoreServerAPI _sapi;
+    private ICoreServerAPI _sapi = null!;
 
     internal override void Init(ICoreServerAPI api)
     {
@@ -68,7 +68,7 @@ internal class RandomTeleport : Command
     private TextCommandResult OnRtp(TextCommandCallingArgs args)
     {
         var player = args.Caller.Player;
-        var playerData = _playerConfig.GetPlayerDataByUID(player.PlayerUID);
+        var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
 
         var playerConfig = Homesystem.GetConfig(player, playerData, _config);
 

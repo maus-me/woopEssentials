@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+// ReSharper disable FieldCanBeMadeReadOnly.Global
 
 namespace Th3Essentials.Config;
 
@@ -16,6 +17,7 @@ public class Th3DiscordConfig
 
     public List<ulong>? ModerationRoles = null;
 
+    // ReSharper disable once InconsistentNaming
     public ulong HelpRoleID = 0;
 
     public Dictionary<string, string>? LinkedAccounts = null;

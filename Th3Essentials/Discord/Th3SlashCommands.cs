@@ -79,12 +79,12 @@ public abstract class Th3SlashCommands
         component.RespondAsync(response, ephemeral: discord.Config.UseEphermalCmdResponse);
     }
 
-    internal async static void HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+    internal static async void HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
     {
-        string response = string.Empty;
-        List<string> responseMult = null;
-        bool ephemeral = discord.Config.UseEphermalCmdResponse;
-        MessageComponent components = null;
+        var response = string.Empty;
+        List<string>? responseMult = null;
+        var ephemeral = discord.Config.UseEphermalCmdResponse;
+        MessageComponent? components = null;
         if (Enum.TryParse(commandInteraction.Data.Name, true, out SlashCommands cmd))
         {
             switch (cmd)
@@ -183,7 +183,7 @@ public abstract class Th3SlashCommands
         {
             if (!(responseMult?.Count > 0)) return;
                 
-            response = responseMult.FirstOrDefault();
+            response = responseMult.FirstOrDefault()!;
             responseMult.RemoveAt(0);
             _ = commandInteraction.RespondAsync(discord.ServerMsg(response), ephemeral: ephemeral);
             foreach (var res in responseMult)
@@ -193,7 +193,7 @@ public abstract class Th3SlashCommands
         }
     }
 
-    public static bool HasPermission(SocketGuildUser guildUser, List<ulong> moderationRoles)
+    public static bool HasPermission(SocketGuildUser guildUser, List<ulong>? moderationRoles)
     {
         if (guildUser.GuildPermissions.Administrator)
         {

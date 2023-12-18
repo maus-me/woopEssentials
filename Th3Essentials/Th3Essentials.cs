@@ -27,25 +27,26 @@ namespace Th3Essentials;
 
 public delegate void PlayerWithRewardJoin(IServerPlayer player, string discordRewardId);
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class Th3Essentials : ModSystem
 {
-    internal const string _configFile = "Th3Config.json";
+    internal const string ConfigFile = "Th3Config.json";
 
-    internal static Th3Config Config { get; set; }
+    internal static Th3Config Config { get; set; } = null!;
 
-    internal static Th3PlayerConfig PlayerConfig { get; private set; }
+    internal static Th3PlayerConfig PlayerConfig { get; private set; } = null!;
 
     internal static DateTime ShutDownTime;
 
-    internal static string Th3EssentialsModDataKey = "Th3Essentials";
+    internal static readonly string Th3EssentialsModDataKey = "Th3Essentials";
 
-    internal ICoreServerAPI _sapi;
+    internal ICoreServerAPI Sapi = null!;
 
-    private Th3Discord _th3Discord;
+    private Th3Discord? _th3Discord;
 
     private long _restartListener;
 
-    public event PlayerWithRewardJoin OnPlayerWithRewardJoin;
+    public event PlayerWithRewardJoin? OnPlayerWithRewardJoin;
 
     public override bool ShouldLoad(EnumAppSide forSide)
     {
@@ -54,45 +55,45 @@ public class Th3Essentials : ModSystem
 
     public override void StartServerSide(ICoreServerAPI sapi)
     {
-        _sapi = sapi;
+        Sapi = sapi;
         try
         {
-            Config = _sapi.LoadModConfig<Th3Config>(_configFile);
+            Config = Sapi.LoadModConfig<Th3Config>(ConfigFile);
 
             if (Config == null)
             {
                 Config = new Th3Config();
                 Config.Init();
-                _sapi.StoreModConfig(Config, _configFile);
+                Sapi.StoreModConfig(Config, ConfigFile);
 
-                _sapi.Server.LogWarning(Lang.Get("th3essentials:config-init"));
-                _sapi.Server.LogWarning(Lang.Get("th3essentials:config-file-info",
-                    Path.Combine(GamePaths.ModConfig, _configFile)));
+                Sapi.Server.LogWarning(Lang.Get("th3essentials:config-init"));
+                Sapi.Server.LogWarning(Lang.Get("th3essentials:config-file-info",
+                    Path.Combine(GamePaths.ModConfig, ConfigFile)));
             }
         }
         catch (Exception e)
         {
-            _sapi.Logger.Error(Lang.Get("th3essentials:th3config-error", e));
-            _sapi.Logger.Error(Lang.Get("th3essentials:disabled"));
+            Sapi.Logger.Error(Lang.Get("th3essentials:th3config-error", e));
+            Sapi.Logger.Error(Lang.Get("th3essentials:disabled"));
             return;
         }
 
         PlayerConfig = new Th3PlayerConfig();
 
-        _sapi.Event.GameWorldSave += GameWorldSave;
-        _sapi.Event.PlayerNowPlaying += PlayerNowPlaying;
-        _sapi.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
+        Sapi.Event.GameWorldSave += GameWorldSave;
+        Sapi.Event.PlayerNowPlaying += PlayerNowPlaying;
+        Sapi.Event.ServerRunPhase(EnumServerRunPhase.Shutdown, Shutdown);
 
         if (Config.IsShutdownConfigured())
         {
             LoadRestartTime(DateTime.Now);
-            _restartListener = _sapi.Event.RegisterGameTickListener(CheckRestart, 60000);
+            _restartListener = Sapi.Event.RegisterGameTickListener(CheckRestart, 60000);
         }
 
-        CommandsLoader.Init(_sapi);
-        new Homesystem().Init(_sapi);
-        new Starterkitsystem().Init(_sapi);
-        new Announcementsystem().Init(_sapi);
+        CommandsLoader.Init(Sapi);
+        new Homesystem().Init(Sapi);
+        new Starterkitsystem().Init(Sapi);
+        new Announcementsystem().Init(Sapi);
 
         if (Config.IsDiscordConfigured())
         {
@@ -104,27 +105,27 @@ public class Th3Essentials : ModSystem
             // enable show role here when discord is not active - else it is enabled in the Th3Discord
             if (Config.ShowRole)
             {
-                _sapi.Event.PlayerChat += PlayerChatAsync;
+                Sapi.Event.PlayerChat += PlayerChatAsync;
             }
 
-            _sapi.Logger.Debug("Discordbot needs to be configured, functionality disabled!!!");
+            Sapi.Logger.Debug("Discordbot needs to be configured, functionality disabled!!!");
         }
 
         if (Config.IsDiscordConfigured())
         {
-            _sapi.Event.PlayerDeath += PlayerDeathAsync;
+            Sapi.Event.PlayerDeath += PlayerDeathAsync;
         }
 
         if (Config.AdminRoles?.Count > 0)
         {
-            _sapi.ChatCommands.Create("admins")
+            Sapi.ChatCommands.Create("admins")
                 .WithDescription(Lang.Get("th3essentials:slc-admins"))
                 .RequiresPrivilege(Privilege.chat)
-                .HandleWith(_ => TextCommandResult.Success(Th3Util.GetAdmins(_sapi)))
+                .HandleWith(_ => TextCommandResult.Success(Th3Util.GetAdmins(Sapi)))
                 .Validate();
         }
 
-        _sapi.ChatCommands.Create("reloadth3config")
+        Sapi.ChatCommands.Create("reloadth3config")
             .WithDescription(Lang.Get("th3essentials:slc-reloadConfig"))
             .RequiresPrivilege(Privilege.controlserver)
             .HandleWith(_ =>
@@ -193,26 +194,26 @@ public class Th3Essentials : ModSystem
                     : Lang.Get("th3essentials:restart-in-mins", timeInMinutes);
                 SendInGameServerMsg(msg);
                 _th3Discord?.SendServerMessage(msg);
-                _sapi.Logger.Event(msg);
+                Sapi.Logger.Event(msg);
             }
         }
 
         var totalSeconds = (int)timeTillRestart.TotalSeconds;
         if (!Config.ShutdownEnabled || totalSeconds >= 5) return;
 
-        _sapi.Event.UnregisterGameTickListener(_restartListener);
+        Sapi.Event.UnregisterGameTickListener(_restartListener);
         if (Config.BackupOnShutdown)
         {
             LockAndKick();
             CreateBackup();
         }
 
-        _sapi.Server.ShutDown();
+        Sapi.Server.ShutDown();
     }
 
     private void SendInGameServerMsg(string msg)
     {
-        _sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup,
+        Sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup,
             !string.IsNullOrEmpty(Config.SystemMsgColor)
                 ? $"<font color=\"#{Config.SystemMsgColor}\"><strong>{msg}</strong></font>"
                 : msg, EnumChatType.OthersMessage);
@@ -220,21 +221,21 @@ public class Th3Essentials : ModSystem
 
     private void CreateBackup()
     {
-        var server = (ServerMain)_sapi.World;
+        var server = (ServerMain)Sapi.World;
             
         var chunkThread = typeof(ServerMain).GetField("chunkThread", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(server) as ChunkServerThread;
         var gameDatabase = typeof(ChunkServerThread).GetField("gameDatabase", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(chunkThread) as GameDatabase;
-        var fileInfo = new FileInfo(gameDatabase.DatabaseFilename);
+        var fileInfo = new FileInfo(gameDatabase!.DatabaseFilename);
         var freeDiskSpace = ServerMain.xPlatInterface.GetFreeDiskSpace(fileInfo.DirectoryName);
         if (freeDiskSpace <= fileInfo.Length)
         {
-            _sapi.Logger.Warning(
+            Sapi.Logger.Warning(
                 $"SaveFileSize: {fileInfo.Length / 1000000} MB, FreeDiskSpace: {freeDiskSpace / 1000000} MB");
-            _sapi.Logger.Error("Not enought disk space left to create a backup");
+            Sapi.Logger.Error("Not enought disk space left to create a backup");
             return;
         }
 
-        var worldName = Path.GetFileNameWithoutExtension(_sapi.WorldManager.CurrentWorldName);
+        var worldName = Path.GetFileNameWithoutExtension(Sapi.WorldManager.CurrentWorldName);
         if (worldName.Length == 0)
         {
             worldName = "world";
@@ -242,7 +243,7 @@ public class Th3Essentials : ModSystem
 
         var backupFileName = $"{worldName}-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.vcdbs";
 
-        _sapi.Logger.Event(Lang.Get("th3essentials:backup"));
+        Sapi.Logger.Event(Lang.Get("th3essentials:backup"));
         _th3Discord?.SendServerMessage(Lang.Get("th3essentials:backup-dc"));
 
         gameDatabase.CreateBackup(backupFileName);
@@ -250,9 +251,9 @@ public class Th3Essentials : ModSystem
 
     private void LockAndKick()
     {
-        _sapi.Server.Config.Password = new Random().Next().ToString();
-        _sapi.Logger.Event($"Temporary server password is: {_sapi.Server.Config.Password}");
-        foreach (var player in _sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
+        Sapi.Server.Config.Password = new Random().Next().ToString();
+        Sapi.Logger.Event($"Temporary server password is: {Sapi.Server.Config.Password}");
+        foreach (var player in Sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
         {
             player.Disconnect("Scheduled Shutdown");
         }
@@ -280,13 +281,13 @@ public class Th3Essentials : ModSystem
 
     private void GameWorldSave()
     {
-        if (Config != null && Config.IsDirty)
+        if (Config.IsDirty)
         {
             Config.IsDirty = false;
-            _sapi.StoreModConfig(Config, _configFile);
+            Sapi.StoreModConfig(Config, ConfigFile);
         }
 
-        PlayerConfig.GameWorldSave(_sapi);
+        PlayerConfig.GameWorldSave(Sapi);
     }
 
     private void Shutdown()
@@ -298,12 +299,12 @@ public class Th3Essentials : ModSystem
     {
         try
         {
-            var configTemp = _sapi.LoadModConfig<Th3Config>(_configFile);
+            var configTemp = Sapi.LoadModConfig<Th3Config>(ConfigFile);
             Config.Reload(configTemp);
         }
         catch (Exception e)
         {
-            _sapi.Logger.Error("Error reloading Th3Config: ", e.ToString());
+            Sapi.Logger.Error("Error reloading Th3Config: ", e.ToString());
             return false;
         }
 
@@ -313,11 +314,11 @@ public class Th3Essentials : ModSystem
     public override void Dispose()
     {
         _th3Discord?.Dispose();
-        _sapi.Event.GameWorldSave -= GameWorldSave;
-        _sapi.Event.PlayerNowPlaying -= PlayerNowPlaying;
-        _sapi.Event.UnregisterGameTickListener(_restartListener);
-        _sapi.Event.PlayerChat -= PlayerChatAsync;
-        _sapi.Event.PlayerDeath -= PlayerDeathAsync;
+        Sapi.Event.GameWorldSave -= GameWorldSave;
+        Sapi.Event.PlayerNowPlaying -= PlayerNowPlaying;
+        Sapi.Event.UnregisterGameTickListener(_restartListener);
+        Sapi.Event.PlayerChat -= PlayerChatAsync;
+        Sapi.Event.PlayerDeath -= PlayerDeathAsync;
     }
 
     public static string ToHex(Color c)
