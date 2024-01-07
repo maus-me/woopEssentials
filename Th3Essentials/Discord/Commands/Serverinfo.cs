@@ -20,7 +20,7 @@ public abstract class Serverinfo
 
     public static List<string> HandleSlashCommand(Th3Discord discord, SocketSlashCommand _)
     {
-        List<string> re = new List<string>();
+        var re = new List<string>();
         var sb = new StringBuilder();
         sb.Append("Game version: ");
         sb.AppendLine(Th3Util.GetVsVersion());

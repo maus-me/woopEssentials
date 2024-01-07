@@ -12,11 +12,11 @@ using Vintagestory.Server;
 
 namespace Th3Essentials.Discord.Commands;
 
-public abstract class Whitelist
+public abstract class Ban
 {
     public static SlashCommandProperties CreateCommand()
     {
-        var whitelistOptions = new List<SlashCommandOptionBuilder>()
+        var banOptions = new List<SlashCommandOptionBuilder>()
         {
             new()
             {
@@ -28,14 +28,14 @@ public abstract class Whitelist
             new()
             {
                 Name = "mode",
-                Description = Lang.Get("th3essentials:slc-whitelist-mode"),
+                Description = Lang.Get("th3essentials:slc-ban-mode"),
                 Type = ApplicationCommandOptionType.Boolean,
                 IsRequired = true
             },
             new()
             {
                 Name = "time",
-                Description = Lang.Get("th3essentials:slc-whitelist-time"),
+                Description = Lang.Get("th3essentials:slc-ban-time"),
                 Type = ApplicationCommandOptionType.Integer,
             },
             new()
@@ -53,18 +53,18 @@ public abstract class Whitelist
             new()
             {
                 Name = "reason",
-                Description = Lang.Get("th3essentials:slc-whitelist-reason"),
+                Description = Lang.Get("th3essentials:slc-ban-reason"),
                 Type = ApplicationCommandOptionType.String
             }
         };
 
-        var whitelist = new SlashCommandBuilder
+        var ban = new SlashCommandBuilder
         {
-            Name = SlashCommands.Whitelist.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-whitelist"),
-            Options = whitelistOptions
+            Name = SlashCommands.Ban.ToString().ToLower(),
+            Description = Lang.Get("th3essentials:slc-ban"),
+            Options = banOptions
         };
-        return whitelist.Build();
+        return ban.Build();
     }
 
     public static async Task<string> HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
@@ -112,15 +112,15 @@ public abstract class Whitelist
                 }
                 default:
                 {
-                    discord.Sapi.Logger.VerboseDebug("Something went wrong getting slc-whitelist option");
+                    discord.Sapi.Logger.VerboseDebug("Something went wrong getting slc-whitelist/ban option");
                     break;
                 }
             }
         }
 
-        if (targetPlayer == null || mode == null)
-            return "Playername or mode missing";
+        if (targetPlayer == null || mode == null) return "Playername or mode missing";
         
+        var playerDataManager = ((ServerMain)discord.Sapi.World).PlayerDataManager;
         if (mode == true)
         {
             reason ??= "";
@@ -134,24 +134,67 @@ public abstract class Whitelist
                 "months" => datetime.AddMonths(timenew),
                 _ => datetime.AddYears(timenew)
             };
-            var name = guildUser.DisplayName;
             var playerUid = await GetPlayerUid(discord.Sapi, targetPlayer);
             
             if (playerUid == null)
                 return $"Could not find player with name: {targetPlayer}";
             
-            ((ServerMain)discord.Sapi.World).PlayerDataManager.WhitelistPlayer(targetPlayer, playerUid, name, reason, datetime);
-            return $"{targetPlayer} is now whitelisted until {datetime}";
+            BanPlayer(playerDataManager, guildUser.DisplayName, playerUid, targetPlayer, reason, datetime);
+
+            return $"{targetPlayer} is now banned until {datetime}";
+
         }
         else
         {
             var playerUid = await GetPlayerUid(discord.Sapi, targetPlayer);
+            
             if (playerUid == null)
                 return $"Could not find player with name: {targetPlayer}";
             
-            _ = ((ServerMain)discord.Sapi.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, playerUid);
-            return $"{targetPlayer} is now removed from whitelist";
+            UnbanPlayer(playerDataManager, guildUser.DisplayName, playerUid, targetPlayer);
+            return $"{targetPlayer} is now removed from banned players";
+
         }
+    }
+
+    private static void BanPlayer(PlayerDataManager playerDataManager, string byDiscordUser, string playerUid, string targetPlayer,
+        string reason, DateTime datetime)
+    {
+        var entry = playerDataManager.GetPlayerBan(byDiscordUser, playerUid);
+
+        if (entry == null)
+        {
+            playerDataManager.BannedPlayers.Add(new PlayerEntry()
+            {
+                PlayerName = targetPlayer,
+                IssuedByPlayerName = byDiscordUser,
+                PlayerUID = playerUid,
+                Reason = reason,
+                UntilDate = datetime
+            });
+
+            ServerMain.Logger.Audit("{0} was banned by {1} until {2}. Reason: {3}", targetPlayer, byDiscordUser, datetime, reason);
+
+        } else
+        {
+            entry.Reason = reason;
+            entry.UntilDate = datetime;
+
+            ServerMain.Logger.Audit("Existing player ban of {0} updated by {1}. Now until {2}, Reason: {3}", targetPlayer, byDiscordUser, datetime, reason);
+        }
+
+        playerDataManager.bannedListDirty = true;
+    }
+    
+    private static void UnbanPlayer(PlayerDataManager playerDataManager, string byDiscordUser, string playerUid, string targetPlayer)
+    {
+        var entry = playerDataManager.GetPlayerBan(targetPlayer, playerUid);
+
+        if (entry == null) return;
+        
+        playerDataManager.BannedPlayers.Remove(entry);
+        playerDataManager.bannedListDirty = true;
+        ServerMain.Logger.Audit("{0} was unbanned by {1}.", targetPlayer, byDiscordUser);
     }
 
     private static async Task<string?> GetPlayerUid(ICoreServerAPI sapi, string targetPlayer)

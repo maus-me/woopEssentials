@@ -48,29 +48,19 @@ public abstract class AllowCharSelOnce
                             playerWoldData.WorldData.SetModdata("createCharacter", SerializerUtil.Serialize(false));
                             return Lang.Get("Ok, player can now run .charsel (or rejoin the world) to change skin and character class once");
                         }
-                        else
-                        {
-                            return "Player is not online";
-                        }
+
+                        return "Player is not online";
                     }
-                    else
-                    {
-                        return "Could not find that player";
-                    }
+
+                    return "Could not find that player";
                 }
-                else
-                {
-                    return "Error: playername needs to be set";
-                }
+
+                return "Error: playername needs to be set";
             }
-            else
-            {
-                return "You do not have permissions to do that";
-            }
+
+            return "You do not have permissions to do that";
         }
-        else
-        {
-            return "Something went wrong: User was not a GuildUser";
-        }
+
+        return "Something went wrong: User was not a GuildUser";
     }
 }

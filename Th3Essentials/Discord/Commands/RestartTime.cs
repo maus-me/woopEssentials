@@ -23,9 +23,7 @@ public abstract class RestartTime
             var restart = Th3Essentials.ShutDownTime - DateTime.Now;
             return Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"), restart.Minutes.ToString("D2"));
         }
-        else
-        {
-            return Lang.Get("th3essentials:slc-restart-disabled");
-        }
+
+        return Lang.Get("th3essentials:slc-restart-disabled");
     }
 }

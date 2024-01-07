@@ -11,7 +11,7 @@ public abstract class Players
 {
     public static SlashCommandProperties CreateCommand()
     {
-        List<SlashCommandOptionBuilder> playersOptions = new List<SlashCommandOptionBuilder>()
+        var playersOptions = new List<SlashCommandOptionBuilder>()
         {
             new()
             {
@@ -39,7 +39,7 @@ public abstract class Players
                 ping = option.Value as bool?;
             }
         }
-        List<string> names = new List<string>();
+        var names = new List<string>();
         foreach (var player in discord.Sapi.World.AllOnlinePlayers.Cast<IServerPlayer>())
         {
             if (ping == true)

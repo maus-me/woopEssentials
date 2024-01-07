@@ -12,7 +12,7 @@ namespace Th3Essentials.Discord;
 public enum SlashCommands
 {
     Players, Date, RestartTime, SetChannel, Whitelist, AllowCharSelOnce, ModifyPermissions, Shutdown, Serverinfo, Stats, Admins, Auth, Announce,
-    ReloadConfig, ChangeRole
+    ReloadConfig, ChangeRole, Ban
 }
 
 public abstract class Th3SlashCommands
@@ -35,6 +35,7 @@ public abstract class Th3SlashCommands
             Auth.CreateCommand(),
             Announce.CreateCommand(),
             ReloadConfig.CreateCommand(),
+            Ban.CreateCommand(),
             ChangeRole.CreateCommand(sapi)
         };
         var created = client.Rest.BulkOverwriteGuildCommands(commands, Th3Discord.Instance.Config.GuildId).GetAwaiter().GetResult();
@@ -157,6 +158,11 @@ public abstract class Th3SlashCommands
                 case SlashCommands.ReloadConfig:
                 {
                     response = ReloadConfig.HandleSlashCommand(discord, commandInteraction);
+                    break;
+                }
+                case SlashCommands.Ban:
+                {
+                    response = await Ban.HandleSlashCommand(discord, commandInteraction);
                     break;
                 }
                 case SlashCommands.ChangeRole:

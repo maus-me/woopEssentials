@@ -251,7 +251,10 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
     // if the reward system is activated you can modify how the chat is formated for someone who has a only reward and no admin/mod role
     "RewardsFormat": "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}",
     // allows to disable the chat relay function Discord <-> ingame chat and only show the system messages in discord if setup
-    "DiscordChatRelay": true
+    "DiscordChatRelay": true,
+    
+    // Enable automatic adding of new slashcommands, will only add new ones and not update old ones. To update old ones run !setupth3essentials in the channel to use for the bot
+    "AutoAddSlashCommands": false
   },
 
   // text displayed when using /serverinfo

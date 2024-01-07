@@ -10,7 +10,7 @@ public abstract class SetChannel
 {
     public static SlashCommandProperties CreateCommand()
     {
-        List<SlashCommandOptionBuilder> channelOptions = new List<SlashCommandOptionBuilder>()
+        var channelOptions = new List<SlashCommandOptionBuilder>()
         {
             new()
             {
@@ -31,38 +31,23 @@ public abstract class SetChannel
 
     public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
     {
-        if (commandInteraction.User is SocketGuildUser guildUser)
-        {
-            if (guildUser.GuildPermissions.Administrator)
-            {
-                var option = commandInteraction.Data.Options.First();
-                if (option.Value is SocketTextChannel channel)
-                {
-                    discord.Config.ChannelId = channel.Id;
-                    Th3Essentials.Config.MarkDirty();
-                    if (!discord.GetDiscordChannel())
-                    {
-                        discord.Sapi.Server.LogError($"Could not find channel with id: {discord.Config.ChannelId}");
-                        return $"Could not find channel with id: {discord.Config.ChannelId}";
-                    }
-                    else
-                    {
-                        return $"Channel was set to {channel.Name}";
-                    }
-                }
-                else
-                {
-                    return "Error: Channel needs to be a Text Channel";
-                }
-            }
-            else
-            {
-                return "You need to have Administrator permissions to do that";
-            }
-        }
-        else
-        {
+        if (commandInteraction.User is not SocketGuildUser guildUser)
             return "Something went wrong: User was not a GuildUser";
-        }
+
+        if (!guildUser.GuildPermissions.Administrator)
+            return "You need to have Administrator permissions to do that";
+        
+        var option = commandInteraction.Data.Options.First();
+        if (option.Value is not SocketTextChannel channel)
+            return "Error: Channel needs to be a Text Channel";
+        
+        discord.Config.ChannelId = channel.Id;
+        Th3Essentials.Config.MarkDirty();
+        if (discord.GetDiscordChannel())
+            return $"Channel was set to {channel.Name}";
+        
+        discord.Sapi.Server.LogError($"Could not find channel with id: {discord.Config.ChannelId}");
+        return $"Could not find channel with id: {discord.Config.ChannelId}";
+
     }
 }

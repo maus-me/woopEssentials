@@ -35,52 +35,49 @@ public abstract class Auth
 
     public static string HandleSlashCommand(SocketSlashCommand commandInteraction)
     {
-        if (commandInteraction.User is SocketGuildUser guildUser)
+        if (commandInteraction.User is not SocketGuildUser guildUser)
+            return "Auth did not work: Could not get user";
+        
+        string? mode = null;
+        foreach (var option in commandInteraction.Data.Options)
         {
-            string? mode = null;
-            foreach (var option in commandInteraction.Data.Options)
+            mode = option.Name switch
             {
-                switch (option.Name)
+                "mode" => option.Value as string,
+                _ => mode
+            };
+        }
+        switch (mode)
+        {
+            case "connect":
+            {
+                if (Th3Essentials.Config.DiscordConfig?.LinkedAccounts == null || !Th3Essentials.Config.DiscordConfig.LinkedAccounts.ContainsValue(guildUser.Id.ToString()))
                 {
-                    case "mode":
-                    {
-                        mode = option.Value as string;
-                        break;
-                    }
+                    var token = Guid.NewGuid().ToString();
+                    Th3Discord.AccountsToLink.Add(token, guildUser.Id.ToString());
+                    return $"Type `/dcauth {token}` ingame then relog.";
                 }
+                return "User already linked to a ingame account";
             }
-            switch (mode)
+            case "disconnect":
             {
-                case "connect":
+                if (Th3Essentials.Config.DiscordConfig?.LinkedAccounts != null)
                 {
-                    if (Th3Essentials.Config.DiscordConfig?.LinkedAccounts == null || !Th3Essentials.Config.DiscordConfig.LinkedAccounts.ContainsValue(guildUser.Id.ToString()))
+                    foreach (KeyValuePair<string, string> account in Th3Essentials.Config.DiscordConfig.LinkedAccounts)
                     {
-                        var token = Guid.NewGuid().ToString();
-                        Th3Discord.AccountsToLink.Add(token, guildUser.Id.ToString());
-                        return $"Type `/dcauth {token}` ingame then relog.";
-                    }
-                    return "User already linked to a ingame account";
-                }
-                case "disconnect":
-                {
-                    if (Th3Essentials.Config.DiscordConfig?.LinkedAccounts != null)
-                    {
-                        foreach (KeyValuePair<string, string> account in Th3Essentials.Config.DiscordConfig.LinkedAccounts)
+                        if (account.Value.Equals(guildUser.Id.ToString()))
                         {
-                            if (account.Value.Equals(guildUser.Id.ToString()))
-                            {
-                                Th3Essentials.Config.DiscordConfig.LinkedAccounts.Remove(account.Key);
-                                Th3Essentials.Config.MarkDirty();
-                                return "Your accounts have been disconnected";
-                            }
+                            Th3Essentials.Config.DiscordConfig.LinkedAccounts.Remove(account.Key);
+                            Th3Essentials.Config.MarkDirty();
+                            return "Your accounts have been disconnected";
                         }
                     }
-                    return "User not linked to a ingame account";
                 }
-                default:
-                {
-                    return "Auth mode unknown";
-                }
+                return "User not linked to a ingame account";
+            }
+            default:
+            {
+                return "Auth mode unknown";
             }
         }
         return "Auth did not work: Could not get user";

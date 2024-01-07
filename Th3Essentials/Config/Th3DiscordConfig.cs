@@ -38,4 +38,6 @@ public class Th3DiscordConfig
     {
         "gamemode", "pickingrange", "kick", "ban", "whitelist", "give", "controlserver", "tp", "time", "grantrevoke", "root", "commandplayer"
     };
+
+    public bool AutoAddSlashCommands = false;
 }

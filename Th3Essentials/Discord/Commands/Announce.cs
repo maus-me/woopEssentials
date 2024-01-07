@@ -98,27 +98,21 @@ public abstract class Announce
                         }
                     }
                 }
-                if (message != null && show != null)
-                {
-                    var cleanMessage = message.Replace("<", "&lt;").Replace(">", "&gt;");
-                    ephemeral = !(bool)show;
-                    discord.Sapi.Logger.Event($"{guildUser.DisplayName}#{guildUser.Discriminator} announced: {cleanMessage}.");
-                    discord.Sapi.BroadcastMessageToAllGroups($"<strong><font color=\"{color}\">{cleanMessage}</font></strong>", EnumChatType.AllGroups);
-                    return cleanMessage;
-                }
-                else
-                {
+
+                if (message == null || show == null)
                     return "Something went wrong: missing argument";
-                }
+                
+                var cleanMessage = message.Replace("<", "&lt;").Replace(">", "&gt;");
+                ephemeral = !(bool)show;
+                discord.Sapi.Logger.Event($"{guildUser.DisplayName}#{guildUser.Discriminator} announced: {cleanMessage}.");
+                discord.Sapi.BroadcastMessageToAllGroups($"<strong><font color=\"{color}\">{cleanMessage}</font></strong>", EnumChatType.AllGroups);
+                return cleanMessage;
+
             }
-            else
-            {
-                return "You do not have permissions to do that";
-            }
+
+            return "You do not have permissions to do that";
         }
-        else
-        {
-            return "Something went wrong: User was not a GuildUser";
-        }
+
+        return "Something went wrong: User was not a GuildUser";
     }
 }

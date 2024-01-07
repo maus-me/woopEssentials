@@ -216,6 +216,21 @@ public class Th3Discord
                     }
                 }
 
+                if (Config.AutoAddSlashCommands)
+                {
+                    Task.Run(async () =>
+                    {
+                        var guild = _client.GetGuild(Config.GuildId);
+                        var applicationCommandsAsync = await guild.GetApplicationCommandsAsync();
+                        var commands = Enum.GetNames(typeof(SlashCommands)).Select(x => x.ToLower());
+                        var discordCommands = applicationCommandsAsync.Select(x => x.Name.ToLower()).ToList();
+                        if (commands.Any(command => !discordCommands.Contains(command)))
+                        {
+                            CreateSlashCommands();
+                        }
+                    });
+                }
+
                 _initialized = true;
             }
 
