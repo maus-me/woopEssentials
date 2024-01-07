@@ -17,7 +17,7 @@ variables:
   SOURCE_CODE_PATH: 'Th3Essentials/'
   VINTAGE_STORY: '/VintageStory'
   SERVER_TYPE: 'stable'
-  SERVER_VERSION: '1.18.10'
+  SERVER_VERSION: '1.19.0-rc.6'
 
 cache:
   # Per-stage and per-branch caching.

@@ -80,6 +80,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
   - /setchannel - Set the channel to send to/from ingame chat [Admin]
   - /modifypermissions - add/remove/clear additional roles to use moderation commands [Admin]
   - /whitelist - Change the whitelist status of a player (also the time duration is customizable, default 50 years as with the ingame command) [Admin or Configured Role]
+  - /ban - Change the ban status of a player (also the time duration is customizable, default 50 years as with the ingame command) [Admin or Configured Role]
   - /allowcharselonce - Allows the player to re-select their class after doing so already [Admin or Configured Role]
   - /shutdown - Will shutdown the server (if configured server will restart see scripts at Shutdownsystem) [Admin or Configured Role]
   - /admins - lists all admins speciefied by "AdminRoles" in Th3Condfig.json
