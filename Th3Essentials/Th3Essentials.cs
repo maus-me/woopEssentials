@@ -111,7 +111,8 @@ public class Th3Essentials : ModSystem
             Sapi.Logger.Debug("Discordbot needs to be configured, functionality disabled!!!");
         }
 
-        if (Config.IsDiscordConfigured())
+        var deathMessages = Sapi.World.Config.GetBool("disableDeathMessages");
+        if (Config.IsDiscordConfigured() && deathMessages)
         {
             Sapi.Event.PlayerDeath += PlayerDeathAsync;
         }
