@@ -198,6 +198,8 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
 When updating make sure to run `!setupth3essentials` again to create all new Discord commands if any.
 
+This is also important for the `/changerole` discord command since if you change the roles in the serverconfig.json you need to rerun `!setupth3essentials` so it detects those and updates the command.
+
 Further change the config value `IsDirty:false` to `IsDirty:true` and run `/autosavenow` on the server console after you started the server. This will save all new config options to the config file so you can change them.
 
 ## This sample config shows all default settings:
