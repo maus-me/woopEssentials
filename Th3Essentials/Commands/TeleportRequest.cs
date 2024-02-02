@@ -159,7 +159,7 @@ internal class TeleportRequest : Command
         {
             if (Homesystem.CheckPayment(_config.TeleportToPlayerItem, playerConfig.TeleportToPlayerCost, player, out var canTeleport, out var success)) return success!;
             
-            if (canTeleport && player.InventoryManager.ActiveHotbarSlot != null)
+            if (canTeleport)
             {
                 Homesystem.PayIfNeeded(player, _config.TeleportToPlayerItem, playerConfig.TeleportToPlayerCost);
                 _tpRequests.Add(otherPlayer.PlayerUID, player.PlayerUID);

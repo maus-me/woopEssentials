@@ -135,5 +135,7 @@
     "wp-notfound": "Warp location \"{0}\" not found",
     "wp-list": "Warp locations:",
     "wp-no-name": "Warp name missing",
-    "wp-exists": "Warp \"{0}\" already exists!"
+    "wp-exists": "Warp \"{0}\" already exists!",
+    "wp-item-set": "Warp Item set",
+    "wp-item-unset": "Warp Item unset"
 }

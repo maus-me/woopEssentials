@@ -3,14 +3,14 @@
     "Client": {
       "commandName": "Executable",
       "executablePath": "dotnet",
-      "commandLineArgs": "$(VINTAGE_STORY_PRE)/Vintagestory.dll --tracelog --addModPath \"$(ProjectDir)/bin/$(Configuration)/Mods\" --dataPath $(VINTAGE_STORY_DATA_MODDING)",
-      "workingDirectory": "$(VINTAGE_STORY_PRE)"
+      "commandLineArgs": "$(VINTAGE_STORY)/Vintagestory.dll --tracelog --addModPath \"$(ProjectDir)/bin/$(Configuration)/Mods\" --dataPath $(VINTAGE_STORY_DATA_MODDING)",
+      "workingDirectory": "$(VINTAGE_STORY)"
     },
     "Server": {
       "commandName": "Executable",
       "executablePath": "dotnet",
-      "commandLineArgs": "$(VINTAGE_STORY_PRE)/VintagestoryServer.dll --tracelog --addModPath \"$(ProjectDir)/bin/$(Configuration)/Mods\" --dataPath $(VINTAGE_STORY_SERVER_DATA_MODDING)",
-      "workingDirectory": "$(VINTAGE_STORY_PRE)"
+      "commandLineArgs": "$(VINTAGE_STORY)/VintagestoryServer.dll --tracelog --addModPath \"$(ProjectDir)/bin/$(Configuration)/Mods\" --dataPath $(VINTAGE_STORY_SERVER_DATA_MODDING)",
+      "workingDirectory": "$(VINTAGE_STORY)"
     }
   }
 }

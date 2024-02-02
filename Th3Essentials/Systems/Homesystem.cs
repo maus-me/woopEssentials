@@ -239,7 +239,7 @@ internal class Homesystem
         {
             if (CheckPayment(_config.HomeItem, playerConfig.HomeTeleportCost, player, out var canTeleport, out var success)) return success!;
 
-            if (canTeleport && player.InventoryManager.ActiveHotbarSlot != null)
+            if (canTeleport)
             {
                 PayIfNeeded(player, _config.HomeItem, playerConfig.HomeTeleportCost);
                 TeleportTo(player, playerData, point.Position, _config.ExcludeHomeFromBack);
@@ -452,6 +452,9 @@ internal class Homesystem
             config.SetHomeCost =  config.SetHomeCost >= 0
                 ? config.SetHomeCost
                 : th3Config.HomeItem?.Stacksize ?? 0;
+            config.WarpCost = config.WarpCost >= 0
+                ? config.WarpCost
+                : th3Config.WarpItem?.Stacksize ?? 0; 
             return config;
         }
 
@@ -460,6 +463,7 @@ internal class Homesystem
             HomeLimit = th3PlayerData.HomeLimit >= 0 ? th3PlayerData.HomeLimit : th3Config.HomeLimit,
             TeleportToPlayerCost = th3Config.TeleportToPlayerItem?.Stacksize ?? 0,
             RandomTeleportCost = th3Config.RandomTeleportItem?.Stacksize ?? 0,
+            WarpCost = th3Config.WarpItem?.Stacksize ?? 0,
             HomeTeleportCost = th3Config.HomeItem?.Stacksize ?? 0,
             SetHomeCost = th3Config.SetHomeItem?.Stacksize ?? 0,
             BackTeleportCost = th3Config.HomeItem?.Stacksize ?? 0,

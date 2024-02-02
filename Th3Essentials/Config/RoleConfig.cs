@@ -8,6 +8,10 @@ public class RoleConfig
     
     public int BackTeleportCost = -1;
     
+    public bool WarpEnabled = true;
+    
+    public int WarpCost = -1;
+    
     public int SetHomeCost = -1;
     
     public int RandomTeleportCost = -1;
@@ -23,11 +27,13 @@ public class RoleConfig
     }
 
     public RoleConfig(int homelimit, int homeCost, int backCost, int setHomeCost, int rtpCost, int teleportToPlayerCost,
-        bool rtpEnabled, bool teleportToPlayerEnabled)
+        bool rtpEnabled, bool teleportToPlayerEnabled, bool warpEnabled, int warpCost)
     {
         HomeLimit = homelimit;
         HomeTeleportCost = homeCost;
         BackTeleportCost = backCost;
+        WarpEnabled = warpEnabled;
+        WarpCost = warpCost;
         SetHomeCost = setHomeCost;
         RandomTeleportCost = rtpCost;
         TeleportToPlayerCost = teleportToPlayerCost;

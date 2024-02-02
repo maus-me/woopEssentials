@@ -55,6 +55,10 @@ public class Th3Config
 
     public bool WarpEnabled;
 
+    public int WarpCooldown = -1;
+    
+    public StarterkitItem? WarpItem;
+    
     public List<HomePoint>? WarpLocations;
 
     public string? ChatTimestampFormat;
@@ -159,6 +163,8 @@ public class Th3Config
         AdminRoles = configTemp.AdminRoles;
 
         WarpEnabled = configTemp.WarpEnabled;
+        WarpCooldown = configTemp.WarpCooldown;
+        WarpItem = configTemp.WarpItem;
         WarpLocations = configTemp.WarpLocations;
         ChatTimestampFormat = configTemp.ChatTimestampFormat;
         EnableSmite = configTemp.EnableSmite;

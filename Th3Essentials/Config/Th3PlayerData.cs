@@ -33,6 +33,9 @@ public class Th3PlayerData
     [ProtoMember(7)]
     public DateTime T2PLastUsage;
 
+    [ProtoMember(8)]
+    public DateTime WarpLastUsage;
+
     public HomePoint? FindPointByName(string name)
     {
         return HomePoints.Find(point => point.Name == name);

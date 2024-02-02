@@ -87,7 +87,7 @@ internal class RandomTeleport : Command
             
             if (Homesystem.CheckPayment(_config.RandomTeleportItem, playerConfig.RandomTeleportCost, player, out var canTeleport, out var success)) return success!;
             
-            if (canTeleport && player.InventoryManager.ActiveHotbarSlot != null)
+            if (canTeleport)
             {
                 Homesystem.PayIfNeeded(player, _config.RandomTeleportItem, playerConfig.RandomTeleportCost);
                 

@@ -363,6 +363,18 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   
   // enable the ingame /warp command
   "WarpEnabled": false,
+  // if this value is -1 then it will use the homesystems cooldown and last used time else it will use its own timer
+  "WarpCooldown" : -1,
+  // item to consume when using /warp, amount can be overwritten by role see RoleConfig
+  // set with /warp setitem with the item and amount in the hotbar slot you have selected
+  // if set to null nothing will be consumed
+  //  "WarpItem": {
+  //    "Itemclass": 1,
+  //    "Code": "game:redmeat-vintage",
+  //    "Stacksize": 2,
+  //    "Attributes": "AA=="
+  //  },
+  "WarpItem" : null,
   // managed ingame with /warp add|remove name /warp name
   "WarpLocations": null,
   
@@ -416,7 +428,9 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   //      "RandomTeleportCost": 7,
   //      "RtpEnabled": false,
   //      "TeleportToPlayerCost": 8,
-  //      "TeleportToPlayerEnabled": false
+  //      "TeleportToPlayerEnabled": false,
+  //      "WarpEnabled": false,
+  //      "WarpCost": 1
   //    }
   //  }
   "RoleConfig": null,

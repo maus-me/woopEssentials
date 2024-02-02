@@ -31,7 +31,9 @@ internal class Th3ConfigCommands : Command
                     _sapi.ChatCommands.Parsers.Int("rtp_cost"), 
                     _sapi.ChatCommands.Parsers.Int("t2p_cost"), 
                     _sapi.ChatCommands.Parsers.Bool("rtp_enabled"), 
-                    _sapi.ChatCommands.Parsers.Bool("t2p_enabled"))
+                    _sapi.ChatCommands.Parsers.Bool("t2p_enabled"),
+                    _sapi.ChatCommands.Parsers.Bool("warp_enabled"),
+                    _sapi.ChatCommands.Parsers.Int("warp_cost") )
                 .HandleWith(AddRole)
             .EndSubCommand()
             
@@ -54,10 +56,12 @@ internal class Th3ConfigCommands : Command
         var teleportToPlayerCost = (int)args.Parsers[6].GetValue();
         var rtpEnabled = (bool)args.Parsers[7].GetValue();
         var t2PEnabled = (bool)args.Parsers[8].GetValue();
+        var warpEnabled = (bool)args.Parsers[9].GetValue();
+        var warpCost = (int)args.Parsers[10].GetValue();
 
         _config.RoleConfig ??= new Dictionary<string, RoleConfig>();
 
-        _config.RoleConfig[code!] = new RoleConfig(homeLimit,homeCost, backCost, setHomeCost, rtpCost, teleportToPlayerCost , rtpEnabled, t2PEnabled);
+        _config.RoleConfig[code!] = new RoleConfig(homeLimit,homeCost, backCost, setHomeCost, rtpCost, teleportToPlayerCost , rtpEnabled, t2PEnabled, warpEnabled, warpCost);
         _config.MarkDirty();
         return TextCommandResult.Success("added config for role");
     }
