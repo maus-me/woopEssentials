@@ -16,8 +16,8 @@ variables:
   # NOTE: Please edit this path so it matches the structure of your project!
   SOURCE_CODE_PATH: 'Th3Essentials/'
   VINTAGE_STORY: '/VintageStory'
-  SERVER_TYPE: 'unstable'
-  SERVER_VERSION: '1.19.0-rc.6'
+  SERVER_TYPE: 'stable'
+  SERVER_VERSION: '1.19.3'
 
 cache:
   # Per-stage and per-branch caching.
