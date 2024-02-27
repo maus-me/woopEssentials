@@ -112,7 +112,7 @@ public class Th3Essentials : ModSystem
         }
 
         var deathMessages = Sapi.World.Config.GetBool("disableDeathMessages");
-        if (Config.IsDiscordConfigured() && deathMessages)
+        if (Config.IsDiscordConfigured() && !deathMessages)
         {
             Sapi.Event.PlayerDeath += PlayerDeathAsync;
         }
