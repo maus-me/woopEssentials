@@ -513,7 +513,7 @@ public class Th3Discord
     {
         players += Sapi.Server.Players.Count(pl => pl.ConnectionState == EnumClientState.Playing);
         players = Math.Max(0, players);
-        _ = _client.SetGameAsync($"players: {players}");
+        _ = _client.SetGameAsync(Lang.Get("th3essentials:bot-status", players, Sapi.Server.Config.MaxClients));
         return players;
     }
 

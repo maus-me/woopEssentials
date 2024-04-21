@@ -100,14 +100,14 @@
     "slc-ban-reason": "The reason why the player got banned",
     "slc-whitelist": "Change the whitelist status of a player",
     "slc-whitelist-playername": "The name of the player",
-    "slc-whitelist-mode": "The mode, whitelist (true) or unwhitelist (false)",
+    "slc-whitelist-mode": "The mode, whitelist or unwhitelist",
     "slc-whitelist-time": "The time the player should be whitelisted, does nothing on unwhitelist [default = 50]",
     "slc-whitelist-reason": "The reason why the player got whitlisted",
     "slc-whitelist-timetype": "How the time parameter should be interpreted [hour,day,month,year] [default = year]",
     "slc-allowcharselonce": "Allows the player to re-select their class after doing so already",
     "slc-allowcharselonce-playername": "The name of the player",
     "slc-setchannel": "Set the channel to send to/from ingame chat",
-    "slc-modifypermissions": "Set the role that can use moderation commands like whitelist,allowcharselonce,..",
+    "slc-modifypermissions": "Set the role that can use moderation commands whitelist/allowcharselonce",
     "slc-modifypermissions-mode": "The operation to modify a role add/remove/clear",
     "slc-shutdown": "Shutdown the Vintage Story server (will restart if configured)",
     "slc-serverinfo": "Show information about the server (gameversion, mods)",
@@ -137,5 +137,6 @@
     "wp-no-name": "Warp name missing",
     "wp-exists": "Warp \"{0}\" already exists!",
     "wp-item-set": "Warp Item set",
-    "wp-item-unset": "Warp Item unset"
+    "wp-item-unset": "Warp Item unset",
+    "bot-status": "players: {0}/{1}"
 }
