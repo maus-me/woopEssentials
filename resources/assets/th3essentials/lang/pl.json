@@ -94,6 +94,10 @@
     "slc-restart-disabled": "Komenda restartu serwera jest wyłączona",
     "slc-players-none": "Och, nikt nie jest online",
     "slc-players-ping": "Pokazuje ping",
+    "slc-ban": "Change the ban status of a player",
+    "slc-ban-mode": "The mode, ban (true) or unban (false)",
+    "slc-ban-time": "The time the player should be ban, does nothing on unban [default = 50]",
+    "slc-ban-reason": "The reason why the player got banned",
     "slc-whitelist": "Zmienia status whitelisty gracza",
     "slc-whitelist-playername": "Nazwa gracza",
     "slc-whitelist-mode": "Tryb, whitelist lub unwhitelist",
@@ -131,5 +135,8 @@
     "wp-notfound": "Lokalizacja teleportacji \"{0}\" nie została znaleziona",
     "wp-list": "Dostępne lokalizacje teleportacji:",
     "wp-no-name": "Brak nazwy Warpa",
-    "wp-exists": "Warp \"{0}\" już istnieje!"
+    "wp-exists": "Warp \"{0}\" już istnieje!",
+    "wp-item-set": "Warp Item set",
+    "wp-item-unset": "Warp Item unset",
+    "bot-status": "players: {0}/{1}"
 }
