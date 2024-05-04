@@ -56,7 +56,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
 - Discord:
 
-  If you want to use the Discord features you will need to create a Discord bot see [Creating a Discord Bot](#Creating-a-Discord-Bot)
+  If you want to use the Discord features you will need to create a Discord bot see [Creating a Discord Bot](#creating-a-discord-bot)
 
   Once you copied the Discord Bot Token into the Th3Config.json you can use the build in commands to configure the guild (Discord server) and the channel to link to ingame.
 
