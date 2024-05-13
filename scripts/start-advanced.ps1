@@ -20,15 +20,15 @@ Start-Transcript -Path $logfile -Append
 $job = $null
 
 while (1) {
-    Write-Host "Vintage Stor server is starting"
+    Write-Host "Vintage Story server is starting"
     Start-Process -FilePath $vsexe -Wait
-    Write-Host "Vintage Stor server stopped"
+    Write-Host "Vintage Story server stopped"
     Start-Sleep -s 2
     $timeStamp = Get-Date -Format "MM-dd-yyyy-HH-mm-ss"
-    $file = Get-Item """$worldDirectory\$worldFile.vcdbs"""
-    Write-Host """$worldDirectory\$worldFile.vcdbs"" -> ""$backupDirectory\$worldFile-$timeStamp.vcdbs"" :: $($file.length/1GB)GB"
-    Start-Process "Robocopy" -ArgumentList """$worldDirectory"" ""$backupDirectory"" ""$worldFile.vcdbs"" /j /v" -RedirectStandardOutput $copylogfile -NoNewWindow -Wait
-    Rename-Item """$backupDirectory\$worldFile.vcdbs""" -NewName """$worldFile-$timeStamp.vcdbs"""
+    $file = Get-Item "$worldDirectory\$worldFile.vcdbs"
+    Write-Host "$worldDirectory\$worldFile.vcdbs -> $backupDirectory\$worldFile-$timeStamp.vcdbs :: $($file.length/1GB)GB"
+    Start-Process "Robocopy" -ArgumentList "`"$worldDirectory`" `"$backupDirectory`" `"$worldFile.vcdbs`" /j /v" -RedirectStandardOutput $copylogfile -NoNewWindow -Wait
+    Rename-Item "$backupDirectory\$worldFile.vcdbs" -NewName "$worldFile-$timeStamp.vcdbs"
     if($null -ne $job){
         Remove-Job $job
     }
@@ -38,8 +38,8 @@ while (1) {
         $timeStamp = $args[2]
         $7zip = $args[3]
         $keep = $args[4]
-        Start-Process $7zip -ArgumentList "a -tzip ""$backupDirectory\$worldFile-$timeStamp.zip"" ""$backupDirectory\$worldFile-$timeStamp.vcdbs""" -Wait
-        Remove-Item """$backupDirectory\$worldFile-$timeStamp.vcdbs"""
+        Start-Process $7zip -ArgumentList "a -tzip `"$backupDirectory\$worldFile-$timeStamp.zip`" `"$backupDirectory\$worldFile-$timeStamp.vcdbs`"" -Wait
+        Remove-Item "$backupDirectory\$worldFile-$timeStamp.vcdbs"
         $items = Get-ChildItem "$backupDirectory"
         $time = (Get-Date).AddDays(-$keep)
         foreach ($item in $items) {
