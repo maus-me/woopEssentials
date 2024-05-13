@@ -472,9 +472,13 @@ public class Th3Discord
     private void PlayerDisconnectAsync(IServerPlayer byPlayer)
     {
         // update player count with allplayer -1 since the disconnecting player is still online while this event fires
-        var players = UpdatePlayers(-1);
+        var isConnecting = byPlayer.ConnectionState == EnumClientState.Connecting;
+        var players = UpdatePlayers(isConnecting ? 0 : -1);
 
-        SendServerMessage(Lang.Get("th3essentials:disconnected", byPlayer.PlayerName, players, Sapi.Server.Config.MaxClients));
+        if (!isConnecting)
+        {
+            SendServerMessage(Lang.Get("th3essentials:disconnected", byPlayer.PlayerName, players, Sapi.Server.Config.MaxClients));
+        }
         if (Config.Rewards)
         {
             byPlayer.ServerData.CustomPlayerData.Remove(REWARDS_SERVER_DATA_KEY);
@@ -483,7 +487,7 @@ public class Th3Discord
 
     private void PlayerNowPlayingAsync(IServerPlayer byPlayer)
     {
-        var players = UpdatePlayers(1);
+        var players = UpdatePlayers();
 
         SendServerMessage(Lang.Get("th3essentials:connected", byPlayer.PlayerName, players, Sapi.Server.Config.MaxClients));
 
@@ -511,7 +515,7 @@ public class Th3Discord
 
     private int UpdatePlayers(int players = 0)
     {
-        players += Sapi.Server.Players.Count(pl => pl.ConnectionState == EnumClientState.Playing);
+        players += Sapi.Server.Players.Count(pl => pl.ConnectionState is EnumClientState.Connected or EnumClientState.Playing);
         players = Math.Max(0, players);
         _ = _client.SetGameAsync(Lang.Get("th3essentials:bot-status", players, Sapi.Server.Config.MaxClients));
         return players;
