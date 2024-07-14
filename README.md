@@ -219,6 +219,10 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
     // Discord GuildID to link all discord features to
     "GuildId": 0,
     
+    // discord channel where system messages go to (start, shutdown, temporal, join, leave, death, restart, backup, help request, )
+    // if set to 0 (default) it will use the same channel as specified by 'ChannelId'
+    "SystemChannelId": 0,
+    
     // discord channel where admin logs go to
     // if set to 0 it will be disabled
     "AdminLogChannelId": 0,
@@ -269,11 +273,18 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   "AnnouncementMessages": null,
   // interval (in min) to send AnnouncementMessages one after another
   "AnnouncementInterval": 0,
+  // Use a custom chat group to send the announcements to
+  // GeneralChatGroup = 0
+  // ServerInfoChatGroup = -1
+  // DamageLogChatGroup = -5
+  // InfoLogChatGroup = -6
+  // see your playergroups.json for the Uid of custom channel (only members of that group will get the messages)
+  "AnnouncementChatGroupUid": 0,
 
   // number of homepoints a player can have
   // use "/home limit <playername> 10" to customize it per player, to revert it set it to -1 again
   "HomeLimit": 0,
-  // time in seconds between usage of the home/spawn/back commands
+  // time in seconds between usage of the home/spawn commands
   "HomeCooldown": 60,
   // cooldown for /back
   "BackCooldown": 120,

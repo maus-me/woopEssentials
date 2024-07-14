@@ -46,7 +46,9 @@ internal class Announcementsystem
         {
             _currentMsg = 0;
         }
-        _sapi.SendMessageToGroup(GlobalConstants.GeneralChatGroup, $"<strong>[Info]</strong> {_config.AnnouncementMessages[_currentMsg]}", EnumChatType.Notification);
+
+        // AnnouncementChatGroupId is by default 0 so general chat
+        _sapi.SendMessageToGroup(_config.AnnouncementChatGroupUid, $"<strong>[Info]</strong> {_config.AnnouncementMessages[_currentMsg]}", EnumChatType.Notification);
         _currentMsg++;
     }
 }

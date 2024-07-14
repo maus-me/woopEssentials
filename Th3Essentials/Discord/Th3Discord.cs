@@ -30,6 +30,7 @@ public class Th3Discord
 
     private IMessageChannel? _discordChannel;
     private IMessageChannel? _adminLogChannel;
+    private IMessageChannel? _systemChannel;
 
     internal ICoreServerAPI Sapi = null!;
 
@@ -270,7 +271,7 @@ public class Th3Discord
 
     internal void SendServerMessage(string msg)
     {
-        _ = _discordChannel?.SendMessageAsync(ServerMsg(msg));
+        _ = _systemChannel?.SendMessageAsync(ServerMsg(msg));
     }
 
     internal void SendAdminLog(string msg)
@@ -343,6 +344,14 @@ public class Th3Discord
         if (Config.AdminLogChannelId != 0)
         {
             _adminLogChannel = _client.GetChannel(Config.AdminLogChannelId) as IMessageChannel;
+        }
+        if (Config.SystemChannelId != 0)
+        {
+            _systemChannel = _client.GetChannel(Config.SystemChannelId) as IMessageChannel;
+        }
+        else
+        {
+            _systemChannel = _discordChannel;
         }
         return _discordChannel != null;
     }
@@ -523,9 +532,9 @@ public class Th3Discord
 
     private async void Shutdown()
     {
-        if (_discordChannel != null)
+        if (_systemChannel != null)
         {
-            _ = await _discordChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:shutdown")));
+            _ = await _systemChannel.SendMessageAsync(ServerMsg(Lang.Get("th3essentials:shutdown")));
         }
         await _client.StopAsync();
         await _client.LogoutAsync();

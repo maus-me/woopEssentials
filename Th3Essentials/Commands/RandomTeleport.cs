@@ -82,9 +82,11 @@ internal class RandomTeleport : Command
             var spawn = player.Entity.Pos.AsBlockPos;
             var x = Random.Shared.Next(-Th3Essentials.Config.RandomTeleportRadius, Th3Essentials.Config.RandomTeleportRadius);
             var z = Random.Shared.Next(-Th3Essentials.Config.RandomTeleportRadius/2, Th3Essentials.Config.RandomTeleportRadius/2);
-
-            var pos = new BlockPos(spawn.X + x, 1, spawn.Z + z);
             
+            var pos = new BlockPos(spawn.X + x, 1, spawn.Z + z, 0);
+            pos.X = Math.Clamp(pos.X, 0, _sapi.WorldManager.MapSizeX);
+            pos.Z = Math.Clamp(pos.Z, 0, _sapi.WorldManager.MapSizeZ);
+
             if (Homesystem.CheckPayment(_config.RandomTeleportItem, playerConfig.RandomTeleportCost, player, out var canTeleport, out var success)) return success!;
             
             if (canTeleport)

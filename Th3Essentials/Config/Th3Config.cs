@@ -15,6 +15,7 @@ public class Th3Config
     public List<string>? AnnouncementMessages;
 
     public int AnnouncementInterval;
+    public int AnnouncementChatGroupUid;
 
     public int HomeLimit = -1;
 

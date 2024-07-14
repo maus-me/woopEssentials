@@ -37,6 +37,7 @@ internal class TeleportRequest : Command
                 
                 .BeginSubCommand("request")
                     .WithAlias("r")
+                    .WithRootAlias("t2pr")
                     .RequiresPrivilege(Privilege.chat)
                     .RequiresPlayer()
                     .WithDescription(Lang.Get("th3essentials:cd-t2pr-e"))
@@ -54,6 +55,7 @@ internal class TeleportRequest : Command
                 
                 .BeginSubCommand("accept")
                     .WithAlias("a")
+                    .WithRootAlias("t2pa")
                     .RequiresPrivilege(Privilege.chat)
                     .RequiresPlayer()
                     .WithDescription(Lang.Get("th3essentials:cd-t2pr-ac"))

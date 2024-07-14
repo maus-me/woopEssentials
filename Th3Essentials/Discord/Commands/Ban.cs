@@ -197,7 +197,7 @@ public abstract class Ban
         ServerMain.Logger.Audit("{0} was unbanned by {1}.", targetPlayer, byDiscordUser);
     }
 
-    private static async Task<string?> GetPlayerUid(ICoreServerAPI sapi, string targetPlayer)
+    public static async Task<string?> GetPlayerUid(ICoreServerAPI sapi, string targetPlayer)
     {
         var player = sapi.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
         

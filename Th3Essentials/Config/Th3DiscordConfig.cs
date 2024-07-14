@@ -33,6 +33,7 @@ public class Th3DiscordConfig
     public bool DiscordChatRelay = true;
         
     public ulong AdminLogChannelId = 0;
+    public ulong SystemChannelId = 0;
 
     public string[]? AdminPrivilegeToMonitor = new[]
     {
