@@ -186,6 +186,10 @@ internal class Starterkitsystem
                             };
 
                             received = player.Entity.TryGiveItemStack(itemStack);
+                            if (!received)
+                            {
+                                _sapi.Logger.Error($"Failed to give starterkit item: {_config.Items[i].Stacksize} x {_config.Items[i].Code}  [{itemStack.Attributes.ToJsonToken()}]");
+                            }
                         }
                         break;
                     }
@@ -200,12 +204,18 @@ internal class Starterkitsystem
                             };
 
                             received = player.Entity.TryGiveItemStack(itemStack);
+                            if (!received)
+                            {
+                                _sapi.Logger.Error($"Failed to give starterkit item: {_config.Items[i].Stacksize} x {_config.Items[i].Code}  [{itemStack.Attributes.ToJsonToken()}]");
+                            }
                         }
                         break;
                     }
                 }
                 if (!received)
                 {
+                    playerData.StarterkitRecived = true;
+                    playerData.MarkDirty();
                     return TextCommandResult.Error(Lang.Get("th3essentials:st-wrong"));
                 }
             }
