@@ -93,21 +93,26 @@ internal class Starterkitsystem
             }
             else
             {
-                var swPdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(gameDatabase.GetPlayerData(th3d.PlayerUID));
-                var th3Pdata = SerializerUtil.Deserialize<Th3PlayerData?>(swPdata.GetModdata(Th3Essentials.Th3EssentialsModDataKey), null);
-                if (th3Pdata != null)
+                var playerData = gameDatabase.GetPlayerData(th3d.PlayerUID);
+                if (playerData != null)
                 {
-                    th3Pdata.StarterkitRecived = false;
-                    swPdata.SetModdata(Th3Essentials.Th3EssentialsModDataKey, SerializerUtil.Serialize(th3Pdata));
-                    gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swPdata));
+                    var swPdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(playerData);
+                    var moddata = swPdata.GetModdata(Th3Essentials.Th3EssentialsModDataKey);
+                    if (moddata != null)
+                    {
+                        var th3Pdata = SerializerUtil.Deserialize<Th3PlayerData?>(moddata, null);
+                        if (th3Pdata != null)
+                        {
+                            th3Pdata.StarterkitRecived = false;
+                            swPdata.SetModdata(Th3Essentials.Th3EssentialsModDataKey, SerializerUtil.Serialize(th3Pdata));
+                            gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swPdata));
+                            continue;
+                        }
+                    }
                 }
-                else
-                {
-                    _sapi.Logger.Debug("No Th3PlayerData for player {0} found", th3d.LastKnownPlayername);
-                }
+                _sapi.Logger.Debug("No Th3PlayerData for player {0} found, no need to reset", th3d.LastKnownPlayername);
             }
         }
-        gameDatabase.Dispose();
         return  TextCommandResult.Success(Lang.Get("th3essentials:cd-rst-alldone"));
     }
 
@@ -166,6 +171,7 @@ internal class Starterkitsystem
                 var asset = new AssetLocation(_config.Items[i].Code.ToString());
                     
                 var received = false;
+                string error = null;
                 switch (_config.Items[i].Itemclass)
                 {
                     case EnumItemClass.Item:
