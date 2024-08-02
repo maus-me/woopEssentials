@@ -162,19 +162,24 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
 1.  Got to [Discord Developers](https://discord.com/developers/applications) and login with your discord account
 2.  Create a new Application as Discord calls it. On the top right you should see a button for that.
-3.  Once you created the Application click on the "Bot" menu entry on the left, there you need to click on "Add Bot" and confirm. \
+3.  Once you created the Application click on the "Installation" menu entry on the left, and change "Install Link" to None.
+4.  Next click on the "Bot" menu entry on the left,
 
 - Look for "PUBLIC BOT"\
    Public bots can be added by anyone. When unchecked, only you can join this bot to servers.\
    And make sure you **uncheck** it. \
   <span style="color:red">Otherwise if someone has your Bots Application ID they could add the bot and link it to their discord server and interact with your server.</span>
+- Next you will have to enable the `MESSAGE CONTENT INTENT` which you can find in under "Privileged Gateway Intents". This will allow the bot to read user messages and forward them and also enables the `!setupth3essentials` command
+
+  If you wanna use the reward/auth system you need to enable in the "Bot" menu the "SERVER MEMBERS INTENT" toggle.
+
 - After look for Token and "Click to Reveal Token" and also "Copy" here you will get your discord bot token that is needed in the Th3Config.json file, copy it and paste it into the Th3Config.json file.
 
   In the Th3Config.json it should look like this:
 
   `"Token": "your_bot_token",`
 
-4.  Click on the OAuth2 menu entry on the left and URL Generator. Here you can setup the permission and invite your bot to your discord server. Scroll down to the "SCOPES" section and tick the box for
+5.  Click on the OAuth2 menu entry on the left and URL Generator. Here you can setup the permission and invite your bot to your discord server. Scroll down to the "SCOPES" section and tick the box for
 
     - bot
     - applications.commands
@@ -187,9 +192,6 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
     after that you can click on "Copy" and open that link in your browser, this will ask you to invite your bot to one of your server where you have permissions to invite a bot to
 
-    Next you will have to enable the `MESSAGE CONTENT INTENT` which you can find in the Bot sidebar menu entry. This will allow the bot to read user messages and forward them and also enables the `!setupth3essentials` command
-
-    if you wanna use the reward/auth system you need to enable in the "Bot" menu the "SERVER MEMBERS INTENT" toggle.
 
     yay you should have your bot now on your discord server :)
 
