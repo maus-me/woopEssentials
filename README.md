@@ -186,9 +186,8 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
     once those are ticked a section for "BOT PERMISSIONS" will appear on there tick
 
-    - Read Message/View Channels
+    - View Channels
     - Send Messages
-    - Send Messages in Threads
 
     after that you can click on "Copy" and open that link in your browser, this will ask you to invite your bot to one of your server where you have permissions to invite a bot to
 
