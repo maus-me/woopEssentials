@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Th3Essentials.Config;
 using Th3Essentials.Systems;
 using Vintagestory.API.Common;
@@ -17,11 +18,17 @@ internal class RandomTeleport : Command
 
     private ICoreServerAPI _sapi = null!;
 
+    // List for specific locations
+    private List<Vec3i>? _pos;
+
     internal override void Init(ICoreServerAPI api)
     {
         _sapi = api;
         _playerConfig = Th3Essentials.PlayerConfig;
         _config = Th3Essentials.Config;
+
+        _pos = _sapi.LoadModConfig<List<Vec3i>>("th3rtplocations.json");
+        
         if (Th3Essentials.Config.RandomTeleportRadius >= 0)
         {
             _sapi = api;       
@@ -82,10 +89,18 @@ internal class RandomTeleport : Command
             var spawn = player.Entity.Pos.AsBlockPos;
             var x = Random.Shared.Next(-Th3Essentials.Config.RandomTeleportRadius, Th3Essentials.Config.RandomTeleportRadius);
             var z = Random.Shared.Next(-Th3Essentials.Config.RandomTeleportRadius/2, Th3Essentials.Config.RandomTeleportRadius/2);
-            
-            var pos = new BlockPos(spawn.X + x, 1, spawn.Z + z, 0);
-            pos.X = Math.Clamp(pos.X, 0, _sapi.WorldManager.MapSizeX);
-            pos.Z = Math.Clamp(pos.Z, 0, _sapi.WorldManager.MapSizeZ);
+            BlockPos pos;
+            if (_pos?.Count > 0)
+            {
+                var next = Random.Shared.Next(_pos.Count);
+                pos = _pos[next].ToBlockPos();
+            }
+            else
+            {
+                pos = new BlockPos(spawn.X + x, 1, spawn.Z + z, 0);
+                pos.X = Math.Clamp(pos.X, 0, _sapi.WorldManager.MapSizeX);
+                pos.Z = Math.Clamp(pos.Z, 0, _sapi.WorldManager.MapSizeZ);
+            }
 
             if (Homesystem.CheckPayment(_config.RandomTeleportItem, playerConfig.RandomTeleportCost, player, out var canTeleport, out var success)) return success!;
             
@@ -96,8 +111,13 @@ internal class RandomTeleport : Command
                 _sapi.WorldManager.LoadChunkColumnPriority(pos.X / _sapi.WorldManager.ChunkSize,
                     pos.Z / _sapi.World.BlockAccessor.ChunkSize, new ChunkLoadOptions{ OnLoaded = () =>
                     {
-                        var y = _sapi.World.BlockAccessor.GetTerrainMapheightAt(pos);
-                        pos.Y = y + 1;
+                        // only use terrain height for none list positions
+                        if (_pos == null)
+                        {
+                            var y = _sapi.World.BlockAccessor.GetRainMapHeightAt(pos);
+                            pos.Y = y + 1;
+                        }
+
                         TeleportTo(player, playerData, pos);
                     }});
                 return TextCommandResult.Success(Lang.Get("th3essentials:rtp-success"));
