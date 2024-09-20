@@ -69,13 +69,17 @@ internal class Warp : Command
         {
             case "setitem":
             {
+                if (!player.HasPrivilege(Privilege.controlserver))
+                {
+                    return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
+                }
                 return SetItem(args);
             }
             case "add":
             {
                 if (!player.HasPrivilege(Privilege.controlserver))
                 {
-                    break;
+                    return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
                 }
 
                 var warpName = (string)args.Parsers[1].GetValue();
@@ -100,7 +104,7 @@ internal class Warp : Command
             {
                 if (!player.HasPrivilege(Privilege.controlserver))
                 {
-                    break;
+                    return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
                 }
 
                 var warpName = (string)args.Parsers[1].GetValue();
