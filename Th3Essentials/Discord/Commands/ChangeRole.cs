@@ -99,7 +99,7 @@ public abstract class ChangeRole
         {
             if (args.Status == EnumCommandStatus.Success)
             {
-                discord.Sapi.Logger.Audit($"Discord user {guildUser.DisplayName} changed {playername}'s role to {roleCode}");
+                discord.Sapi.Logger.Audit($"Discord user {guildUser.DisplayName}({guildUser.Id}) changed {playername}'s role to {roleCode}");
             }
         });
         return Lang.Get($"Ok, players roles is now set to {roleCode}");

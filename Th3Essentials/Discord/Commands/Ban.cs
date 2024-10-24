@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -140,6 +141,7 @@ public abstract class Ban
                 return $"Could not find player with name: {targetPlayer}";
             
             BanPlayer(playerDataManager, guildUser.DisplayName, playerUid, targetPlayer, reason, datetime);
+            discord.Sapi.Logger.Audit($"{guildUser.DisplayName}({guildUser.Id}) banned {targetPlayer} for {datetime.ToString(CultureInfo.InvariantCulture)}.");
 
             return $"{targetPlayer} is now banned until {datetime}";
 
@@ -152,6 +154,8 @@ public abstract class Ban
                 return $"Could not find player with name: {targetPlayer}";
             
             UnbanPlayer(playerDataManager, guildUser.DisplayName, playerUid, targetPlayer);
+            discord.Sapi.Logger.Audit($"{guildUser.DisplayName}({guildUser.Id}) unbanned {targetPlayer}.");
+
             return $"{targetPlayer} is now removed from banned players";
 
         }

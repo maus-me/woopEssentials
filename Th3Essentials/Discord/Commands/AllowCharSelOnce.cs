@@ -46,6 +46,7 @@ public abstract class AllowCharSelOnce
                         if (playerWoldData != null && SerializerUtil.Deserialize(playerWoldData.WorldData.GetModdata("createCharacter"), false))
                         {
                             playerWoldData.WorldData.SetModdata("createCharacter", SerializerUtil.Serialize(false));
+                            discord.Sapi.Logger.Audit($"{guildUser.DisplayName}({guildUser.Id}) granted charsel to {playername}.");
                             return Lang.Get("Ok, player can now run .charsel (or rejoin the world) to change skin and character class once");
                         }
 

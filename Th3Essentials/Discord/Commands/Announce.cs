@@ -104,7 +104,7 @@ public abstract class Announce
                 
                 var cleanMessage = message.Replace("<", "&lt;").Replace(">", "&gt;");
                 ephemeral = !(bool)show;
-                discord.Sapi.Logger.Event($"{guildUser.DisplayName}#{guildUser.Discriminator} announced: {cleanMessage}.");
+                discord.Sapi.Logger.Audit($"{guildUser.DisplayName}({guildUser.Id}) announced: {cleanMessage}.");
                 discord.Sapi.BroadcastMessageToAllGroups($"<strong><font color=\"{color}\">{cleanMessage}</font></strong>", EnumChatType.AllGroups);
                 return cleanMessage;
 

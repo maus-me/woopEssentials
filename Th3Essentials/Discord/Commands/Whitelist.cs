@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -141,6 +142,8 @@ public abstract class Whitelist
                 return $"Could not find player with name: {targetPlayer}";
             
             ((ServerMain)discord.Sapi.World).PlayerDataManager.WhitelistPlayer(targetPlayer, playerUid, name, reason, datetime);
+            discord.Sapi.Logger.Audit($"{guildUser.DisplayName}({guildUser.Id}) whitelisted {targetPlayer} for {datetime.ToString(CultureInfo.InvariantCulture)}.");
+
             return $"{targetPlayer} is now whitelisted until {datetime}";
         }
         else
