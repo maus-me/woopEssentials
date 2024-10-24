@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Discord;
 using Discord.WebSocket;
@@ -33,28 +34,9 @@ public abstract class Stats
         
         var stringBuilder = new StringBuilder();
         var server = (ServerMain)discord.Sapi.World;
-        var upSeconds = server.totalUpTime.ElapsedMilliseconds / 1000;
-        var upMinutes = 0;
-        var upHours = 0;
-        var upDays = 0;
-        if (upSeconds > 60)
-        {
-            upMinutes = (int)(upSeconds / 60);
-            upSeconds -= 60 * upMinutes;
-        }
-        if (upMinutes > 60)
-        {
-            upHours = upMinutes / 60;
-            upMinutes -= 60 * upHours;
-        }
-        if (upHours > 24)
-        {
-            upDays = upHours / 24;
-            upHours -= 24 * upDays;
-        }
         stringBuilder.Append("Version: ");
         stringBuilder.AppendLine(Th3Util.GetVsVersion());
-        stringBuilder.AppendLine($"Uptime: {upDays} days, {upHours} hours, {upMinutes} minutes, {upSeconds} seconds");
+        stringBuilder.AppendLine($"Uptime: {server.totalUpTime.Elapsed.ToString()}");
         stringBuilder.AppendLine($"Players online: {server.Clients.Count} / {server.Config.MaxClients}");
 
         var activeEntities = 0;
@@ -65,7 +47,10 @@ public abstract class Stats
                 activeEntities++;
             }
         }
-        stringBuilder.AppendLine($"Memory usage: {decimal.Round(GC.GetTotalMemory(forceFullCollection: false) / (decimal)1048576, 2)} Mb");
+        var managed = decimal.Round((decimal)(GC.GetTotalMemory(false) / 1024f / 1024f), 2).ToString("#.#", GlobalConstants.DefaultCultureInfo);
+        var total = decimal.Round((decimal)(Process.GetCurrentProcess().WorkingSet64 / 1024f / 1024f), 2).ToString("#.#", GlobalConstants.DefaultCultureInfo);
+
+        stringBuilder.AppendLine("Memory usage Managed/Total: " + managed + "Mb / " + total + " Mb");
         var statsCollection = server.StatsCollector[GameMath.Mod(server.StatsCollectorIndex - 1, server.StatsCollector.Length)];
 
         if (statsCollection.ticksTotal > 0)

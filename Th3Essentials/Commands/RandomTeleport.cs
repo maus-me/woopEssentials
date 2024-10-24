@@ -27,10 +27,10 @@ internal class RandomTeleport : Command
         _playerConfig = Th3Essentials.PlayerConfig;
         _config = Th3Essentials.Config;
 
-        _pos = _sapi.LoadModConfig<List<Vec3i>>("th3rtplocations.json");
         
-        if (Th3Essentials.Config.RandomTeleportRadius >= 0)
+        if (Th3Essentials.Config.RandomTeleportRadius > 0)
         {
+            _pos = _sapi.LoadModConfig<List<Vec3i>>("th3rtplocations.json");
             _sapi = api;       
             api.ChatCommands.Create("rtp")
                 .WithDescription(Lang.Get("th3essentials:cd-rtp"))

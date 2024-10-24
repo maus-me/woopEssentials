@@ -42,102 +42,103 @@ public abstract class ModifyPermissions
     public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
     {
         string response;
-        if (commandInteraction.User is SocketGuildUser guildUser)
+        if (commandInteraction.User is not SocketGuildUser guildUser)
         {
-            if (guildUser.GuildPermissions.Administrator)
+            return "Something went wrong: User was not a GuildUser";
+        }
+
+        if (!guildUser.GuildPermissions.Administrator)
+        {
+            return "You do not have permissions to do that";
+        }
+
+        SocketRole? role = null;
+        string? mode = null;
+        foreach (var option in commandInteraction.Data.Options)
+        {
+            switch (option.Name)
             {
-                SocketRole? role = null;
-                string? mode = null;
-                foreach (var option in commandInteraction.Data.Options)
+                case "role":
                 {
-                    switch (option.Name)
-                    {
-                        case "role":
-                        {
-                            role = option.Value as SocketRole;
-                            break;
-                        }
-                        case "mode":
-                        {
-                            mode = option.Value as string;
-                            break;
-                        }
-                    }
+                    role = option.Value as SocketRole;
+                    break;
                 }
-                switch (mode)
+                case "mode":
                 {
-                    case "add":
-                    {
-                        if (role != null)
-                        {
-                            discord.Config.ModerationRoles ??= new List<ulong>();
-                            discord.Config.ModerationRoles.Add(role.Id);
-                            Th3Essentials.Config.MarkDirty();
-                            response = $"Added role: {role.Name}";
-                        }
-                        else
-                        {
-                            response = "Invalid role";
-                        }
-                        break;
-                    }
-                    case "remove":
-                    {
-                        if (role != null)
-                        {
-                            if (discord.Config.ModerationRoles != null)
-                            {
-                                if (discord.Config.ModerationRoles.Remove(role.Id))
-                                {
-                                    Th3Essentials.Config.MarkDirty();
-                                    response = $"Removed role: {role.Name}";
-                                }
-                                else
-                                {
-                                    response = "Role had not permissions, nothing to remove";
-                                }
-                            }
-                            else
-                            {
-                                response = "Nothing to remove";
-                            }
-                        }
-                        else
-                        {
-                            response = "Invalid role";
-                        }
-                        break;
-                    }
-                    case "clear":
-                    {
-                        if (discord.Config.ModerationRoles != null)
-                        {
-                            discord.Config.ModerationRoles.Clear();
-                            Th3Essentials.Config.MarkDirty();
-                            response = "All moderation roles removed";
-                        }
-                        else
-                        {
-                            response = "Nothing to remove";
-                        }
-                        break;
-                    }
-                    default:
-                    {
-                        response = $"Error: Mode option invalid: {mode}";
-                        break;
-                    }
+                    mode = option.Value as string;
+                    break;
                 }
             }
-            else
+        }
+
+        switch (mode)
+        {
+            case "add":
             {
-                response = "You do not have permissions to do that";
+                if (role != null)
+                {
+                    discord.Config.ModerationRoles ??= new List<ulong>();
+                    discord.Config.ModerationRoles.Add(role.Id);
+                    Th3Essentials.Config.MarkDirty();
+                    response = $"Added role: {role.Name}";
+                }
+                else
+                {
+                    response = "Invalid role";
+                }
+
+                break;
+            }
+            case "remove":
+            {
+                if (role != null)
+                {
+                    if (discord.Config.ModerationRoles != null)
+                    {
+                        if (discord.Config.ModerationRoles.Remove(role.Id))
+                        {
+                            Th3Essentials.Config.MarkDirty();
+                            response = $"Removed role: {role.Name}";
+                        }
+                        else
+                        {
+                            response = "Role had not permissions, nothing to remove";
+                        }
+                    }
+                    else
+                    {
+                        response = "Nothing to remove";
+                    }
+                }
+                else
+                {
+                    response = "Invalid role";
+                }
+
+                break;
+            }
+            case "clear":
+            {
+                if (discord.Config.ModerationRoles != null)
+                {
+                    discord.Config.ModerationRoles.Clear();
+                    Th3Essentials.Config.MarkDirty();
+                    response = "All moderation roles removed";
+                }
+                else
+                {
+                    response = "Nothing to remove";
+                }
+
+                break;
+            }
+            default:
+            {
+                response = $"Error: Mode option invalid: {mode}";
+                break;
             }
         }
-        else
-        {
-            response = "Something went wrong: User was not a GuildUser";
-        }
+
         return response;
     }
 }

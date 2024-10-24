@@ -148,16 +148,16 @@ internal class Starterkitsystem
 
     private TextCommandResult TryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
     {
+        if (_config.Items == null || _config.Items.Count == 0)
+        {
+            return TextCommandResult.Success(Lang.Get("th3essentials:st-notsetup"));
+        }
         var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
         if (playerData.StarterkitRecived)
         {
             return TextCommandResult.Success(Lang.Get("th3essentials:st-hasalready"));
         }
 
-        if (_config.Items == null || _config.Items.Count == 0)
-        {
-            return TextCommandResult.Success(Lang.Get("th3essentials:st-notsetup"));
-        }
         try
         {
             var inventory = player.InventoryManager.GetHotbarInventory();

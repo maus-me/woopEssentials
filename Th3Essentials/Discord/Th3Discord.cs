@@ -99,13 +99,16 @@ public class Th3Discord
             _harmony ??= new Harmony(_harmonyPatchkey);
             PatchAdminLogging.Patch(_harmony);
         }
-            
-        Sapi.ChatCommands.Create("dcauth")
-            .WithDescription("Link ingame and discord account")
-            .RequiresPlayer()
-            .RequiresPrivilege(Privilege.chat)
-            .WithArgs(Sapi.ChatCommands.Parsers.Word("token"))
-            .HandleWith(OnDiscordAuth);
+
+        if (Config.Rewards)
+        {
+            Sapi.ChatCommands.Create("dcauth")
+                .WithDescription("Link ingame and discord account")
+                .RequiresPlayer()
+                .RequiresPrivilege(Privilege.chat)
+                .WithArgs(Sapi.ChatCommands.Parsers.Word("token"))
+                .HandleWith(OnDiscordAuth);
+        }
 
         // start discord bot
         BotMainAsync();
@@ -185,6 +188,7 @@ public class Th3Discord
             // needed since discord might disconect from the gateway and reconnect emitting the ReadyAsync again
             if (!_initialized)
             {
+
                 _client.MessageReceived += MessageReceivedAsync;
                 _client.SlashCommandExecuted += InteractionCreated;
                 _client.ButtonExecuted += ButtonExecuted;
@@ -504,7 +508,7 @@ public class Th3Discord
             
         byPlayer.ServerData.CustomPlayerData.Remove(REWARDS_SERVER_DATA_KEY);
         if (!Config.LinkedAccounts.TryGetValue(byPlayer.PlayerUID, out var discordId)) return;
-            
+
         var guild = _client.GetGuild(Config.GuildId);
         var socketGuildUser = guild.GetUser(ulong.Parse(discordId));
 

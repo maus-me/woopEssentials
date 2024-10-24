@@ -24,10 +24,10 @@ internal class TeleportRequest : Command
     internal override void Init(ICoreServerAPI api)
     {
         _sapi = api;
-        _playerConfig = Th3Essentials.PlayerConfig;
         _config = Th3Essentials.Config;
         if (_config.TeleportToPlayerEnabled)
         {
+            _playerConfig = Th3Essentials.PlayerConfig;
             _sapi = api;
             _tpRequests = new Dictionary<string, string>();
             api.ChatCommands.Create("t2p")

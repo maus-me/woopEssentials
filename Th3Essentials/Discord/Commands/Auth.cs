@@ -37,6 +37,11 @@ public abstract class Auth
     {
         if (commandInteraction.User is not SocketGuildUser guildUser)
             return "Auth did not work: Could not get user";
+
+        if (Th3Essentials.Config.DiscordConfig?.Rewards != true)
+        {
+            return "Auth not enabled";
+        }
         
         string? mode = null;
         foreach (var option in commandInteraction.Data.Options)
