@@ -173,11 +173,12 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
   If you wanna use the reward/auth system you need to enable in the "Bot" menu the "SERVER MEMBERS INTENT" toggle.
 
-- After look for Token and "Click to Reveal Token" and also "Copy" here you will get your discord bot token that is needed in the Th3Config.json file, copy it and paste it into the Th3Config.json file.
+- Next look for Token press "Reset Token" button then confirm it and finally "Copy" here you will get your discord bot token that is needed in the Th3Config.json file, copy it and paste it into the Th3Config.json file.
 
   In the Th3Config.json it should look like this:
 
   `"Token": "your_bot_token",`
+  make sure the `"` before and after the token are still there.
 
 5.  Click on the OAuth2 menu entry on the left and URL Generator. Here you can setup the permission and invite your bot to your discord server. Scroll down to the "SCOPES" section and tick the box for
 
