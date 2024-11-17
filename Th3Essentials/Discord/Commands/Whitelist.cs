@@ -136,7 +136,7 @@ public abstract class Whitelist
                 _ => datetime.AddYears(timenew)
             };
             var name = guildUser.DisplayName;
-            var playerUid = await GetPlayerUid(discord.Sapi, targetPlayer);
+            var playerUid = await Th3SlashCommands.GetPlayerUid(discord.Sapi, targetPlayer);
             
             if (playerUid == null)
                 return $"Could not find player with name: {targetPlayer}";
@@ -148,34 +148,12 @@ public abstract class Whitelist
         }
         else
         {
-            var playerUid = await GetPlayerUid(discord.Sapi, targetPlayer);
+            var playerUid = await Th3SlashCommands.GetPlayerUid(discord.Sapi, targetPlayer);
             if (playerUid == null)
                 return $"Could not find player with name: {targetPlayer}";
             
             _ = ((ServerMain)discord.Sapi.World).PlayerDataManager.UnWhitelistPlayer(targetPlayer, playerUid);
             return $"{targetPlayer} is now removed from whitelist";
         }
-    }
-
-    private static async Task<string?> GetPlayerUid(ICoreServerAPI sapi, string targetPlayer)
-    {
-        var player = sapi.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
-        
-        if (player != null) return player.PlayerUID;
-        
-        using var client = new HttpClient();
-        var bodydata = new List<KeyValuePair<string, string>>
-        {
-            new("playername", targetPlayer)
-        };
-        
-        var body = new FormUrlEncodedContent(bodydata);
-        var result = await client.PostAsync("https://auth.vintagestory.at/resolveplayername", body);
-        
-        if (result.StatusCode != HttpStatusCode.OK) return null;
-        
-        var responseData = await result.Content.ReadAsStringAsync();
-        var resolveResponse = JsonConvert.DeserializeObject<ResolveResponse>(responseData);
-        return resolveResponse?.playeruid;
     }
 }

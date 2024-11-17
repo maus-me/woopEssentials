@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 using Th3Essentials.Discord.Commands;
 using Vintagestory.API.Server;
+using Vintagestory.Server;
 
 namespace Th3Essentials.Discord;
 
@@ -213,5 +217,38 @@ public abstract class Th3SlashCommands
         }
 
         return moderationRoles != null && guildUser.Roles.Select(r => r.Id).ToArray().Intersect(moderationRoles).Any();
+    }
+
+    public static async Task<string?> GetPlayerUid(ICoreServerAPI sapi, string targetPlayer)
+    {
+        var player = sapi.PlayerData.GetPlayerDataByLastKnownName(targetPlayer);
+
+        if (player == null)
+        {
+            foreach (var p in sapi.World.AllPlayers)
+            {
+                if (p.PlayerUID.Equals(targetPlayer, StringComparison.OrdinalIgnoreCase))
+                {
+                    return p.PlayerUID;
+                }
+            }
+        }
+        
+        if (player != null) return player.PlayerUID;
+        
+        using var client = new HttpClient();
+        var bodydata = new List<KeyValuePair<string, string>>
+        {
+            new("playername", targetPlayer)
+        };
+        
+        var body = new FormUrlEncodedContent(bodydata);
+        var result = await client.PostAsync("https://auth.vintagestory.at/resolveplayername", body);
+        
+        if (result.StatusCode != HttpStatusCode.OK) return null;
+        
+        var responseData = await result.Content.ReadAsStringAsync();
+        var resolveResponse = JsonConvert.DeserializeObject<ResolveResponse>(responseData);
+        return resolveResponse?.playeruid;
     }
 }
