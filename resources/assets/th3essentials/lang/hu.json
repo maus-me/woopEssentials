@@ -94,6 +94,8 @@
     "slc-restart-disabled": "A szerver újraindítási parancsa le van tiltva",
     "slc-players-none": "Ó, senki sincs online",
     "slc-players-ping": "Ping megjelenítése",
+    "slc-kick": "Kick a player",
+    "slc-kick-reason": "The reason why the player got kicked",
     "slc-ban": "Egy játékos kitiltási státuszának módosítása",
     "slc-ban-mode": "Mód, kitiltás (true) vagy visszaengedés (false)",
     "slc-ban-time": "Az idő, ameddig a játékos ki lesz tiltva, semmi a visszaengedésnél [alapértelmezett = 50]",

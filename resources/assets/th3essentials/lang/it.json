@@ -94,6 +94,8 @@
     "slc-restart-disabled": "Il comando per riavviare il server è disabilitato",
     "slc-players-none": "Oh, nessuno è online",
     "slc-players-ping": "Visualizza il ping",
+    "slc-kick": "Kick a player",
+    "slc-kick-reason": "The reason why the player got kicked",
     "slc-ban": "Change the ban status of a player",
     "slc-ban-mode": "The mode, ban (true) or unban (false)",
     "slc-ban-time": "The time the player should be ban, does nothing on unban [default = 50]",
