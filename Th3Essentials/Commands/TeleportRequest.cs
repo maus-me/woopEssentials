@@ -97,11 +97,20 @@ internal class TeleportRequest : Command
                 var requestingPlayer = _sapi.World.AllOnlinePlayers.FirstOrDefault(p => p.PlayerUID.Equals(requesterUid));
                 if (requestingPlayer == null)
                 {
+                    //player not online anymore
                     return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-no"));
                 }
-                var playerData = _playerConfig.GetPlayerDataByUid(requestingPlayer.PlayerUID);
 
-                TeleportTo(requestingPlayer, playerData ,args.Caller.Player.Entity.Pos);
+                var requestingPlayerData = _playerConfig.GetPlayerDataByUid(requestingPlayer.PlayerUID);
+                var requestingplayerConfig = Homesystem.GetConfig(requestingPlayer, requestingPlayerData, _config);
+
+                if (Homesystem.CheckPayment(_config.TeleportToPlayerItem, requestingplayerConfig.TeleportToPlayerCost, requestingPlayer, out var canTeleport, out var success)) return success!;
+
+                if (canTeleport)
+                {
+                    Homesystem.PayIfNeeded(requestingPlayer, _config.TeleportToPlayerItem, requestingplayerConfig.TeleportToPlayerCost);
+                    TeleportTo(requestingPlayer, requestingPlayerData, args.Caller.Player.Entity.Pos);
+                }
             }
             else
             {
@@ -163,7 +172,6 @@ internal class TeleportRequest : Command
             
             if (canTeleport)
             {
-                Homesystem.PayIfNeeded(player, _config.TeleportToPlayerItem, playerConfig.TeleportToPlayerCost);
                 _tpRequests.Add(otherPlayer.PlayerUID, player.PlayerUID);
                 (otherPlayer as IServerPlayer)?.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-t2pr-prm", player.PlayerName),EnumChatType.Notification);
                 return TextCommandResult.Success(Lang.Get("th3essentials:t2p-success"));
