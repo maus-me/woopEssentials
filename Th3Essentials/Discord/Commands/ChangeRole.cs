@@ -20,15 +20,6 @@ public abstract class ChangeRole
             IsRequired = true
         };
 
-        if (sapi.Server.Config.Roles.Count <= 25)
-        {
-            roles.Choices = sapi.Server.Config.Roles.Select(role => new ApplicationCommandOptionChoiceProperties
-            {
-                Name = role.Code,
-                Value = role.Code
-            }).ToList();
-        }
-
         var roleOptions = new List<SlashCommandOptionBuilder>()
         {
             new()
