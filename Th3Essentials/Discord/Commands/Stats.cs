@@ -38,6 +38,7 @@ public abstract class Stats
         stringBuilder.AppendLine(Th3Util.GetVsVersion());
         stringBuilder.AppendLine($"Uptime: {server.totalUpTime.Elapsed.ToString()}");
         stringBuilder.AppendLine($"Players online: {server.Clients.Count} / {server.Config.MaxClients}");
+        stringBuilder.AppendLine($"Players in queue: {server.ConnectionQueue.Count} / {server.Config.MaxClientsInQueue}");
 
         var activeEntities = 0;
         foreach (KeyValuePair<long, Entity> loadedEntity in discord.Sapi.World.LoadedEntities)
