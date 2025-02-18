@@ -2,6 +2,8 @@
 
 For help, discussion, suggestions and polls on new fetures join the [Discord Server](https://discord.gg/GX65XawGWX)
 
+[Tanslations](https://crowdin.com/project/th3essentials)
+
 - [Installation](#installation)
 - [Updating](#updating)
 
