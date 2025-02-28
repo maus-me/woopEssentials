@@ -233,6 +233,7 @@ public class Th3Essentials : ModSystem
             Sapi.Logger.Warning(
                 $"SaveFileSize: {fileInfo.Length / 1000000} MB, FreeDiskSpace: {freeDiskSpace / 1000000} MB");
             Sapi.Logger.Error("Not enought disk space left to create a backup");
+            _th3Discord?.SendServerMessage(Lang.Get("th3essentials:backup-dc"));
             return;
         }
 
