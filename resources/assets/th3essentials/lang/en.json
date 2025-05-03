@@ -78,7 +78,7 @@
     "st-notsetup": "starterkit has not been configured yet",
     "st-setup": "Starterkit was set",
     "hs-noBack": "no back location yet set",
-    "hs-back": "teleportet to last position",
+    "hs-back": "teleported to last position",
     "shutdown": ":no_entry: Server shutdown",
     "start": ":white_check_mark: Server started",
     "backup": "Backing up world... Do not turn off the server! It will shutdown once it finished.",
