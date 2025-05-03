@@ -175,7 +175,7 @@ internal class Homesystem
             {
                 return TextCommandResult.Error(Lang.Get("th3essentials:hs-noBack"));
             }
-                
+
             var playerConfig = GetConfig(player, playerData, _config);
             if (CheckPayment(_config.HomeItem, playerConfig.BackTeleportCost, player, out var canTeleport, out var success)) return success!;
             if (canTeleport)
@@ -189,7 +189,7 @@ internal class Homesystem
         }
 
         var diff = playerData.HomeLastuseage.AddSeconds(_config.BackCooldown) - DateTime.Now;
-        return TextCommandResult.Success(Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds));
+        return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
     }
 
     public TextCommandResult ToSpawn(TextCommandCallingArgs args)
@@ -211,7 +211,7 @@ internal class Homesystem
         }
 
         var diff = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown) - DateTime.Now;
-        return TextCommandResult.Success(Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds));
+        return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
     }
 
     public TextCommandResult Home(TextCommandCallingArgs args)
@@ -250,7 +250,7 @@ internal class Homesystem
         }
 
         var diff = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown) - DateTime.Now;
-        return TextCommandResult.Success(Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds));
+        return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
     }
 
     internal static void PayIfNeeded(IPlayer player, StarterkitItem? item, int cost)

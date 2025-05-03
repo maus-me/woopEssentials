@@ -181,7 +181,7 @@ internal class TeleportRequest : Command
         }
         
         var diff = playerData.T2PLastUsage.AddSeconds(_config.TeleportToPlayerCooldown) - DateTime.Now;
-        return TextCommandResult.Success(Lang.Get("th3essentials:hs-wait", diff.Minutes, diff.Seconds));
+        return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
     }
 
     public static void TeleportTo(IPlayer player, Th3PlayerData playerData, EntityPos location)

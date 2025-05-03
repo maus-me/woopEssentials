@@ -172,8 +172,7 @@ internal class Warp : Command
                     diff = playerData.WarpLastUsage.AddSeconds(Th3Essentials.Config.WarpCooldown) -
                            DateTime.Now;
                 }
-                return TextCommandResult.Success(Lang.Get("th3essentials:hs-wait", diff.Minutes,
-                    diff.Seconds));
+                return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
 
             }
         }

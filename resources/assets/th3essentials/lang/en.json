@@ -60,7 +60,7 @@
     "th3essentials:hs-item-desc": "Sets the current hotbar slot as the required item and quantity, use empty slot to unset",
     "hs-changelim": "Updated home point limit for player : {0} to {1}",
     "hs-item-missing": "You are missing {0} x {1}",
-    "hs-wait": "you have to wait {0} min {1} sec",
+    "wait-time": "you have to wait for {0}",
     "hs-tp-spawn": "teleport to spawn",
     "hs-tp-point": "teleport to {0}",
     "hs-list": "Your Homepoints: {0}",

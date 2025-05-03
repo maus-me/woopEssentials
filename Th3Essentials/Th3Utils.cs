@@ -191,4 +191,19 @@ public static class Th3Util
 
         return msg;
     }
+
+    public static string PrettyTime(TimeSpan span)
+    {
+        var parts = new List<string>();
+        if (span.Days > 0)
+            parts.Add($"{span.Days} day{(span.Days == 1 ? "" : "s")}");
+        if (span.Hours > 0)
+            parts.Add($"{span.Hours} hour{(span.Hours == 1 ? "" : "s")}");
+        if (span.Minutes > 0)
+            parts.Add($"{span.Minutes} minute{(span.Minutes == 1 ? "" : "s")}");
+        if (span.Seconds > 0 || parts.Count == 0) // Always show seconds if nothing else
+            parts.Add($"{span.Seconds} second{(span.Seconds == 1 ? "" : "s")}");
+
+        return string.Join(", ", parts);
+    }
 }
