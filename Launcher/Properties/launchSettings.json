@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ServerHot": {
+      "hotReloadEnabled": true,
+      "targetProject": "$(SolutionDir)/Launcher/Launcher.csproj",
+      "commandName": "Project",
+      "commandLineArgs": "--tracelog --addModPath \"$(SolutionDir)/Th3Essentials/bin/$(Configuration)/Mods\" --dataPath $(VINTAGE_STORY_SERVER_DATA_MODDING)",
+      "workingDirectory": "$(SolutionDir)/Launcher/bin/$(Configuration)/"
+    }
+  }
+}

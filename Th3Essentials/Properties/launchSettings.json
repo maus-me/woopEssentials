@@ -1,12 +1,14 @@
 {
   "profiles": {
     "Client": {
+      "hotReloadEnabled": true,
       "commandName": "Executable",
       "executablePath": "dotnet",
       "commandLineArgs": "$(VINTAGE_STORY)/Vintagestory.dll --tracelog --addModPath \"$(ProjectDir)/bin/$(Configuration)/Mods\" --dataPath $(VINTAGE_STORY_DATA_MODDING)",
       "workingDirectory": "$(VINTAGE_STORY)"
     },
     "Server": {
+      "hotReloadEnabled": true,
       "commandName": "Executable",
       "executablePath": "dotnet",
       "commandLineArgs": "$(VINTAGE_STORY)/VintagestoryServer.dll --tracelog --addModPath \"$(ProjectDir)/bin/$(Configuration)/Mods\" --dataPath $(VINTAGE_STORY_SERVER_DATA_MODDING)",
