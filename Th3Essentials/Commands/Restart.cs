@@ -19,7 +19,7 @@ internal class Restart : Command
                     if (Th3Essentials.Config.ShutdownEnabled)
                     {
                         var restart = Th3Essentials.ShutDownTime - DateTime.Now;
-                        var response = Lang.Get("th3essentials:slc-restart-resp", restart.TotalHours.ToString("D2"),
+                        var response = Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"),
                             restart.Minutes.ToString("D2"));
                         return TextCommandResult.Success(response);
                     }
