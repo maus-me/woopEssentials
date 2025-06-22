@@ -88,7 +88,7 @@ internal class RandomTeleport : Command
         {
             var spawn = player.Entity.Pos.AsBlockPos;
             var x = Random.Shared.Next(-Th3Essentials.Config.RandomTeleportRadius, Th3Essentials.Config.RandomTeleportRadius);
-            var z = Random.Shared.Next(-Th3Essentials.Config.RandomTeleportRadius/2, Th3Essentials.Config.RandomTeleportRadius/2);
+            var z = Random.Shared.Next(-Th3Essentials.Config.RandomTeleportRadius / 2, Th3Essentials.Config.RandomTeleportRadius / 2);
             BlockPos pos;
             if (_pos?.Count > 0)
             {
@@ -98,8 +98,8 @@ internal class RandomTeleport : Command
             else
             {
                 pos = new BlockPos(spawn.X + x, 1, spawn.Z + z, 0);
-                pos.X = Math.Clamp(pos.X, 0, _sapi.WorldManager.MapSizeX);
-                pos.Z = Math.Clamp(pos.Z, 0, _sapi.WorldManager.MapSizeZ);
+                pos.X = Math.Clamp(pos.X, 0, _sapi.WorldManager.MapSizeX - 1);
+                pos.Z = Math.Clamp(pos.Z, 0, _sapi.WorldManager.MapSizeZ - 1);
             }
 
             if (Homesystem.CheckPayment(_config.RandomTeleportItem, playerConfig.RandomTeleportCost, player, out var canTeleport, out var success)) return success!;
@@ -109,7 +109,7 @@ internal class RandomTeleport : Command
                 Homesystem.PayIfNeeded(player, _config.RandomTeleportItem, playerConfig.RandomTeleportCost);
                 
                 _sapi.WorldManager.LoadChunkColumnPriority(pos.X / _sapi.WorldManager.ChunkSize,
-                    pos.Z / _sapi.World.BlockAccessor.ChunkSize, new ChunkLoadOptions{ OnLoaded = () =>
+                    pos.Z / GlobalConstants.ChunkSize, new ChunkLoadOptions{ OnLoaded = () =>
                     {
                         // only use terrain height for none list positions
                         if (_pos == null)
