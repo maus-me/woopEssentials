@@ -348,10 +348,20 @@ public class Th3Discord
         if (Config.AdminLogChannelId != 0)
         {
             _adminLogChannel = _client.GetChannel(Config.AdminLogChannelId) as IMessageChannel;
+            if (_adminLogChannel == null)
+            {
+                Sapi.Logger.Warning($"AdminLogChannelId: {Config.AdminLogChannelId} is not a valid channel. You will not see any admin messages");
+            }
         }
         if (Config.SystemChannelId != 0)
         {
             _systemChannel = _client.GetChannel(Config.SystemChannelId) as IMessageChannel;
+
+            if (_systemChannel == null)
+            {
+                Sapi.Logger.Warning($"SystemChannelId: {Config.SystemChannelId} is not a valid channel. Falling back to use the ChannelId for SystemChannelId");
+                _systemChannel = _discordChannel;
+            }
         }
         else
         {
