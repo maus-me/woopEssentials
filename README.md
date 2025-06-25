@@ -333,7 +333,10 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // if ShutdownEnabled is this will create a backup and restart after that is finished
   "BackupOnShutdown": false,
 
-  // time on the server when the server should restart, also used for the ShutdownAnnounce messages - do not set this to null - if ShutdownEnabled is false and ShutdownAnnounce is null it wont do anything
+  // time on the server when the server should restart, also used for the ShutdownAnnounce messages 
+  // - do not set this to null 
+  // - if ShutdownEnabled is false and ShutdownAnnounce is null it wont do anything
+  // ShutdownTime and ShutdownTimes is both in UTC
   "ShutdownTime": "00:00:00",
   // if you wanna have  multiple shutdowns per day you can define the time in here , will send shutodwn announce messages for every shutdown
   // on startup this will be checked for the next shutdown and written to ShutdownTime - so this value has priority over ShutdownTime
