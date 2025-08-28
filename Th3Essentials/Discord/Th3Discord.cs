@@ -185,7 +185,7 @@ public class Th3Discord
                 Sapi.Server.LogError($"Could not find channel with id: {Config.ChannelId}");
             }
 
-            // needed since discord might disconect from the gateway and reconnect emitting the ReadyAsync again
+            // needed since discord might disconnect from the gateway and reconnect emitting the ReadyAsync again
             if (!_initialized)
             {
 
@@ -331,7 +331,7 @@ public class Th3Discord
             }
             else
             {
-                name = message.Author.GlobalName ?? message.Author.Username;
+                name = (message.Author.GlobalName ?? message.Author.Username).Replace("<", "&lt;").Replace(">", "&gt;");
             }
             msg = message.Attachments.Count > 0
                 ? string.Format(format, Config.DiscordChatColor, name, $" [Attachments] {msg}")
