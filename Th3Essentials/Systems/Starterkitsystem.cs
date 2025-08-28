@@ -54,8 +54,32 @@ internal class Starterkitsystem
             .RequiresPrivilege(Privilege.controlserver)
             .WithArgs(sapi.ChatCommands.Parsers.OnlinePlayer("player"))
             .HandleWith(OnResetKit);
+
+        sapi.ChatCommands.Create("setstarterkitusage")
+            .WithDescription(Lang.Get("th3essentials:cd-rstp"))
+            .RequiresPlayer()
+            .RequiresPrivilege(Privilege.controlserver)
+            .WithArgs(sapi.ChatCommands.Parsers.OnlinePlayer("player"))
+            .HandleWith(OnSetKit);
     }
 
+    private TextCommandResult OnSetKit(TextCommandCallingArgs args)
+    {
+        if (args.Parsers[0].GetValue() is IPlayer foundPlayer)
+        {
+            var playerData = _playerConfig.GetPlayerDataByUid(foundPlayer.PlayerUID, false);
+            if (playerData != null)
+            {
+                playerData.StarterkitRecived = true;
+                playerData.MarkDirty();
+                return TextCommandResult.Success(Lang.Get("th3essentials:cd-stp-done", foundPlayer.PlayerName));
+            }
+
+            return TextCommandResult.Error(Lang.Get("th3essentials:cd-rstp-npd"));
+        }
+        return TextCommandResult.Error(Lang.Get("th3essentials:cd-rstp-unknown"));
+    }
+    
     private TextCommandResult OnResetKit(TextCommandCallingArgs args)
     {
         if (args.Parsers[0].GetValue() is IPlayer foundPlayer)

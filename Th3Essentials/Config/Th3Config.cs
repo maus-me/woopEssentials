@@ -89,8 +89,8 @@ public class Th3Config
         _ = sb.AppendLine("/back | Teleport back to last position (home/spawn teleport and death)");
         _ = sb.AppendLine("/home | List all homepoints");
         _ = sb.AppendLine("/home [name] | Teleport to a homepoint");
-        _ = sb.AppendLine("/sethome [name] | Set a homepoint");
-        _ = sb.AppendLine("/delhome [name] | Delete a homepoint");
+        _ = sb.AppendLine("/home set [name] | Set a homepoint");
+        _ = sb.AppendLine("/home del [name] | Delete a homepoint");
         _ = sb.AppendLine("/restart | Shows time till next restart");
         _ = sb.AppendLine("/msg [Name] [Message] | Send a message to a player that is online");
         _ = sb.AppendLine("/starterkit | Recive a one time starterkit");

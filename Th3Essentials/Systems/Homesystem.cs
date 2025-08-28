@@ -329,7 +329,7 @@ internal class Homesystem
         //TODO remove in next version
         if (args.Command.Name.Equals("delhome"))
         {
-            (args.Caller.Player as IServerPlayer)?.SendMessage(GlobalConstants.GeneralChatGroup, "Deprecated: use /home set [name] instead", EnumChatType.Notification);
+            (args.Caller.Player as IServerPlayer)?.SendMessage(GlobalConstants.GeneralChatGroup, "Deprecated: use /home delete [name] instead", EnumChatType.Notification);
         }
         var name = (string)args.Parsers[0].GetValue();
         var player = args.Caller.Player;
