@@ -1,7 +1,6 @@
 using System.Timers;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 
 namespace Th3Essentials.Systems;

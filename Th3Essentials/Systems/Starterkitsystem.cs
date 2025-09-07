@@ -195,7 +195,6 @@ internal class Starterkitsystem
                 var asset = new AssetLocation(_config.Items[i].Code.ToString());
                     
                 var received = false;
-                string error = null;
                 switch (_config.Items[i].Itemclass)
                 {
                     case EnumItemClass.Item:

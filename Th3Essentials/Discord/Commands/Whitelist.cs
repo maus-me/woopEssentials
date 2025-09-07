@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using Newtonsoft.Json;
 using Vintagestory.API.Config;
-using Vintagestory.API.Server;
 using Vintagestory.Server;
 
 namespace Th3Essentials.Discord.Commands;

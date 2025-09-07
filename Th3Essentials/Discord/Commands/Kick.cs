@@ -97,7 +97,7 @@ public abstract class Kick
             {
                 serverMain.DisconnectPlayer(client, othersKickmessage, hisKickMessage);
             }
-            catch (Exception _)
+            catch (Exception ex)
             {
                 // ignored
             }
