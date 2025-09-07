@@ -17,6 +17,8 @@ public class Th3Config
     public int AnnouncementInterval;
     public int AnnouncementChatGroupUid;
 
+    public string AnnouncementLabel = "<br /><strong>[Info]</strong>";
+
     public int HomeLimit = -1;
 
     public int HomeCooldown = 60;
@@ -134,6 +136,7 @@ public class Th3Config
     {
         AnnouncementInterval = configTemp.AnnouncementInterval;
         AnnouncementMessages = configTemp.AnnouncementMessages;
+        AnnouncementLabel = configTemp.AnnouncementLabel;
         InfoMessage = configTemp.InfoMessage;
         Items = configTemp.Items;
 

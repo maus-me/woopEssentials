@@ -60,6 +60,6 @@ internal class Announcementsystem
         _lastIndex = index;
 
         // AnnouncementChatGroupId is by default 0 so general chat
-        _sapi.SendMessageToGroup(_config.AnnouncementChatGroupUid, $"<strong>[Info]</strong> {_config.AnnouncementMessages[index]}", EnumChatType.Notification);
+        _sapi.SendMessageToGroup(_config.AnnouncementChatGroupUid, $"{_config.AnnouncementLabel} {_config.AnnouncementMessages[index]}", EnumChatType.Notification);
     }
 }
