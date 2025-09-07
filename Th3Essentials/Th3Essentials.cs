@@ -16,10 +16,10 @@ using Vintagestory.API.Util;
 using Vintagestory.Common;
 using Vintagestory.Server;
 
-[assembly: ModInfo("Th3Essentials",
-    Description = "Th3Dilli essentials server mod",
-    Website = "https://gitlab.com/Th3Dilli/",
-    Authors = new[] { "Th3Dilli" })]
+[assembly: ModInfo("woopEssentials",
+    Description = "WoopLands essentials server mod",
+    Website = "https://github.com/maus-me/woopEssentials/",
+    Authors = new[] { "Th3Dilli", "mausterio" })]
 
 [assembly: InternalsVisibleTo("Tests")]
 
@@ -30,7 +30,7 @@ public delegate void PlayerWithRewardJoin(IServerPlayer player, string discordRe
 // ReSharper disable once ClassNeverInstantiated.Global
 public class Th3Essentials : ModSystem
 {
-    internal const string ConfigFile = "Th3Config.json";
+    internal const string ConfigFile = "woopEssentials.json";
 
     internal static Th3Config Config { get; set; } = null!;
 
@@ -108,7 +108,7 @@ public class Th3Essentials : ModSystem
                 Sapi.Event.PlayerChat += PlayerChatAsync;
             }
 
-            Sapi.Logger.Debug("Discordbot needs to be configured, functionality disabled!!!");
+            Sapi.Logger.Debug("Discordbot needs to be configured, functionality disabled!");
         }
 
         var deathMessages = Sapi.World.Config.GetBool("disableDeathMessages");
