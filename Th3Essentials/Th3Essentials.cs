@@ -38,7 +38,7 @@ public class Th3Essentials : ModSystem
 
     internal static DateTime ShutDownTime;
 
-    internal static readonly string Th3EssentialsModDataKey = "Th3Essentials";
+    internal static readonly string Th3EssentialsModDataKey = "woopEssentials";
 
     internal ICoreServerAPI Sapi = null!;
 
