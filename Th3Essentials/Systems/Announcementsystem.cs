@@ -1,3 +1,4 @@
+using System;
 using System.Timers;
 using Th3Essentials.Config;
 using Vintagestory.API.Common;
@@ -11,13 +12,13 @@ internal class Announcementsystem
 
     private Th3Config _config = null!;
 
-    private int _currentMsg;
+    private readonly Random _rng = new Random();
+    private int _lastIndex = -1;
 
     private Timer _announcer = null!;
 
     public Announcementsystem()
     {
-        _currentMsg = 0;
     }
 
     public void Init(ICoreServerAPI sapi)
@@ -36,18 +37,29 @@ internal class Announcementsystem
 
     private void AnnounceMsg(object? source, ElapsedEventArgs args)
     {
-        if (_config.AnnouncementMessages == null)
+        if (_config.AnnouncementMessages == null || _config.AnnouncementMessages.Count == 0)
         {
             _announcer.Elapsed -= AnnounceMsg;
             return;
         }
-        if (_currentMsg >= _config.AnnouncementMessages.Count)
+
+        int count = _config.AnnouncementMessages.Count;
+        int index;
+        if (count == 1)
         {
-            _currentMsg = 0;
+            index = 0;
         }
+        else
+        {
+            // pick a random index different from previous to avoid immediate repeats when possible
+            do
+            {
+                index = _rng.Next(0, count);
+            } while (index == _lastIndex);
+        }
+        _lastIndex = index;
 
         // AnnouncementChatGroupId is by default 0 so general chat
-        _sapi.SendMessageToGroup(_config.AnnouncementChatGroupUid, $"<strong>[Info]</strong> {_config.AnnouncementMessages[_currentMsg]}", EnumChatType.Notification);
-        _currentMsg++;
+        _sapi.SendMessageToGroup(_config.AnnouncementChatGroupUid, $"<strong>[Info]</strong> {_config.AnnouncementMessages[index]}", EnumChatType.Notification);
     }
 }
