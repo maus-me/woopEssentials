@@ -1,11 +1,12 @@
 {
     "type": "code",
-    "modid": "th3essentials",
-    "name": "Th3Essentials",
+    "modid": "woopessentials",
+    "name": "WoopEssentials",
     "authors": [
-        "Th3Dilli"
+        "Th3Dilli",
+        "Mausterio"
     ],
-    "description": "Th3Dilli's essentials mod",
+    "description": "WoopLand's essentials mod",
     "version": "2.12.0",
     "side": "server",
     "dependencies": {
