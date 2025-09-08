@@ -93,8 +93,12 @@ internal class Message : Command
         {
             return TextCommandResult.Error("/msg " + Lang.Get("th3essentials:cd-msg-param"));
         }
-
-        var senderName = player.PlayerName ?? "Console";
+        // Handle the case where the server console is sending a message
+        var senderName = "Console";
+        if (player != null)
+        {
+            senderName = player.PlayerName;
+        }
 
         msgRaw = msgRaw.Replace("<", "&lt;").Replace(">", "&gt;");
         var msg =
@@ -113,8 +117,13 @@ internal class Message : Command
             {
                 var otherPlayer = otherPlayers.First();
 
-                _lastMsgFrom[otherPlayer.PlayerUID] = player.PlayerUID;
-                _sapi.Logger.Chat($"{player.PlayerName} -> {otherPlayer.PlayerName}: {msg}");
+                // If message was sent by a player, track it as _lastMsgFrom for reply purposes
+                if (player != null)
+                {
+                    _lastMsgFrom[otherPlayer.PlayerUID] = player.PlayerUID;
+                }
+
+                _sapi.Logger.Chat($"{senderName} -> {otherPlayer.PlayerName}: {msg}");
 
                 otherPlayer.SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
                 try
