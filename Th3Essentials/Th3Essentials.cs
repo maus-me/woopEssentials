@@ -90,6 +90,9 @@ public class Th3Essentials : ModSystem
             _restartListener = Sapi.Event.RegisterGameTickListener(CheckRestart, 60000);
         }
 
+        // Register entity behaviors early so JSON patches referencing them can load without errors
+        Sapi.RegisterEntityBehaviorClass("EntityBehaviorPvp", typeof(EntityBehaviorPvp));
+
         CommandsLoader.Init(Sapi);
         new Homesystem().Init(Sapi);
         new Starterkitsystem().Init(Sapi);

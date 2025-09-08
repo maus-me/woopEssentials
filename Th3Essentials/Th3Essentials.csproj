@@ -50,6 +50,9 @@
         <Content Include="..\resources\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Update="..\resources\assets\th3essentials\patches\game-entities-humanoid-player.json">
+          <Link>assets\th3essentials\patches\game-entities-humanoid-player.json</Link>
+        </Content>
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,10 @@
+﻿[
+  {
+    "op": "add",
+    "path": "/server/behaviors/0",
+    "value": {
+      "code": "EntityBehaviorPvp"
+    },
+    "file": "game:entities/humanoid/player.json"
+  }
+]

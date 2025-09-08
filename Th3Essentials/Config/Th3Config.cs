@@ -67,6 +67,8 @@ public class Th3Config
     public string? ChatTimestampFormat;
 
     public bool EnableSmite;
+
+    public bool EnablePvPToggle;
         
     public int RandomTeleportRadius;
         
@@ -172,6 +174,8 @@ public class Th3Config
         WarpLocations = configTemp.WarpLocations;
         ChatTimestampFormat = configTemp.ChatTimestampFormat;
         EnableSmite = configTemp.EnableSmite;
+
+        EnablePvPToggle = configTemp.EnablePvPToggle;
             
         RandomTeleportRadius = configTemp.RandomTeleportRadius;
         RandomTeleportCooldown = configTemp.RandomTeleportCooldown;
