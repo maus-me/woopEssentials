@@ -1,3 +1,13 @@
+v2.2.0
+- Fixed error when trying to send /msg as console.
+- Removed deprecated commands /sethome and /delhome
+- Added aliases for some commands.
+- Randomized announcement broadcast order with additional check to ensure the same message is not sent back-to-back.
+- Unused code cleanup.
+- Bumped .Net version from 7.0 to 8.0. This drops support for Vintage Story versions below 1.21.0.
+- Code formatting adjustments.
+
+
 v2.1.0
 - add automatic backup feature (lock server, kick players, backup, restart)
 - fix reply command to reply to last received message
