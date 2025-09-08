@@ -1,8 +1,6 @@
-# Th3Essentials
+# woopEssentials
 
 For help, discussion, suggestions and polls on new fetures join the [Discord Server](https://discord.gg/GX65XawGWX)
-
-[Tanslations](https://crowdin.com/project/th3essentials)
 
 - [Installation](#installation)
 - [Updating](#updating)
@@ -108,7 +106,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
 - Homesystem / Spawn and Back command
 
-  With `"HomeLimit" : 5` every player can set up to 5 individual positions as so called homepoints and fast-travel to them using /home name. Points can be created with /sethome name and deleted with /delhome name. /home will list all your homepoints.
+  With `"HomeLimit" : 5` every player can set up to 5 individual positions as so called homepoints and fast-travel to them using /home name. Points can be created with /home set name and deleted with /home delete name. /home will list all your homepoints.
   To disable set `"HomeLimit" : 0`.
 
   `"HomeCooldown" : 60` will set a cooldown for teleportation using the /home name command as well as the /back and /spawn commands.
