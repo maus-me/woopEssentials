@@ -94,9 +94,11 @@ internal class Message : Command
             return TextCommandResult.Error("/msg " + Lang.Get("th3essentials:cd-msg-param"));
         }
 
+        var senderName = player.PlayerName ?? "Console";
+
         msgRaw = msgRaw.Replace("<", "&lt;").Replace(">", "&gt;");
         var msg =
-            $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>{player.PlayerName} whispers:</strong></font> {msgRaw}";
+            $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>{senderName} whispers:</strong></font> {msgRaw}";
 
         var otherPlayers = _sapi.Server.Players.Where((curPlayer) =>
             curPlayer.ConnectionState == EnumClientState.Playing &&
