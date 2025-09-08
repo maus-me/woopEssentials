@@ -79,22 +79,6 @@ internal class Homesystem
                 .HandleWith(SetSetItem)
                 .EndSubCommand()
                 ;
-                
-            //TODO remove in next version
-            _sapi.ChatCommands.Create("sethome")
-                .WithDescription(Lang.Get("th3essentials:cd-sethome") + " Deprecated: use /home set [name] instead")
-                .RequiresPlayer()
-                .RequiresPrivilege(Privilege.chat)
-                .WithArgs(_sapi.ChatCommands.Parsers.Word("name"))
-                .HandleWith(SetHome);
-
-            //TODO remove in next version
-            _sapi.ChatCommands.Create("delhome")
-                .WithDescription(Lang.Get("th3essentials:cd-delhome") + " Deprecated: use /home delete [name] instead")
-                .RequiresPlayer()
-                .RequiresPrivilege(Privilege.chat)
-                .WithArgs(_sapi.ChatCommands.Parsers.Word("name"))
-                .HandleWith(DeleteHome);
         }
 
         if (_config.SpawnEnabled)
@@ -325,12 +309,6 @@ internal class Homesystem
 
     public TextCommandResult DeleteHome(TextCommandCallingArgs args)
     {
-            
-        //TODO remove in next version
-        if (args.Command.Name.Equals("delhome"))
-        {
-            (args.Caller.Player as IServerPlayer)?.SendMessage(GlobalConstants.GeneralChatGroup, "Deprecated: use /home delete [name] instead", EnumChatType.Notification);
-        }
         var name = (string)args.Parsers[0].GetValue();
         var player = args.Caller.Player;
         var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
@@ -345,11 +323,6 @@ internal class Homesystem
 
     public TextCommandResult SetHome(TextCommandCallingArgs args)
     {
-        //TODO remove in next version
-        if (args.Command.Name.Equals("sethome"))
-        {
-            (args.Caller.Player as IServerPlayer)?.SendMessage(GlobalConstants.GeneralChatGroup, "Deprecated: use /home set [name] instead", EnumChatType.Notification);
-        }
         var name = args.Parsers[0].GetValue() as string;
         var player = args.Caller.Player;
         if (string.IsNullOrWhiteSpace(name))
