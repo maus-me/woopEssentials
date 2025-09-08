@@ -64,7 +64,18 @@ internal class Message : Command
 
         otherPlayer.SendMessage(GlobalConstants.GeneralChatGroup, msg,
             EnumChatType.OthersMessage);
-            
+        // Play sound for recipient (server-side only for the target player)
+        try
+        {
+            // Sound path is relative to assets/sounds without .ogg; using a common UI notify sound
+            var sound = new AssetLocation("game","sounds/player/projectilehit");
+            _sapi.World.PlaySoundFor(sound, otherPlayer, false, 16f, 0.75f);
+        }
+        catch (Exception e)
+        {
+            _sapi.Logger.Warning($"Failed to play pm sound for {otherPlayer.PlayerName}: {e.Message}");
+        }
+
         _sapi.Logger.Chat($"{player.PlayerName} -> {otherPlayer.PlayerName}: {msg}");
 
         _lastMsgFrom[otherPlayer.PlayerUID] = player.PlayerUID;
@@ -104,6 +115,15 @@ internal class Message : Command
                 _sapi.Logger.Chat($"{player.PlayerName} -> {otherPlayer.PlayerName}: {msg}");
 
                 otherPlayer.SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.OthersMessage);
+                try
+                {
+                    var sound = new AssetLocation("game","sounds/player/projectilehit");
+                    _sapi.World.PlaySoundFor(sound, otherPlayer, false, 16f, 0.75f);
+                }
+                catch (Exception e)
+                {
+                    _sapi.Logger.Warning($"Failed to play pm sound for {otherPlayer.PlayerName}: {e.Message}");
+                }
                 var msgSelf =
                     $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>whispering to {otherPlayer.PlayerName}:</strong></font> {msgRaw}";
 
@@ -115,4 +135,7 @@ internal class Message : Command
             }
         }
     }
+
+    /* Todo: Review the previous two functions to see if these can be consolidated.
+     A bit confused why the previous two are separate since they appear to largely share the same code. */
 }
