@@ -153,5 +153,10 @@
     "cd-pvp-toggle-off": "Disable PVP for yourself.",
     "combat-logout-broadcast": "{0} disconnected while in combat! Their items have been dropped.",
     "combat-die-reason": "disconnecting during combat!",
-    "pvp-tagged": "You are in combat for {0}s."
+    "pvp-tagged": "You are in combat for {0}s.",
+    "cd-heal": "Heal yourself to full health.",
+    "cd-heal-done": "You have been healed to full.",
+    "cd-feed": "Fill your hunger bar to full.",
+    "cd-feed-done": "Your hunger has been filled.",
+    "cd-revive": "Revive a dead player or fully heal if alive."
 }
