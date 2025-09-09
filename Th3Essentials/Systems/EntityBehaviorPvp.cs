@@ -128,7 +128,7 @@ namespace Th3Essentials.Systems
                     var attackerSp = attacker?.Player as IServerPlayer;
                     var victimPlayer = (entity as EntityPlayer)?.Player as IServerPlayer;
                     var victimName = victimPlayer?.PlayerName ?? "The player";
-                    NotifyOnce(attackerSp, "pvp-victim-disabled", $"{victimName} has PvP disabled.");
+                    NotifyOnce(attackerSp, "pvp-victim-disabled", $"{victimName} has PvP disabled."); // Todo: Replace message with lang string
 
                     return;
                 }
@@ -144,7 +144,7 @@ namespace Th3Essentials.Systems
 
                         // Notify attacker that their PvP is disabled
                         var attackerSp = attacker.Player as IServerPlayer;
-                        NotifyOnce(attackerSp, "pvp-attacker-disabled", "Your PvP is disabled, you cannot damage other players.");
+                        NotifyOnce(attackerSp, "pvp-attacker-disabled", "Your PvP is disabled, you cannot damage other players."); // Todo: Replace message with lang string
 
                         return;
                     }
@@ -153,6 +153,41 @@ namespace Th3Essentials.Systems
                     // Reset cooldown timer for both players as per requirement
                     attackerPvp?.ResetCooldownOnCombat();
                     this.ResetCooldownOnCombat();
+
+                    // Notify involved players they are tagged in combat (anti-spam protected)
+                    try
+                    {
+                        var victimSp = (entity as EntityPlayer)?.Player as IServerPlayer;
+                        var attackerSp = attacker.Player as IServerPlayer;
+
+                        // Notify victim
+                        if (victimSp != null)
+                        {
+                            // Show a simple message, include seconds left if already active
+                            if (IsCooldownActive(out var remainingVictim) && remainingVictim.TotalSeconds > 0)
+                            {
+                                var secs = Math.Ceiling(remainingVictim.TotalSeconds);
+                                NotifyOnce(victimSp, "pvp-tagged", Lang.Get("th3essentials:pvp-tagged", secs));
+                            }
+                            else
+                            {
+                                NotifyOnce(victimSp, "pvp-tagged", Lang.Get("th3essentials:pvp-tagged", (double)DefaultCooldownSeconds));
+                            }
+                        }
+
+                        // Notify attacker
+                        if (attackerSp != null)
+                        {
+                            var secsAtt = attackerPvp != null && attackerPvp.IsCooldownActive(out var remainingAtk)
+                                ? Math.Ceiling(remainingAtk.TotalSeconds)
+                                : (double)DefaultCooldownSeconds;
+                            NotifyOnce(attackerSp, "pvp-tagged", Lang.Get("th3essentials:pvp-tagged", secsAtt));
+                        }
+                    }
+                    catch
+                    {
+                        // ignore notification issues
+                    }
                 }
             }
         }
@@ -181,12 +216,14 @@ namespace Th3Essentials.Systems
                     };
                 }
 
-                // Play a sound at the disconnect location so nearby players hear it
                 try
                 {
-                    if (entity.Api?.Side == EnumAppSide.Server)
+                    // Play a sound at the disconnect location via world API so it still plays even as the entity despawns
+                    if (entity.Api is ICoreServerAPI sapiLocal)
                     {
-                        entity.PlayEntitySound("death", null, true, 24f);
+                        var pos = entity.ServerPos;
+                        // Using vanilla player death sound. World-level positional play avoids entity lifecycle issues.
+                        sapiLocal.World.PlaySoundAt(new AssetLocation("game","sounds/player/death1"), pos.X, pos.Y, pos.Z, null, true, 24f);
                     }
                 }
                 catch
