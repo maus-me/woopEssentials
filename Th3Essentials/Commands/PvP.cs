@@ -8,11 +8,6 @@ using System;
 using System.Collections.Generic;
 using Th3Essentials.Config;
 using Th3Essentials.Systems;
-using Vintagestory.API.Common;
-using Vintagestory.API.Config;
-using Vintagestory.API.Datastructures;
-using Vintagestory.API.MathTools;
-using Vintagestory.API.Server;
 
 namespace Th3Essentials.Commands;
 
@@ -24,8 +19,6 @@ internal class PvP : Command
 
     private ICoreServerAPI _sapi = null!;
 
-    private readonly Dictionary<IPlayer, DateTime> FlagTimeouts = new();
-
     internal override void Init(ICoreServerAPI api)
     {
         if (!Th3Essentials.Config.EnablePvPToggle) return;
@@ -33,7 +26,6 @@ internal class PvP : Command
         _sapi = api;
         _playerConfig = Th3Essentials.PlayerConfig;
         _config = Th3Essentials.Config;
-
 
         api.ChatCommands.Create("pvp")
             .WithDescription(Lang.Get("th3essentials:cd-pvp"))
@@ -65,8 +57,15 @@ internal class PvP : Command
         {
             return TextCommandResult.Error("No PVP Behavior Set.");
         }
+
         if (pvp.Enabled)
         {
+            // Also show cooldown remaining if any
+            if (pvp.IsCooldownActive(out var remaining))
+            {
+                return TextCommandResult.Success(Lang.Get("th3essentials:pvp-status-enabled") +
+                    $" (cooldown: {Math.Ceiling(remaining.TotalSeconds)}s)");
+            }
             return TextCommandResult.Success(Lang.Get("th3essentials:pvp-status-enabled"));
         }
         else
@@ -78,7 +77,6 @@ internal class PvP : Command
     private TextCommandResult OnPvPToggleOn(TextCommandCallingArgs args)
     {
         var pvp = args.Caller.Player.Entity.GetBehavior<EntityBehaviorPvp>();
-        // Todo: Remove null check after we're sure this value is fully implemented.
         if (pvp == null)
         {
             return TextCommandResult.Error("No PVP Behavior Set.");
@@ -88,8 +86,8 @@ internal class PvP : Command
             return TextCommandResult.Success(Lang.Get("th3essentials:pvp-already-enabled"));
         }
 
-        FlagTimeouts[args.Caller.Player] = DateTime.Now.AddSeconds(90);
         pvp.Enabled = true;
+        pvp.StartCooldown(EntityBehaviorPvp.DefaultCooldownSeconds);
 
         return TextCommandResult.Success(Lang.Get("th3essentials:pvp-now-enabled"));
     }
@@ -97,7 +95,6 @@ internal class PvP : Command
     private TextCommandResult OnPvPToggleOff(TextCommandCallingArgs args)
     {
         var pvp = args.Caller.Player.Entity.GetBehavior<EntityBehaviorPvp>();
-        // Todo: Remove null check after we're sure this value is fully implemented.
         if (pvp == null)
         {
             return TextCommandResult.Error("No PVP Behavior Set.");
@@ -107,11 +104,14 @@ internal class PvP : Command
             return TextCommandResult.Success(Lang.Get("th3essentials:pvp-already-disabled"));
         }
 
-        FlagTimeouts[args.Caller.Player] = DateTime.Now.AddSeconds(90);
-        pvp.Enabled = false;
+        // Enforce cooldown after enabling or recent combat
+        if (pvp.IsCooldownActive(out var remaining))
+        {
+            var secs = Math.Ceiling(remaining.TotalSeconds);
+            return TextCommandResult.Error($"You cannot disable PvP yet. Cooldown: {secs}s remaining.");
+        }
 
+        pvp.Enabled = false;
         return TextCommandResult.Success(Lang.Get("th3essentials:pvp-now-disabled"));
     }
-
-
 }
