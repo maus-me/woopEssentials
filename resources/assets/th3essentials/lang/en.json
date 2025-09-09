@@ -141,5 +141,14 @@
     "wp-exists": "Warp \"{0}\" already exists!",
     "wp-item-set": "Warp Item set",
     "wp-item-unset": "Warp Item unset",
-    "bot-status": "players: {0}/{1}"
+    "bot-status": "players: {0}/{1}",
+    "pvp-status-enabled": "PVP is enabled.",
+    "pvp-status-disabled": "PVP is disabled.",
+    "pvp-already-enabled": "PVP was already enabled.",
+    "pvp-already-disabled": "PVP was already disabled.",
+    "pvp-now-enabled": "PVP is now enabled.",
+    "pvp-now-disabled": "PVP is now disabled.",
+    "cd-pvp": "View your current PVP status.",
+    "cd-pvp-toggle-on": "Enable PVP for yourself.",
+    "cd-pvp-toggle-off": "Disable PVP for yourself."
 }
