@@ -86,12 +86,12 @@ internal class HealFeed : Command
         var e = sp.Entity;
         if (e == null) return TextCommandResult.Error("Player not found");
 
-        // Revive() fully heals even if dead; if alive, heal via negative damage
+        // Revive() fully heals even if dead; if alive, heal via damage.  That was fun to figure out.
         if (e.Alive)
         {
             float healAmount = 9999f;
             var ds = new DamageSource { Source = EnumDamageSource.Internal, Type = EnumDamageType.Heal, SourceEntity = e };
-            e.ReceiveDamage(ds, -healAmount);
+            e.ReceiveDamage(ds, healAmount);
         }
         else
         {
