@@ -17,10 +17,6 @@ internal class Announcementsystem
 
     private Timer _announcer = null!;
 
-    public Announcementsystem()
-    {
-    }
-
     public void Init(ICoreServerAPI sapi)
     {
         _sapi = sapi;

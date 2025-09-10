@@ -41,7 +41,7 @@ namespace Th3Essentials.Systems
 
         public bool Enabled
         {
-            get => entity?.WatchedAttributes?.GetBool(AttrKey, false) ?? false;
+            get => entity?.WatchedAttributes?.GetBool(AttrKey) ?? false;
             set
             {
                 if (entity?.WatchedAttributes == null) return;
@@ -70,7 +70,7 @@ namespace Th3Essentials.Systems
         // Cooldown storage helpers
         private long CooldownUntilUtcTicks
         {
-            get => entity?.WatchedAttributes?.GetLong(CooldownAttrKey, 0L) ?? 0L;
+            get => entity?.WatchedAttributes?.GetLong(CooldownAttrKey) ?? 0L;
             set
             {
                 if (entity?.WatchedAttributes == null) return;
@@ -84,12 +84,6 @@ namespace Th3Essentials.Systems
             var secs = seconds ?? DefaultCooldownSeconds;
             var until = DateTime.UtcNow.AddSeconds(secs).Ticks;
             CooldownUntilUtcTicks = until;
-        }
-
-        public void ResetCooldownOnCombat(int? seconds = null)
-        {
-            // Always extend to now+secs, regardless of existing value
-            StartCooldown(seconds);
         }
 
         public bool IsCooldownActive(out TimeSpan remaining)
@@ -112,7 +106,6 @@ namespace Th3Essentials.Systems
         {
             // Only interested in player-vs-player interactions
             if (damage <= 0) return;
-            if (damageSource == null) return;
 
             if (damageSource.Source == EnumDamageSource.Player)
             {
@@ -151,8 +144,8 @@ namespace Th3Essentials.Systems
 
                     // At this point, both victim (this) and attacker have PvP enabled and damage would apply
                     // Reset cooldown timer for both players as per requirement
-                    attackerPvp?.ResetCooldownOnCombat();
-                    this.ResetCooldownOnCombat();
+                    attackerPvp?.StartCooldown();
+                    StartCooldown();
 
                     // Notify involved players they are tagged in combat (anti-spam protected)
                     try
@@ -180,7 +173,7 @@ namespace Th3Essentials.Systems
                         {
                             var secsAtt = attackerPvp != null && attackerPvp.IsCooldownActive(out var remainingAtk)
                                 ? Math.Ceiling(remainingAtk.TotalSeconds)
-                                : (double)DefaultCooldownSeconds;
+                                : DefaultCooldownSeconds;
                             NotifyOnce(attackerSp, "pvp-tagged", Lang.Get("th3essentials:pvp-tagged", secsAtt));
                         }
                     }
@@ -200,7 +193,6 @@ namespace Th3Essentials.Systems
         public override void OnEntityDespawn(EntityDespawnData despawn)
         {
             // If a player disconnects while under PvP combat cooldown, treat as death so items drop
-            if (despawn == null) return;
             if (despawn.Reason != EnumDespawnReason.Disconnect) return;
 
             // Only relevant for players
@@ -256,13 +248,16 @@ namespace Th3Essentials.Systems
             }
         }
 
+        // Function to use to check for PVP status before allowing certain actions (e.g. teleport)
+
+
         public override void OnEntityDeath(DamageSource damageSourceForDeath)
         {
             base.OnEntityDeath(damageSourceForDeath);
 
             // Only on server, only for players
             if (entity?.Api?.Side != EnumAppSide.Server) return;
-            if (entity is not EntityPlayer ep) return;
+            if (entity is not EntityPlayer) return;
 
             try
             {

@@ -23,35 +23,34 @@ internal class RandomTeleport : Command
 
     internal override void Init(ICoreServerAPI api)
     {
+        if (Th3Essentials.Config.RandomTeleportRadius <= 0) return;
+
         _sapi = api;
         _playerConfig = Th3Essentials.PlayerConfig;
         _config = Th3Essentials.Config;
 
-        
-        if (Th3Essentials.Config.RandomTeleportRadius > 0)
-        {
-            _pos = _sapi.LoadModConfig<List<Vec3i>>("th3rtplocations.json");
-            _sapi = api;       
-            api.ChatCommands.Create("rtp")
-                .WithDescription(Lang.Get("th3essentials:cd-rtp"))
+        _pos = _sapi.LoadModConfig<List<Vec3i>>("wooprtplocations.json");
+        _sapi = api;
+        api.ChatCommands.Create("rtp")
+            .WithDescription(Lang.Get("th3essentials:cd-rtp"))
+            .RequiresPlayer()
+            .RequiresPrivilege(Privilege.chat)
+            .HandleWith(OnRtp)
+            .WithAlias("rt")
+
+            .BeginSubCommand("item")
+                .RequiresPrivilege(Privilege.controlserver)
                 .RequiresPlayer()
-                .RequiresPrivilege(Privilege.chat)
-                .HandleWith(OnRtp)
-                
-                .BeginSubCommand("item")
-                    .RequiresPrivilege(Privilege.controlserver)
-                    .RequiresPlayer()
-                    .WithDescription(Lang.Get("th3essentials:cd-rtp-desc"))
-                    .HandleWith(SetItem)
-                .EndSubCommand()
-                ;
-        }
+                .WithDescription(Lang.Get("th3essentials:cd-rtp-desc"))
+                .HandleWith(SetItem)
+            .EndSubCommand()
+            ;
     }
-    
+
     private TextCommandResult SetItem(TextCommandCallingArgs args)
     {
         var slot = args.Caller.Player.InventoryManager.ActiveHotbarSlot;
-        
+
         if (slot.Itemstack == null)
         {
             _config.TeleportToPlayerItem = null;
@@ -62,7 +61,7 @@ internal class RandomTeleport : Command
         var code = slot.Itemstack.Collectible.Code;
 
         if (slot.Itemstack.Attributes is not TreeAttribute attributes) return TextCommandResult.Success("error not a TreeAttribute");
-                        
+
         // remove food perish data
         attributes.RemoveAttribute("transitionstate");
 
@@ -83,7 +82,7 @@ internal class RandomTeleport : Command
         {
             return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
         }
-        
+
         if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
         {
             var spawn = player.Entity.Pos.AsBlockPos;
@@ -103,11 +102,11 @@ internal class RandomTeleport : Command
             }
 
             if (Homesystem.CheckPayment(_config.RandomTeleportItem, playerConfig.RandomTeleportCost, player, out var canTeleport, out var success)) return success!;
-            
+
             if (canTeleport)
             {
                 Homesystem.PayIfNeeded(player, _config.RandomTeleportItem, playerConfig.RandomTeleportCost);
-                
+
                 _sapi.WorldManager.LoadChunkColumnPriority(pos.X / _sapi.WorldManager.ChunkSize,
                     pos.Z / GlobalConstants.ChunkSize, new ChunkLoadOptions{ OnLoaded = () =>
                     {
@@ -125,7 +124,7 @@ internal class RandomTeleport : Command
 
             return TextCommandResult.Error("Something went wrong");
         }
-        
+
         var diff = playerData.RTPLastUsage.AddSeconds(_config.RandomTeleportCooldown) - DateTime.Now;
         return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
     }

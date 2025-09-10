@@ -1,7 +1,6 @@
 ﻿using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
-using Vintagestory.API.Common.Entities;
 using System.Linq;
 
 namespace Th3Essentials.Commands;
