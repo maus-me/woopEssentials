@@ -114,4 +114,10 @@ internal class PvP : Command
         pvp.Enabled = false;
         return TextCommandResult.Success(Lang.Get("th3essentials:pvp-now-disabled"));
     }
+
+    /* TODO: Need to handle the case where PVP is in progress when the server restarts.
+     Players will be kicked before the server shutdown functionality is triggered,
+     preventing us from just hooking into the Shutdown sequence to clear the values out.
+     Unsure if there is a way to properly monitor for this? I would expect the answer to be "Yes" as there is a specific
+     reason on the player kick but I don't see the documentation that defines what or where this is. */
 }

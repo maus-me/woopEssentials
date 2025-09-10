@@ -19,7 +19,7 @@ namespace Th3Essentials.Systems
         private static readonly TimeSpan NotifyCooldown = TimeSpan.FromSeconds(3);
 
         // Default cooldown duration in seconds after enabling PvP
-        public static int DefaultCooldownSeconds = 90;
+        public static int DefaultCooldownSeconds = 30;
 
         private static void NotifyOnce(IServerPlayer? sp, string key, string message)
         {
@@ -192,6 +192,11 @@ namespace Th3Essentials.Systems
             }
         }
 
+        public void ClearCooldown()
+        {
+            CooldownUntilUtcTicks = 0L;
+        }
+
         public override void OnEntityDespawn(EntityDespawnData despawn)
         {
             // If a player disconnects while under PvP combat cooldown, treat as death so items drop
@@ -262,7 +267,7 @@ namespace Th3Essentials.Systems
             try
             {
                 // Clear any active PvP cooldown on death
-                CooldownUntilUtcTicks = 0L;
+                ClearCooldown();
             }
             catch
             {
