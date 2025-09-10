@@ -85,6 +85,5 @@ public abstract class Auth
                 return "Auth mode unknown";
             }
         }
-        return "Auth did not work: Could not get user";
     }
 }

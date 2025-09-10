@@ -176,8 +176,6 @@ internal class Warp : Command
 
             }
         }
-
-        throw new UnreachableException("Unknown warp command");
     }
     
     public bool CanTravel(Th3PlayerData playerData)
