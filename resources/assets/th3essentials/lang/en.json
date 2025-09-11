@@ -158,5 +158,9 @@
     "cd-heal-done": "You have been healed to full.",
     "cd-feed": "Fill the specified player to full saturation. Usage: /feed [player]",
     "cd-feed-done": "Your hunger has been filled.",
-    "cd-revive": "Revive the specified player if dead. Usage: /revive [player]"
+    "cd-revive": "Revive the specified player if dead. Usage: /revive [player]",
+    "cd-seen": "Show when a player was last seen online (or now if currently online). Usage: /seen [player]",
+    "seen-online-now": "{0} is currently online.",
+    "seen-lastlogout": "{0} was last seen at {1}",
+    "seen-notfound": "Player \"{0}\" could not be found"
 }

@@ -16,5 +16,6 @@ public abstract class CommandsLoader
         new TeleportRequest().Init(sapi);
         new Th3ConfigCommands().Init(sapi);
         new HealFeed().Init(sapi);
+        new PlayerStats().Init(sapi);
     }
 }
