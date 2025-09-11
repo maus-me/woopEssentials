@@ -353,7 +353,7 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // color to use for the system messages ingame (restart warnings) [hex color value] https://colorpicker.me/
   "SystemMsgColor": "ff9102",
 
-  // shows the players role ingame and in discord like: [Admin] WoopDilli: hello
+  // shows the players role ingame and in discord like: [Admin] Th3Dilli: hello
   // this uses the the roles provided by the game itself see serverconfig.json -> Roles
   // each role has a Name which is used to display and a Color that the role name will be colored in
   // it wont print roles with PrivilegeLevel less then 1
@@ -366,10 +366,10 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // allows to format the ingame role information to your likeing
   // {0} will be the color specified in the serverconfig.json
   // {1} will be the role name specified in the serverconfig.json
-  // {2} will be the message including one space and : like | WoopDilli: message|
+  // {2} will be the message including one space and : like | Th3Dilli: message|
   // for format options check https://wiki.vintagestory.at/index.php?title=VTML
   // sample will show for role Admin and the role will be colerd according to the value in serverconfig.json
-  // [Admin] WoopDilli: message
+  // [Admin] Th3Dilli: message
   // info since fonts are different on windows and linux this may look different depending on the operating system
   "RoleFormat": "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}",
   

@@ -17,9 +17,9 @@ using WoopEssentials.Discord;
 using WoopEssentials.Systems;
 
 [assembly: ModInfo("woopEssentials",
-    Description = "WoopLands essentials server mod",
+    Description = "WoopEssentials server mod",
     Website = "https://github.com/maus-me/woopEssentials/",
-    Authors = new[] { "WoopDilli", "mausterio" })]
+    Authors = new[] { "Th3Dilli", "mausterio" })]
 
 [assembly: InternalsVisibleTo("Tests")]
 
