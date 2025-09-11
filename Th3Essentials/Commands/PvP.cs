@@ -1,31 +1,16 @@
-﻿using System.Linq;
-using Vintagestory.API.Common;
+﻿using Vintagestory.API.Common;
 using Vintagestory.API.Config;
-using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
-using Vintagestory.GameContent;
 using System;
-using System.Collections.Generic;
-using Th3Essentials.Config;
 using Th3Essentials.Systems;
 
 namespace Th3Essentials.Commands;
 
 internal class PvP : Command
 {
-    private Th3PlayerConfig _playerConfig = null!;
-
-    private Th3Config _config = null!;
-
-    private ICoreServerAPI _sapi = null!;
-
     internal override void Init(ICoreServerAPI api)
     {
         if (!Th3Essentials.Config.EnablePvPToggle) return;
-
-        _sapi = api;
-        _playerConfig = Th3Essentials.PlayerConfig;
-        _config = Th3Essentials.Config;
 
         api.ChatCommands.Create("pvp")
             .WithDescription(Lang.Get("th3essentials:cd-pvp"))
