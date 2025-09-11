@@ -17,6 +17,7 @@ internal class Message : Command
         _sapi = sapi;
         if (!Th3Essentials.Config.MessageEnabled) return;
         _sapi.ChatCommands.Create("msg")
+            .WithAlias("whisper")
             .WithDescription(Lang.Get("th3essentials:cd-msg"))
             .RequiresPrivilege(Privilege.chat)
             .WithArgs(_sapi.ChatCommands.Parsers.OnlinePlayer("player"),
@@ -25,11 +26,14 @@ internal class Message : Command
             .Validate();
 
         _sapi.ChatCommands.Create("r")
+            .WithAlias("reply")
             .WithDescription(Lang.Get("th3essentials:cd-reply"))
             .RequiresPrivilege(Privilege.chat)
             .WithArgs(_sapi.ChatCommands.Parsers.All("message"))
             .HandleWith(OnRCmd)
             .Validate();
+
+
     }
 
     private TextCommandResult OnRCmd(TextCommandCallingArgs args)
