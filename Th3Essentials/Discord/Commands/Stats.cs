@@ -19,23 +19,23 @@ public abstract class Stats
         var stats = new SlashCommandBuilder
         {
             Name = SlashCommands.Stats.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-stats")
+            Description = Lang.Get("woopessentials:slc-stats")
         };
         return stats.Build();
     }
 
-    public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+    public static string HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction)
     {
         if (commandInteraction.User is not SocketGuildUser guildUser)
             return "Something went wrong: User was not a GuildUser";
 
-        if (!Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
+        if (!WoopSlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
             return "You do not have permissions to do that";
         
         var stringBuilder = new StringBuilder();
         var server = (ServerMain)discord.Sapi.World;
         stringBuilder.Append("Version: ");
-        stringBuilder.AppendLine(Th3Util.GetVsVersion());
+        stringBuilder.AppendLine(WoopUtil.GetVsVersion());
         stringBuilder.AppendLine($"Uptime: {server.totalUpTime.Elapsed.ToString()}");
         stringBuilder.AppendLine($"Players online: {server.Clients.Count} / {server.Config.MaxClients}");
         stringBuilder.AppendLine($"Players in queue: {server.ConnectionQueue.Count} / {server.Config.MaxClientsInQueue}");

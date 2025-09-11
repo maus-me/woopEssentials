@@ -12,9 +12,9 @@ namespace Th3Essentials.Commands;
 
 internal class RandomTeleport : Command
 {
-    private Th3PlayerConfig _playerConfig = null!;
+    private WoopPlayerConfig _playerConfig = null!;
 
-    private Th3Config _config = null!;
+    private WoopConfig _config = null!;
 
     private ICoreServerAPI _sapi = null!;
 
@@ -23,16 +23,16 @@ internal class RandomTeleport : Command
 
     internal override void Init(ICoreServerAPI api)
     {
-        if (Th3Essentials.Config.RandomTeleportRadius <= 0) return;
+        if (WoopEssentials.Config.RandomTeleportRadius <= 0) return;
 
         _sapi = api;
-        _playerConfig = Th3Essentials.PlayerConfig;
-        _config = Th3Essentials.Config;
+        _playerConfig = WoopEssentials.PlayerConfig;
+        _config = WoopEssentials.Config;
 
         _pos = _sapi.LoadModConfig<List<Vec3i>>("wooprtplocations.json");
         _sapi = api;
         api.ChatCommands.Create("rtp")
-            .WithDescription(Lang.Get("th3essentials:cd-rtp"))
+            .WithDescription(Lang.Get("woopessentials:cd-rtp"))
             .RequiresPlayer()
             .RequiresPrivilege(Privilege.chat)
             .HandleWith(OnRtp)
@@ -41,7 +41,7 @@ internal class RandomTeleport : Command
             .BeginSubCommand("item")
                 .RequiresPrivilege(Privilege.controlserver)
                 .RequiresPlayer()
-                .WithDescription(Lang.Get("th3essentials:cd-rtp-desc"))
+                .WithDescription(Lang.Get("woopessentials:cd-rtp-desc"))
                 .HandleWith(SetItem)
             .EndSubCommand()
             ;
@@ -54,7 +54,7 @@ internal class RandomTeleport : Command
         if (slot.Itemstack == null)
         {
             _config.TeleportToPlayerItem = null;
-            return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-unset"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:hs-item-unset"));
         }
         var enumItemClass = slot.Itemstack.Class;
         var stackSize = slot.Itemstack.StackSize;
@@ -67,7 +67,7 @@ internal class RandomTeleport : Command
 
         _config.RandomTeleportItem = new StarterkitItem(enumItemClass, code, stackSize, attributes);
         _config.MarkDirty();
-        return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-set"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:hs-item-set"));
     }
 
 
@@ -80,14 +80,14 @@ internal class RandomTeleport : Command
 
         if (!playerConfig.RtpEnabled)
         {
-            return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:cd-all-notallow"));
         }
 
         if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
         {
             var spawn = player.Entity.Pos.AsBlockPos;
-            var x = Random.Shared.Next(-Th3Essentials.Config.RandomTeleportRadius, Th3Essentials.Config.RandomTeleportRadius);
-            var z = Random.Shared.Next(-Th3Essentials.Config.RandomTeleportRadius / 2, Th3Essentials.Config.RandomTeleportRadius / 2);
+            var x = Random.Shared.Next(-WoopEssentials.Config.RandomTeleportRadius, WoopEssentials.Config.RandomTeleportRadius);
+            var z = Random.Shared.Next(-WoopEssentials.Config.RandomTeleportRadius / 2, WoopEssentials.Config.RandomTeleportRadius / 2);
             BlockPos pos;
             if (_pos?.Count > 0)
             {
@@ -119,26 +119,26 @@ internal class RandomTeleport : Command
 
                         TeleportTo(player, playerData, pos);
                     }});
-                return TextCommandResult.Success(Lang.Get("th3essentials:rtp-success"));
+                return TextCommandResult.Success(Lang.Get("woopessentials:rtp-success"));
             }
 
             return TextCommandResult.Error("Something went wrong");
         }
 
         var diff = playerData.RTPLastUsage.AddSeconds(_config.RandomTeleportCooldown) - DateTime.Now;
-        return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
+        return TextCommandResult.Success(Lang.Get("woopessentials:wait-time", WoopUtil.PrettyTime(diff)));
     }
 
-    public static void TeleportTo(IPlayer player, Th3PlayerData playerData, BlockPos location)
+    public static void TeleportTo(IPlayer player, WoopPlayerData playerData, BlockPos location)
     {
         player.Entity.TeleportTo(new Vec3d(location.X + 0.5,location.Y + 0.2,location.Z + 0.5));
         playerData.RTPLastUsage = DateTime.Now;
         playerData.MarkDirty();
     }
 
-    public static bool CanTravel(Th3PlayerData playerData)
+    public static bool CanTravel(WoopPlayerData playerData)
     {
-        var canTravel = playerData.RTPLastUsage.AddSeconds(Th3Essentials.Config.RandomTeleportCooldown);
+        var canTravel = playerData.RTPLastUsage.AddSeconds(WoopEssentials.Config.RandomTeleportCooldown);
         return canTravel <= DateTime.Now;
     }
 }

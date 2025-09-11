@@ -13,9 +13,9 @@ namespace Th3Essentials.Commands;
 
 internal class TeleportRequest : Command
 {
-    private Th3PlayerConfig _playerConfig = null!;
+    private WoopPlayerConfig _playerConfig = null!;
 
-    private Th3Config _config = null!;
+    private WoopConfig _config = null!;
 
     private ICoreServerAPI _sapi = null!;
 
@@ -24,14 +24,14 @@ internal class TeleportRequest : Command
     internal override void Init(ICoreServerAPI api)
     {
         _sapi = api;
-        _config = Th3Essentials.Config;
+        _config = WoopEssentials.Config;
         if (_config.TeleportToPlayerEnabled)
         {
-            _playerConfig = Th3Essentials.PlayerConfig;
+            _playerConfig = WoopEssentials.PlayerConfig;
             _sapi = api;
             _tpRequests = new Dictionary<string, string>();
             api.ChatCommands.Create("t2p")
-                .WithDescription(Lang.Get("th3essentials:cd-t2pr"))
+                .WithDescription(Lang.Get("woopessentials:cd-t2pr"))
                 .RequiresPlayer()
                 .RequiresPrivilege(Privilege.chat)
                 
@@ -40,7 +40,7 @@ internal class TeleportRequest : Command
                     .WithRootAlias("t2pr")
                     .RequiresPrivilege(Privilege.chat)
                     .RequiresPlayer()
-                    .WithDescription(Lang.Get("th3essentials:cd-t2pr-e"))
+                    .WithDescription(Lang.Get("woopessentials:cd-t2pr-e"))
                     .WithArgs(_sapi.ChatCommands.Parsers.OnlinePlayer("player"))
                     .HandleWith(OnT2Pr)
                 .EndSubCommand()
@@ -48,7 +48,7 @@ internal class TeleportRequest : Command
                 .BeginSubCommand("abort")
                     .RequiresPrivilege(Privilege.chat)
                     .RequiresPlayer()
-                    .WithDescription(Lang.Get("th3essentials:cd-t2pr-a"))
+                    .WithDescription(Lang.Get("woopessentials:cd-t2pr-a"))
                     .WithArgs(_sapi.ChatCommands.Parsers.OnlinePlayer("player"))
                     .HandleWith(OnAbortT2p)
                 .EndSubCommand()
@@ -58,7 +58,7 @@ internal class TeleportRequest : Command
                     .WithRootAlias("t2pa")
                     .RequiresPrivilege(Privilege.chat)
                     .RequiresPlayer()
-                    .WithDescription(Lang.Get("th3essentials:cd-t2pr-ac"))
+                    .WithDescription(Lang.Get("woopessentials:cd-t2pr-ac"))
                     .WithArgs(_sapi.ChatCommands.Parsers.OptionalBool("accept"))
                     .HandleWith(AcceptTp)
                 .EndSubCommand()
@@ -66,7 +66,7 @@ internal class TeleportRequest : Command
                 .BeginSubCommand("item")
                     .RequiresPrivilege(Privilege.controlserver)
                     .RequiresPlayer()
-                    .WithDescription(Lang.Get("th3essentials:cd-t2pr-sc"))
+                    .WithDescription(Lang.Get("woopessentials:cd-t2pr-sc"))
                     .HandleWith(SetItem)
                 .EndSubCommand()
                 ;
@@ -79,9 +79,9 @@ internal class TeleportRequest : Command
         if (_tpRequests.ContainsKey(otherPlayer.PlayerUID))
         {
             _tpRequests.Remove(otherPlayer.PlayerUID);
-            return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-ra",otherPlayer.PlayerName));
+            return TextCommandResult.Success(Lang.Get("woopessentials:cd-t2pr-ra",otherPlayer.PlayerName));
         }
-        return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-nr"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:cd-t2pr-nr"));
     }
 
     private TextCommandResult AcceptTp(TextCommandCallingArgs args)
@@ -98,7 +98,7 @@ internal class TeleportRequest : Command
                 if (requestingPlayer == null)
                 {
                     //player not online anymore
-                    return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-no"));
+                    return TextCommandResult.Success(Lang.Get("woopessentials:cd-t2pr-no"));
                 }
 
                 var requestingPlayerData = _playerConfig.GetPlayerDataByUid(requestingPlayer.PlayerUID);
@@ -114,10 +114,10 @@ internal class TeleportRequest : Command
             }
             else
             {
-                return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-my"));
+                return TextCommandResult.Success(Lang.Get("woopessentials:cd-t2pr-my"));
             }
         }
-        return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-de"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:cd-t2pr-de"));
     }
 
     private TextCommandResult SetItem(TextCommandCallingArgs args)
@@ -127,7 +127,7 @@ internal class TeleportRequest : Command
         if (slot.Itemstack == null)
         {
             _config.TeleportToPlayerItem = null;
-            return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-unset"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:hs-item-unset"));
         }
         
         var enumItemClass = slot.Itemstack.Class;
@@ -141,7 +141,7 @@ internal class TeleportRequest : Command
 
         _config.TeleportToPlayerItem = new StarterkitItem(enumItemClass, code, stackSize, attributes);
         _config.MarkDirty();
-        return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-set"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:hs-item-set"));
     }
 
 
@@ -151,7 +151,7 @@ internal class TeleportRequest : Command
         
         if (_tpRequests.ContainsKey(otherPlayer.PlayerUID))
         {
-            return TextCommandResult.Success(Lang.Get("th3essentials:cd-t2pr-pr"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:cd-t2pr-pr"));
         }
         
         var player = args.Caller.Player;
@@ -163,7 +163,7 @@ internal class TeleportRequest : Command
 
         if (!playerConfig.TeleportToPlayerEnabled)
         {
-            return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:cd-all-notallow"));
         }
         
         if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
@@ -173,27 +173,27 @@ internal class TeleportRequest : Command
             if (canTeleport)
             {
                 _tpRequests.Add(otherPlayer.PlayerUID, player.PlayerUID);
-                (otherPlayer as IServerPlayer)?.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("th3essentials:cd-t2pr-prm", player.PlayerName),EnumChatType.Notification);
-                return TextCommandResult.Success(Lang.Get("th3essentials:t2p-success"));
+                (otherPlayer as IServerPlayer)?.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("woopessentials:cd-t2pr-prm", player.PlayerName),EnumChatType.Notification);
+                return TextCommandResult.Success(Lang.Get("woopessentials:t2p-success"));
             }
 
             return TextCommandResult.Error("Something went wrong");
         }
         
         var diff = playerData.T2PLastUsage.AddSeconds(_config.TeleportToPlayerCooldown) - DateTime.Now;
-        return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
+        return TextCommandResult.Success(Lang.Get("woopessentials:wait-time", WoopUtil.PrettyTime(diff)));
     }
 
-    public static void TeleportTo(IPlayer player, Th3PlayerData playerData, EntityPos location)
+    public static void TeleportTo(IPlayer player, WoopPlayerData playerData, EntityPos location)
     {
         player.Entity.TeleportTo(location);
         playerData.T2PLastUsage = DateTime.Now;
         playerData.MarkDirty();
     }
 
-    public static bool CanTravel(Th3PlayerData playerData)
+    public static bool CanTravel(WoopPlayerData playerData)
     {
-        var canTravel = playerData.T2PLastUsage.AddSeconds(Th3Essentials.Config.TeleportToPlayerCooldown);
+        var canTravel = playerData.T2PLastUsage.AddSeconds(WoopEssentials.Config.TeleportToPlayerCooldown);
         return canTravel <= DateTime.Now;
     }
 }

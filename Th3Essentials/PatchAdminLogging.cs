@@ -44,26 +44,26 @@ public class PatchAdminLogging
     {
         try
         {
-            var cmd = Th3Discord.Instance.Sapi.ChatCommands.Get(commandName) as ChatCommandImpl;
+            var cmd = WoopDiscord.Instance.Sapi.ChatCommands.Get(commandName) as ChatCommandImpl;
             var priv = cmd?.GetType().GetField("privilege", BindingFlags.Instance | BindingFlags.NonPublic)
                 ?.GetValue(cmd);
 
             // if (priv is string s && player.HasPrivilege(s))
             // {
-            if (Th3Essentials.Config.DiscordConfig?.AdminPrivilegeToMonitor?.Contains(priv) == true)
+            if (WoopEssentials.Config.DiscordConfig?.AdminPrivilegeToMonitor?.Contains(priv) == true)
             {
-                Th3Discord.Instance.SendAdminLog($"**{player.PlayerName}** executed: {commandName} {args}");
+                WoopDiscord.Instance.SendAdminLog($"**{player.PlayerName}** executed: {commandName} {args}");
             }
             else if (Equals("gamemode", commandName) || Equals("gm", commandName))
             {
-                Th3Discord.Instance.SendAdminLog(
+                WoopDiscord.Instance.SendAdminLog(
                     $"**{player.PlayerName}** executed @ ({player.Entity.Pos.AsBlockPos}): {commandName} {args}");
             }
             // }
         }
         catch (Exception e)
         {
-            Th3Discord.Instance.Sapi.Logger.Error(e);
+            WoopDiscord.Instance.Sapi.Logger.Error(e);
         }
     }
 
@@ -74,12 +74,12 @@ public class PatchAdminLogging
         if (op.ShiftDown)
         {
             var itemSlot = __instance[slotId];
-            Th3Discord.Instance.SendAdminLog(
+            WoopDiscord.Instance.SendAdminLog(
                 $"**{op.ActingPlayer?.PlayerName}** spawned: {op.MovedQuantity} {itemSlot.Itemstack?.Collectible?.Code}");
         }
         else
         {
-            Th3Discord.Instance.SendAdminLog(
+            WoopDiscord.Instance.SendAdminLog(
                 $"**{op.ActingPlayer?.PlayerName}** spawned: {op.MovedQuantity} {sourceSlot.Itemstack?.Collectible?.Code}");
         }
     }
@@ -109,7 +109,7 @@ public class PatchAdminLogging
 
             if (player.WorldData.CurrentGameMode == EnumGameMode.Creative && slot?.Itemstack != null)
             {
-                Th3Discord.Instance.SendAdminLog(
+                WoopDiscord.Instance.SendAdminLog(
                     $"**{player.PlayerName}** spawned: 1 {slot.Itemstack?.Collectible?.Code}");
             }
         }

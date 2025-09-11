@@ -9,23 +9,23 @@ internal class Restart : Command
 {
     internal override void Init(ICoreServerAPI sapi)
     {
-        if (Th3Essentials.Config.ShutdownEnabled)
+        if (WoopEssentials.Config.ShutdownEnabled)
         {
             sapi.ChatCommands.Create("restart")
-                .WithDescription(Lang.Get("th3essentials:cd-restart"))
+                .WithDescription(Lang.Get("woopessentials:cd-restart"))
                 .RequiresPrivilege(Privilege.chat)
                 .HandleWith(_ =>
                 {
-                    if (Th3Essentials.Config.ShutdownEnabled)
+                    if (WoopEssentials.Config.ShutdownEnabled)
                     {
-                        var restart = Th3Essentials.ShutDownTime - DateTime.Now;
-                        var response = Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"),
+                        var restart = WoopEssentials.ShutDownTime - DateTime.Now;
+                        var response = Lang.Get("woopessentials:slc-restart-resp", restart.Hours.ToString("D2"),
                             restart.Minutes.ToString("D2"));
                         return TextCommandResult.Success(response);
                     }
                     else
                     {
-                        return TextCommandResult.Success(Lang.Get("th3essentials:slc-restart-disabled"));
+                        return TextCommandResult.Success(Lang.Get("woopessentials:slc-restart-disabled"));
                     }
                 });
         }

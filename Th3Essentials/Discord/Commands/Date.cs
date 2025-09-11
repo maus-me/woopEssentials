@@ -10,7 +10,7 @@ public abstract class Date
         var date = new SlashCommandBuilder
         {
             Name = SlashCommands.Date.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-date")
+            Description = Lang.Get("woopessentials:slc-date")
         };
         return date.Build();
     }

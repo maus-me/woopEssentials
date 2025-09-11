@@ -13,28 +13,28 @@ public abstract class ReloadConfig
         var reloadConfig = new SlashCommandBuilder
         {
             Name = SlashCommands.ReloadConfig.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-reload")
+            Description = Lang.Get("woopessentials:slc-reload")
         };
         return reloadConfig.Build();
     }
 
-    public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+    public static string HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction)
     {
         if (!(commandInteraction.User is SocketGuildUser guildUser))
         {
             return "You do not have permissions to do that";
         }
 
-        if (!Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
+        if (!WoopSlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
         {
             return "You do not have permissions to do that";
         }
 
         try
         {
-            var configTemp = discord.Sapi.LoadModConfig<Th3Config>(Th3Essentials.ConfigFile);
-            Th3Essentials.Config.Reload(configTemp);
-            Th3Essentials.LoadRestartTime(DateTime.Now);
+            var configTemp = discord.Sapi.LoadModConfig<WoopConfig>(WoopEssentials.ConfigFile);
+            WoopEssentials.Config.Reload(configTemp);
+            WoopEssentials.LoadRestartTime(DateTime.Now);
             return "Config reloaded";
         }
         catch (Exception e)

@@ -11,21 +11,21 @@ namespace Th3Essentials.Systems;
 
 internal class Homesystem
 {
-    private Th3PlayerConfig _playerConfig = null!;
+    private WoopPlayerConfig _playerConfig = null!;
 
-    private Th3Config _config = null!;
+    private WoopConfig _config = null!;
 
     private ICoreServerAPI _sapi = null!;
 
     internal void Init(ICoreServerAPI sapi)
     {
         _sapi = sapi;
-        _playerConfig = Th3Essentials.PlayerConfig;
-        _config = Th3Essentials.Config;
+        _playerConfig = WoopEssentials.PlayerConfig;
+        _config = WoopEssentials.Config;
         if (_config.HomeLimit >= 0)
         {
             _sapi.ChatCommands.Create("home")
-                .WithDescription(Lang.Get("th3essentials:cd-home"))
+                .WithDescription(Lang.Get("woopessentials:cd-home"))
                 .RequiresPlayer()
                 .RequiresPrivilege(Privilege.chat)
                 .IgnoreAdditionalArgs()
@@ -33,7 +33,7 @@ internal class Homesystem
                     
                 .BeginSubCommand("delete")
                 .WithAlias("del", "rm", "d", "r")
-                .WithDescription(Lang.Get("th3essentials:cd-delhome"))
+                .WithDescription(Lang.Get("woopessentials:cd-delhome"))
                 .RequiresPlayer()
                 .RequiresPrivilege(Privilege.chat)
                 .WithArgs(_sapi.ChatCommands.Parsers.Word("name"))
@@ -42,7 +42,7 @@ internal class Homesystem
                     
                 .BeginSubCommand("set")
                 .WithAlias("s","new","add")
-                .WithDescription(Lang.Get("th3essentials:cd-sethome"))
+                .WithDescription(Lang.Get("woopessentials:cd-sethome"))
                 .RequiresPlayer()
                 .RequiresPrivilege(Privilege.chat)
                 .WithArgs(_sapi.ChatCommands.Parsers.Word("name"))
@@ -51,14 +51,14 @@ internal class Homesystem
                     
                 .BeginSubCommand("list")
                 .WithAlias("ls","l")
-                .WithDescription(Lang.Get("th3essentials:cd-lshome"))
+                .WithDescription(Lang.Get("woopessentials:cd-lshome"))
                 .RequiresPlayer()
                 .RequiresPrivilege(Privilege.chat)
                 .HandleWith(OnList)
                 .EndSubCommand()
                     
                 .BeginSubCommand("limit")
-                .WithDescription(Lang.Get("th3essentials:cd-limithome"))
+                .WithDescription(Lang.Get("woopessentials:cd-limithome"))
                 .RequiresPlayer()
                 .RequiresPrivilege(Privilege.commandplayer)
                 .WithArgs(_sapi.ChatCommands.Parsers.OnlinePlayer("player"),_sapi.ChatCommands.Parsers.Int("limit"))
@@ -68,14 +68,14 @@ internal class Homesystem
                 .BeginSubCommand("item")
                 .RequiresPrivilege(Privilege.controlserver)
                 .RequiresPlayer()
-                .WithDescription(Lang.Get("th3essentials:hs-item-desc"))
+                .WithDescription(Lang.Get("woopessentials:hs-item-desc"))
                 .HandleWith(SetItem)
                 .EndSubCommand()
                     
                 .BeginSubCommand("setitem")
                 .RequiresPrivilege(Privilege.controlserver)
                 .RequiresPlayer()
-                .WithDescription(Lang.Get("th3essentials:hs-item-desc"))
+                .WithDescription(Lang.Get("woopessentials:hs-item-desc"))
                 .HandleWith(SetSetItem)
                 .EndSubCommand()
                 ;
@@ -84,7 +84,7 @@ internal class Homesystem
         if (_config.SpawnEnabled)
         {
             _sapi.ChatCommands.Create("spawn")
-                .WithDescription(Lang.Get("th3essentials:cd-spawn"))
+                .WithDescription(Lang.Get("woopessentials:cd-spawn"))
                 .RequiresPlayer()
                 .RequiresPrivilege(Privilege.chat)
                 .HandleWith(ToSpawn);
@@ -93,7 +93,7 @@ internal class Homesystem
         if (_config.BackEnabled)
         {
             _sapi.ChatCommands.Create("back")
-                .WithDescription(Lang.Get("th3essentials:cd-back"))
+                .WithDescription(Lang.Get("woopessentials:cd-back"))
                 .RequiresPlayer()
                 .RequiresPrivilege(Privilege.chat)
                 .HandleWith(TeleportBack);
@@ -108,7 +108,7 @@ internal class Homesystem
         if (slot.Itemstack == null)
         {
             _config.SetHomeItem = null;
-            return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-unset"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:hs-item-unset"));
         }
         
         var enumItemClass = slot.Itemstack.Class;
@@ -122,7 +122,7 @@ internal class Homesystem
 
         _config.SetHomeItem = new StarterkitItem(enumItemClass, code, stackSize, attributes);
         _config.MarkDirty();
-        return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-set"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:hs-item-set"));
     }
 
     private TextCommandResult ChangeLimit(TextCommandCallingArgs args)
@@ -139,7 +139,7 @@ internal class Homesystem
             playerData.MarkDirty();
         }
             
-        return TextCommandResult.Success(Lang.Get("th3essentials:hs-changelim", player.PlayerName, limit));
+        return TextCommandResult.Success(Lang.Get("woopessentials:hs-changelim", player.PlayerName, limit));
     }
 
     private void PlayerDied(IServerPlayer byPlayer, DamageSource damageSource)
@@ -157,7 +157,7 @@ internal class Homesystem
         {
             if (playerData.LastPosition == null)
             {
-                return TextCommandResult.Error(Lang.Get("th3essentials:hs-noBack"));
+                return TextCommandResult.Error(Lang.Get("woopessentials:hs-noBack"));
             }
 
             var playerConfig = GetConfig(player, playerData, _config);
@@ -166,14 +166,14 @@ internal class Homesystem
             {
                 PayIfNeeded(player, _config.HomeItem, playerConfig.BackTeleportCost);
                 TeleportTo(player, playerData, playerData.LastPosition, _config.ExcludeBackFromBack);
-                return TextCommandResult.Success(Lang.Get("th3essentials:hs-back"));
+                return TextCommandResult.Success(Lang.Get("woopessentials:hs-back"));
             }
                 
             return TextCommandResult.Success("Could not teleport");
         }
 
         var diff = playerData.HomeLastuseage.AddSeconds(_config.BackCooldown) - DateTime.Now;
-        return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
+        return TextCommandResult.Success(Lang.Get("woopessentials:wait-time", WoopUtil.PrettyTime(diff)));
     }
 
     public TextCommandResult ToSpawn(TextCommandCallingArgs args)
@@ -188,14 +188,14 @@ internal class Homesystem
             {
                 PayIfNeeded(player, _config.HomeItem, playerConfig.HomeTeleportCost);
                 TeleportTo(player, playerData, _sapi.World.DefaultSpawnPosition.AsBlockPos);
-                return TextCommandResult.Success(Lang.Get("th3essentials:hs-tp-spawn"));
+                return TextCommandResult.Success(Lang.Get("woopessentials:hs-tp-spawn"));
             }
                 
             return TextCommandResult.Success("Could not teleport");
         }
 
         var diff = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown) - DateTime.Now;
-        return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
+        return TextCommandResult.Success(Lang.Get("woopessentials:wait-time", WoopUtil.PrettyTime(diff)));
     }
 
     public TextCommandResult Home(TextCommandCallingArgs args)
@@ -208,14 +208,14 @@ internal class Homesystem
         {
             if (playerData.HomePoints.Count == 0)
             {
-                return TextCommandResult.Success(Lang.Get("th3essentials:hs-none"));
+                return TextCommandResult.Success(Lang.Get("woopessentials:hs-none"));
             }
 
             return OnList(args);
         }
 
         var point = playerData.FindPointByName(name);
-        if (point == null) return TextCommandResult.Success(Lang.Get("th3essentials:hs-404"));
+        if (point == null) return TextCommandResult.Success(Lang.Get("woopessentials:hs-404"));
 
         var playerConfig = GetConfig(player, playerData, _config);
             
@@ -227,14 +227,14 @@ internal class Homesystem
             {
                 PayIfNeeded(player, _config.HomeItem, playerConfig.HomeTeleportCost);
                 TeleportTo(player, playerData, point.Position, _config.ExcludeHomeFromBack);
-                return TextCommandResult.Success(Lang.Get("th3essentials:hs-tp-point", name));
+                return TextCommandResult.Success(Lang.Get("woopessentials:hs-tp-point", name));
             }
 
             return TextCommandResult.Success("Could not teleport");
         }
 
         var diff = playerData.HomeLastuseage.AddSeconds(_config.HomeCooldown) - DateTime.Now;
-        return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
+        return TextCommandResult.Success(Lang.Get("woopessentials:wait-time", WoopUtil.PrettyTime(diff)));
     }
 
     internal static void PayIfNeeded(IPlayer player, StarterkitItem? item, int cost)
@@ -267,7 +267,7 @@ internal class Homesystem
                         var itemName =
                             Lang.Get(item.Itemclass.ToString().ToLowerInvariant() + "-" + item.Code.Path);
                         success = TextCommandResult.Success(
-                            Lang.Get("th3essentials:hs-item-missing", cost, itemName));
+                            Lang.Get("woopessentials:hs-item-missing", cost, itemName));
                         return true;
                     }
                     break;
@@ -284,7 +284,7 @@ internal class Homesystem
                         var itemName =
                             Lang.Get(item.Itemclass.ToString().ToLowerInvariant() + "-" + item.Code.Path);
                         success = TextCommandResult.Success(
-                            Lang.Get("th3essentials:hs-item-missing", cost, itemName));
+                            Lang.Get("woopessentials:hs-item-missing", cost, itemName));
                         return true;
                     }
                     break;
@@ -301,7 +301,7 @@ internal class Homesystem
         var player = args.Caller.Player;
         var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
             
-        var response = Lang.Get("th3essentials:hs-list", $"{playerData.HomePoints.Count}/{GetPlayerHomeLimit(args.Caller.Player, playerData)}\n");
+        var response = Lang.Get("woopessentials:hs-list", $"{playerData.HomePoints.Count}/{GetPlayerHomeLimit(args.Caller.Player, playerData)}\n");
         response = playerData.HomePoints.Aggregate(response, (current, t) => current + (t.Name + "\n"));
 
         return TextCommandResult.Success(response);
@@ -314,11 +314,11 @@ internal class Homesystem
         var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
         var point = playerData.FindPointByName(name);
 
-        if (point == null) return TextCommandResult.Success(Lang.Get("th3essentials:hs-404"));
+        if (point == null) return TextCommandResult.Success(Lang.Get("woopessentials:hs-404"));
 
         _ = playerData.HomePoints.Remove(point);
         playerData.MarkDirty();
-        return TextCommandResult.Success(Lang.Get("th3essentials:hs-delete", name));
+        return TextCommandResult.Success(Lang.Get("woopessentials:hs-delete", name));
     }
 
     public TextCommandResult SetHome(TextCommandCallingArgs args)
@@ -327,13 +327,13 @@ internal class Homesystem
         var player = args.Caller.Player;
         if (string.IsNullOrWhiteSpace(name))
         {
-            return TextCommandResult.Success(Lang.Get("th3essentials:hs-empty"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:hs-empty"));
         }
 
         var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
         if (playerData.HomePoints.Count >= GetPlayerHomeLimit(args.Caller.Player, playerData))
         {
-            return TextCommandResult.Success(Lang.Get("th3essentials:hs-max"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:hs-max"));
         }
 
         if (playerData.FindPointByName(name) == null)
@@ -347,12 +347,12 @@ internal class Homesystem
                 var newPoint = new HomePoint(name, player.Entity.Pos.XYZ.AsBlockPos);
                 playerData.HomePoints.Add(newPoint);
                 playerData.MarkDirty();
-                return TextCommandResult.Success(Lang.Get("th3essentials:hs-created", name));
+                return TextCommandResult.Success(Lang.Get("woopessentials:hs-created", name));
             }
             return TextCommandResult.Error("Something went wrong");
         }
 
-        return TextCommandResult.Success(Lang.Get("th3essentials:hs-exists"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:hs-exists"));
     }
     private TextCommandResult SetItem(TextCommandCallingArgs args)
     {
@@ -361,7 +361,7 @@ internal class Homesystem
         if (slot.Itemstack == null)
         {
             _config.HomeItem = null;
-            return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-unset"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:hs-item-unset"));
         }
         
         var enumItemClass = slot.Itemstack.Class;
@@ -375,10 +375,10 @@ internal class Homesystem
 
         _config.HomeItem = new StarterkitItem(enumItemClass, code, stackSize, attributes);
         _config.MarkDirty();
-        return TextCommandResult.Success(Lang.Get("th3essentials:hs-item-set"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:hs-item-set"));
     }
 
-    public static void TeleportTo(IPlayer player, Th3PlayerData playerData, BlockPos location, bool excludeFromBack = false)
+    public static void TeleportTo(IPlayer player, WoopPlayerData playerData, BlockPos location, bool excludeFromBack = false)
     {
         if (!excludeFromBack)
         {
@@ -389,59 +389,59 @@ internal class Homesystem
         playerData.MarkDirty();
     }
 
-    public static bool CanTravel(Th3PlayerData playerData, int overrideCooldown = -1)
+    public static bool CanTravel(WoopPlayerData playerData, int overrideCooldown = -1)
     {
-        var cooldown = overrideCooldown >= 0 ? overrideCooldown : Th3Essentials.Config.HomeCooldown;
+        var cooldown = overrideCooldown >= 0 ? overrideCooldown : WoopEssentials.Config.HomeCooldown;
         var canTravel = playerData.HomeLastuseage.AddSeconds(cooldown);
         return canTravel <= DateTime.Now;
     }
 
-    public int GetPlayerHomeLimit(IPlayer callerPlayer, Th3PlayerData th3PlayerData)
+    public int GetPlayerHomeLimit(IPlayer callerPlayer, WoopPlayerData woopPlayerData)
     {
         if (_config.RoleConfig != null && _config.RoleConfig.TryGetValue(callerPlayer.Role.Code, out var config))
         {
-            return th3PlayerData.HomeLimit >= 0 ? th3PlayerData.HomeLimit : config.HomeLimit >= 0 ? config.HomeLimit : _config.HomeLimit;
+            return woopPlayerData.HomeLimit >= 0 ? woopPlayerData.HomeLimit : config.HomeLimit >= 0 ? config.HomeLimit : _config.HomeLimit;
         }
-        return th3PlayerData.HomeLimit >= 0 ? th3PlayerData.HomeLimit : _config.HomeLimit;
+        return woopPlayerData.HomeLimit >= 0 ? woopPlayerData.HomeLimit : _config.HomeLimit;
     }
 
-    public static RoleConfig GetConfig(IPlayer player, Th3PlayerData th3PlayerData, Th3Config th3Config)
+    public static RoleConfig GetConfig(IPlayer player, WoopPlayerData woopPlayerData, WoopConfig woopConfig)
     {
-        if (th3Config.RoleConfig != null && th3Config.RoleConfig.TryGetValue(player.Role.Code, out var config))
+        if (woopConfig.RoleConfig != null && woopConfig.RoleConfig.TryGetValue(player.Role.Code, out var config))
         {
-            config.HomeLimit = th3PlayerData.HomeLimit >= 0 ? th3PlayerData.HomeLimit : config.HomeLimit >= 0 ? config.HomeLimit : th3Config.HomeLimit;
+            config.HomeLimit = woopPlayerData.HomeLimit >= 0 ? woopPlayerData.HomeLimit : config.HomeLimit >= 0 ? config.HomeLimit : woopConfig.HomeLimit;
             config.TeleportToPlayerCost = config.TeleportToPlayerCost >= 0
                 ? config.TeleportToPlayerCost
-                : th3Config.TeleportToPlayerItem?.Stacksize ?? 0; 
+                : woopConfig.TeleportToPlayerItem?.Stacksize ?? 0;
             config.RandomTeleportCost = config.RandomTeleportCost >= 0
                 ? config.RandomTeleportCost
-                : th3Config.RandomTeleportItem?.Stacksize ?? 0; 
+                : woopConfig.RandomTeleportItem?.Stacksize ?? 0;
             config.HomeTeleportCost = config.HomeTeleportCost >= 0
                 ? config.HomeTeleportCost
-                : th3Config.HomeItem?.Stacksize ?? 0; 
+                : woopConfig.HomeItem?.Stacksize ?? 0;
             config.BackTeleportCost =  config.BackTeleportCost >= 0
                 ? config.BackTeleportCost
-                : th3Config.HomeItem?.Stacksize ?? 0; 
+                : woopConfig.HomeItem?.Stacksize ?? 0;
             config.SetHomeCost =  config.SetHomeCost >= 0
                 ? config.SetHomeCost
-                : th3Config.HomeItem?.Stacksize ?? 0;
+                : woopConfig.HomeItem?.Stacksize ?? 0;
             config.WarpCost = config.WarpCost >= 0
                 ? config.WarpCost
-                : th3Config.WarpItem?.Stacksize ?? 0; 
+                : woopConfig.WarpItem?.Stacksize ?? 0;
             return config;
         }
 
         return new RoleConfig
         {
-            HomeLimit = th3PlayerData.HomeLimit >= 0 ? th3PlayerData.HomeLimit : th3Config.HomeLimit,
-            TeleportToPlayerCost = th3Config.TeleportToPlayerItem?.Stacksize ?? 0,
-            RandomTeleportCost = th3Config.RandomTeleportItem?.Stacksize ?? 0,
-            WarpCost = th3Config.WarpItem?.Stacksize ?? 0,
-            HomeTeleportCost = th3Config.HomeItem?.Stacksize ?? 0,
-            SetHomeCost = th3Config.SetHomeItem?.Stacksize ?? 0,
-            BackTeleportCost = th3Config.HomeItem?.Stacksize ?? 0,
-            RtpEnabled = th3Config.RandomTeleportRadius >= 0,
-            TeleportToPlayerEnabled = th3Config.TeleportToPlayerEnabled
+            HomeLimit = woopPlayerData.HomeLimit >= 0 ? woopPlayerData.HomeLimit : woopConfig.HomeLimit,
+            TeleportToPlayerCost = woopConfig.TeleportToPlayerItem?.Stacksize ?? 0,
+            RandomTeleportCost = woopConfig.RandomTeleportItem?.Stacksize ?? 0,
+            WarpCost = woopConfig.WarpItem?.Stacksize ?? 0,
+            HomeTeleportCost = woopConfig.HomeItem?.Stacksize ?? 0,
+            SetHomeCost = woopConfig.SetHomeItem?.Stacksize ?? 0,
+            BackTeleportCost = woopConfig.HomeItem?.Stacksize ?? 0,
+            RtpEnabled = woopConfig.RandomTeleportRadius >= 0,
+            TeleportToPlayerEnabled = woopConfig.TeleportToPlayerEnabled
         };
     }
 }

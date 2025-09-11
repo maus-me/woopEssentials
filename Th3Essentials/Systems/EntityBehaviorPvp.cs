@@ -160,11 +160,11 @@ namespace Th3Essentials.Systems
                             if (IsCooldownActive(out var remainingVictim) && remainingVictim.TotalSeconds > 0)
                             {
                                 var secs = Math.Ceiling(remainingVictim.TotalSeconds);
-                                NotifyOnce(victimSp, "pvp-tagged", Lang.Get("th3essentials:pvp-tagged", secs));
+                                NotifyOnce(victimSp, "pvp-tagged", Lang.Get("woopessentials:pvp-tagged", secs));
                             }
                             else
                             {
-                                NotifyOnce(victimSp, "pvp-tagged", Lang.Get("th3essentials:pvp-tagged", (double)DefaultCooldownSeconds));
+                                NotifyOnce(victimSp, "pvp-tagged", Lang.Get("woopessentials:pvp-tagged", (double)DefaultCooldownSeconds));
                             }
                         }
 
@@ -174,7 +174,7 @@ namespace Th3Essentials.Systems
                             var secsAtt = attackerPvp != null && attackerPvp.IsCooldownActive(out var remainingAtk)
                                 ? Math.Ceiling(remainingAtk.TotalSeconds)
                                 : DefaultCooldownSeconds;
-                            NotifyOnce(attackerSp, "pvp-tagged", Lang.Get("th3essentials:pvp-tagged", secsAtt));
+                            NotifyOnce(attackerSp, "pvp-tagged", Lang.Get("woopessentials:pvp-tagged", secsAtt));
                         }
                     }
                     catch
@@ -234,11 +234,11 @@ namespace Th3Essentials.Systems
                 // Broadcast to all players that this player logged out during combat
                 var sapi = entity.Api as ICoreServerAPI;
                 var sp = ep.Player as IServerPlayer;
-                var pname = sp?.PlayerName ?? Lang.Get("th3essentials:combat-die-reason");
+                var pname = sp?.PlayerName ?? Lang.Get("woopessentials:combat-die-reason");
                 try
                 {
                     sapi?.SendMessageToGroup(GlobalConstants.GeneralChatGroup,
-                        Lang.Get("th3essentials:combat-logout-broadcast", pname),
+                        Lang.Get("woopessentials:combat-logout-broadcast", pname),
                         EnumChatType.OthersMessage);
                 }
                 catch

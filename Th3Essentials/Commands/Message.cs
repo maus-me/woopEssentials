@@ -15,10 +15,10 @@ internal class Message : Command
     internal override void Init(ICoreServerAPI sapi)
     {
         _sapi = sapi;
-        if (!Th3Essentials.Config.MessageEnabled) return;
+        if (!WoopEssentials.Config.MessageEnabled) return;
         _sapi.ChatCommands.Create("msg")
             .WithAlias("whisper")
-            .WithDescription(Lang.Get("th3essentials:cd-msg"))
+            .WithDescription(Lang.Get("woopessentials:cd-msg"))
             .RequiresPrivilege(Privilege.chat)
             .WithArgs(_sapi.ChatCommands.Parsers.OnlinePlayer("player"),
                 _sapi.ChatCommands.Parsers.All("message"))
@@ -27,7 +27,7 @@ internal class Message : Command
 
         _sapi.ChatCommands.Create("r")
             .WithAlias("reply")
-            .WithDescription(Lang.Get("th3essentials:cd-reply"))
+            .WithDescription(Lang.Get("woopessentials:cd-reply"))
             .RequiresPrivilege(Privilege.chat)
             .WithArgs(_sapi.ChatCommands.Parsers.All("message"))
             .HandleWith(OnRCmd)
@@ -42,15 +42,15 @@ internal class Message : Command
         var msgRaw = (string)args.Parsers[0].GetValue();
         if (msgRaw == string.Empty)
         {
-            return TextCommandResult.Error(Lang.Get("th3essentials:cd-reply-param"));
+            return TextCommandResult.Error(Lang.Get("woopessentials:cd-reply-param"));
         }
 
         msgRaw = msgRaw.Replace("<", "&lt;").Replace(">", "&gt;");
         var msg =
-            $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>{player.PlayerName} whispers:</strong></font> {msgRaw}";
+            $"<font color=\"#{WoopEssentials.Config.MessageCmdColor}\"><strong>{player.PlayerName} whispers:</strong></font> {msgRaw}";
         if (!_lastMsgFrom.TryGetValue(player.PlayerUID, out var otherPlayerUid))
         {
-            return TextCommandResult.Error(Lang.Get("th3essentials:cd-reply-fail"));
+            return TextCommandResult.Error(Lang.Get("woopessentials:cd-reply-fail"));
         }
 
         var otherPlayers = _sapi.Server.Players.Where((curPlayer) =>
@@ -59,12 +59,12 @@ internal class Message : Command
         var serverPlayers = otherPlayers as IServerPlayer[] ?? otherPlayers.ToArray();
         if (serverPlayers.Length != 1)
         {
-            return TextCommandResult.Error(Lang.Get("th3essentials:cd-reply-fail"));
+            return TextCommandResult.Error(Lang.Get("woopessentials:cd-reply-fail"));
         }
 
         var otherPlayer = serverPlayers.First();
         var msgSelf =
-            $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>whispering to {otherPlayer.PlayerName}:</strong></font> {msgRaw}";
+            $"<font color=\"#{WoopEssentials.Config.MessageCmdColor}\"><strong>whispering to {otherPlayer.PlayerName}:</strong></font> {msgRaw}";
 
         otherPlayer.SendMessage(GlobalConstants.GeneralChatGroup, msg,
             EnumChatType.OthersMessage);
@@ -95,7 +95,7 @@ internal class Message : Command
         var msgRaw = (string)args.Parsers[1].GetValue();
         if (playername == null || msgRaw == string.Empty)
         {
-            return TextCommandResult.Error("/msg " + Lang.Get("th3essentials:cd-msg-param"));
+            return TextCommandResult.Error("/msg " + Lang.Get("woopessentials:cd-msg-param"));
         }
         // Handle the case where the server console is sending a message
         var senderName = "Console";
@@ -106,7 +106,7 @@ internal class Message : Command
 
         msgRaw = msgRaw.Replace("<", "&lt;").Replace(">", "&gt;");
         var msg =
-            $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>{senderName} whispers:</strong></font> {msgRaw}";
+            $"<font color=\"#{WoopEssentials.Config.MessageCmdColor}\"><strong>{senderName} whispers:</strong></font> {msgRaw}";
 
         var otherPlayers = _sapi.Server.Players.Where((curPlayer) =>
             curPlayer.ConnectionState == EnumClientState.Playing &&
@@ -115,7 +115,7 @@ internal class Message : Command
         {
             case 0:
             {
-                return TextCommandResult.Error(Lang.Get("th3essentials:cd-msg-fail", playername));
+                return TextCommandResult.Error(Lang.Get("woopessentials:cd-msg-fail", playername));
             }
             case 1:
             {
@@ -140,13 +140,13 @@ internal class Message : Command
                     _sapi.Logger.Warning($"Failed to play pm sound for {otherPlayer.PlayerName}: {e.Message}");
                 }
                 var msgSelf =
-                    $"<font color=\"#{Th3Essentials.Config.MessageCmdColor}\"><strong>whispering to {otherPlayer.PlayerName}:</strong></font> {msgRaw}";
+                    $"<font color=\"#{WoopEssentials.Config.MessageCmdColor}\"><strong>whispering to {otherPlayer.PlayerName}:</strong></font> {msgRaw}";
 
                 return TextCommandResult.Success(msgSelf);
             }
             default:
             {
-                return TextCommandResult.Error(Lang.Get("th3essentials:cd-msg-fail-mult", playername));
+                return TextCommandResult.Error(Lang.Get("woopessentials:cd-msg-fail-mult", playername));
             }
         }
     }

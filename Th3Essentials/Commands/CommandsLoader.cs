@@ -14,7 +14,7 @@ public abstract class CommandsLoader
         new PvP().Init(sapi);
         new RandomTeleport().Init(sapi);
         new TeleportRequest().Init(sapi);
-        new Th3ConfigCommands().Init(sapi);
+        new WoopConfigCommands().Init(sapi);
         new HealFeed().Init(sapi);
         new PlayerStats().Init(sapi);
     }

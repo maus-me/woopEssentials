@@ -8,13 +8,13 @@ internal class Serverinfo : Command
 {
     internal override void Init(ICoreServerAPI sapi)
     {
-        if (Th3Essentials.Config.InfoMessage != null)
+        if (WoopEssentials.Config.InfoMessage != null)
         {
             sapi.ChatCommands.Create("serverinfo")
-                .WithDescription(Lang.Get("th3essentials:cd-info"))
+                .WithDescription(Lang.Get("woopessentials:cd-info"))
                 .RequiresPlayer()
                 .RequiresPrivilege(Privilege.chat)
-                .HandleWith(_ => TextCommandResult.Success(Th3Essentials.Config.InfoMessage));
+                .HandleWith(_ => TextCommandResult.Success(WoopEssentials.Config.InfoMessage));
         }
     }
 }

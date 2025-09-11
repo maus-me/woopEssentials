@@ -16,7 +16,7 @@ public abstract class AllowCharSelOnce
             new()
             {
                 Name = "playername",
-                Description = Lang.Get("th3essentials:slc-allowcharselonce-playername"),
+                Description = Lang.Get("woopessentials:slc-allowcharselonce-playername"),
                 Type = ApplicationCommandOptionType.String,
                 IsRequired = true
             }
@@ -24,17 +24,17 @@ public abstract class AllowCharSelOnce
         var allowcharselonce = new SlashCommandBuilder
         {
             Name = SlashCommands.AllowCharSelOnce.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-allowcharselonce"),
+            Description = Lang.Get("woopessentials:slc-allowcharselonce"),
             Options = charSelectOptions
         };
         return allowcharselonce.Build();
     }
 
-    public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+    public static string HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction)
     {
         if (commandInteraction.User is SocketGuildUser guildUser)
         {
-            if (Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
+            if (WoopSlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
             {
                 var option = commandInteraction.Data.Options.First();
                 if (option.Value is string playername)

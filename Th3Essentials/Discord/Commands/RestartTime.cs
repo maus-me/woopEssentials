@@ -11,19 +11,19 @@ public abstract class RestartTime
         var restartTime = new SlashCommandBuilder
         {
             Name = SlashCommands.RestartTime.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-restart")
+            Description = Lang.Get("woopessentials:slc-restart")
         };
         return restartTime.Build();
     }
 
     public static string HandleSlashCommand()
     {
-        if (Th3Essentials.Config.ShutdownEnabled)
+        if (WoopEssentials.Config.ShutdownEnabled)
         {
-            var restart = Th3Essentials.ShutDownTime - DateTime.Now;
-            return Lang.Get("th3essentials:slc-restart-resp", restart.Hours.ToString("D2"), restart.Minutes.ToString("D2"));
+            var restart = WoopEssentials.ShutDownTime - DateTime.Now;
+            return Lang.Get("woopessentials:slc-restart-resp", restart.Hours.ToString("D2"), restart.Minutes.ToString("D2"));
         }
 
-        return Lang.Get("th3essentials:slc-restart-disabled");
+        return Lang.Get("woopessentials:slc-restart-disabled");
     }
 }

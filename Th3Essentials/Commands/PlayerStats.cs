@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Th3Essentials.Systems;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
@@ -15,7 +14,7 @@ internal class PlayerStats : Command
     {
         _sapi = api;
         api.ChatCommands.Create("seen")
-            .WithDescription(Lang.Get("th3essentials:cd-seen"))
+            .WithDescription(Lang.Get("woopessentials:cd-seen"))
             .RequiresPrivilege(Privilege.chat)
             .WithArgs(api.ChatCommands.Parsers.OptionalWord("player"))
             .HandleWith(OnSeen)
@@ -48,8 +47,7 @@ internal class PlayerStats : Command
         if (onlinePlayer != null)
         {
             // Player is currently online
-            var currentTime = DateTime.Now.ToString("g"); // Short date and time pattern
-            return TextCommandResult.Success(Lang.Get("th3essentials:seen-online-now", onlinePlayer.PlayerName));
+            return TextCommandResult.Success(Lang.Get("woopessentials:seen-online-now", onlinePlayer.PlayerName));
         }
 
         // Player is not online, lookup their data in playerdata.json
@@ -58,14 +56,14 @@ internal class PlayerStats : Command
         if (playerData == null)
         {
             // Player not found in data
-            return TextCommandResult.Error(Lang.Get("th3essentials:seen-notfound", playerName));
+            return TextCommandResult.Error(Lang.Get("woopessentials:seen-notfound", playerName));
         }
 
         // Return the player date information
         var lastJoinDateTime = DateTime.Parse(playerData.LastJoinDate).ToLocalTime();
         var timeSinceLastJoin = DateTime.Now - lastJoinDateTime;
-        var timeSinceText = Th3Util.PrettyTime(timeSinceLastJoin);
+        var timeSinceText = WoopUtil.PrettyTime(timeSinceLastJoin);
         var lastseen = $"{lastJoinDateTime.ToString("g")} ({timeSinceText} ago)";
-        return TextCommandResult.Success(Lang.Get("th3essentials:seen-lastlogout", playerData.LastKnownPlayername, lastseen));
+        return TextCommandResult.Success(Lang.Get("woopessentials:seen-lastlogout", playerData.LastKnownPlayername, lastseen));
     }
 }

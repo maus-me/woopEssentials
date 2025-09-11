@@ -11,17 +11,17 @@ public abstract class Shutdown
         var shutdown = new SlashCommandBuilder
         {
             Name = SlashCommands.Shutdown.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-shutdown")
+            Description = Lang.Get("woopessentials:slc-shutdown")
         };
         return shutdown.Build();
     }
 
-    public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction, ref MessageComponent? components)
+    public static string HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction, ref MessageComponent? components)
     {
         if (commandInteraction.User is not SocketGuildUser guildUser)
             return "Something went wrong: User was not a GuildUser";
             
-        if (!Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
+        if (!WoopSlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
             return "You do not have permissions to do that";
                 
         var builder = new ComponentBuilder().WithButton("Confirm", "shutdown-confirm");

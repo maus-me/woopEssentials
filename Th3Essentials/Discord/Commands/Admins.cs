@@ -10,7 +10,7 @@ public abstract class Admins
         var admins = new SlashCommandBuilder
         {
             Name = SlashCommands.Admins.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-admins")
+            Description = Lang.Get("woopessentials:slc-admins")
         };
         return admins.Build();
     }

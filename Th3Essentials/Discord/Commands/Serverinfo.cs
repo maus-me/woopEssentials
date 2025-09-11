@@ -13,17 +13,17 @@ public abstract class Serverinfo
         var serverinfo = new SlashCommandBuilder
         {
             Name = SlashCommands.Serverinfo.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-serverinfo")
+            Description = Lang.Get("woopessentials:slc-serverinfo")
         };
         return serverinfo.Build();
     }
 
-    public static List<string> HandleSlashCommand(Th3Discord discord, SocketSlashCommand _)
+    public static List<string> HandleSlashCommand(WoopDiscord discord, SocketSlashCommand _)
     {
         var re = new List<string>();
         var sb = new StringBuilder();
         sb.Append("Game version: ");
-        sb.AppendLine(Th3Util.GetVsVersion());
+        sb.AppendLine(WoopUtil.GetVsVersion());
         sb.Append("Mods:");
         foreach (var mod in discord.Sapi.ModLoader.Mods)
         {

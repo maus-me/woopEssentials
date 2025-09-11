@@ -18,14 +18,14 @@ public abstract class Kick
             new()
             {
                 Name = "playername",
-                Description = Lang.Get("th3essentials:slc-whitelist-playername"),
+                Description = Lang.Get("woopessentials:slc-whitelist-playername"),
                 Type = ApplicationCommandOptionType.String,
                 IsRequired = true
             },
             new()
             {
                 Name = "reason",
-                Description = Lang.Get("th3essentials:slc-kick-reason"),
+                Description = Lang.Get("woopessentials:slc-kick-reason"),
                 Type = ApplicationCommandOptionType.String
             }
         };
@@ -33,18 +33,18 @@ public abstract class Kick
         var kick = new SlashCommandBuilder
         {
             Name = SlashCommands.Kick.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-kick"),
+            Description = Lang.Get("woopessentials:slc-kick"),
             Options = banOptions
         };
         return kick.Build();
     }
 
-    public static async Task<string> HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+    public static async Task<string> HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction)
     {
         if (commandInteraction.User is not SocketGuildUser guildUser)
             return "Something went wrong: User was not a GuildUser";
 
-        if (!Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
+        if (!WoopSlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
             return "You do not have permissions to do that";
         
         string? targetPlayer = null;

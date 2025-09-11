@@ -15,15 +15,15 @@ namespace Th3Essentials.Systems;
 
 internal class Starterkitsystem
 {
-    private Th3Config _config = null!;
+    private WoopConfig _config = null!;
 
-    private Th3PlayerConfig _playerConfig = null!;
+    private WoopPlayerConfig _playerConfig = null!;
     private ICoreServerAPI _sapi = null!;
 
     internal void Init(ICoreServerAPI sapi)
     {
-        _config = Th3Essentials.Config;
-        _playerConfig = Th3Essentials.PlayerConfig;
+        _config = WoopEssentials.Config;
+        _playerConfig = WoopEssentials.PlayerConfig;
         _sapi = sapi;
         RegisterCommands(sapi);
     }
@@ -31,32 +31,32 @@ internal class Starterkitsystem
     private void RegisterCommands(ICoreServerAPI sapi)
     {
         sapi.ChatCommands.Create("starterkit")
-            .WithDescription(Lang.Get("th3essentials:cd-starterkit"))
+            .WithDescription(Lang.Get("woopessentials:cd-starterkit"))
             .RequiresPlayer()
             .RequiresPrivilege(Privilege.chat)
             .HandleWith(args => TryGiveItemStack(sapi, (IServerPlayer)args.Caller.Player));
             
         sapi.ChatCommands.Create("setstarterkit")
-            .WithDescription(Lang.Get("th3essentials:cd-setstarterkit"))
+            .WithDescription(Lang.Get("woopessentials:cd-setstarterkit"))
             .RequiresPlayer()
             .RequiresPrivilege(Privilege.controlserver)
             .HandleWith(OnSetStarterKit);
             
         sapi.ChatCommands.Create("resetstarterkitusageall")
-            .WithDescription(Lang.Get("th3essentials:cd-rstall"))
+            .WithDescription(Lang.Get("woopessentials:cd-rstall"))
             .RequiresPrivilege(Privilege.controlserver)
             .WithArgs(sapi.ChatCommands.Parsers.OptionalWord("confirm"))
             .HandleWith(OnResetAllKits);
 
         sapi.ChatCommands.Create("resetstarterkitusage")
-            .WithDescription(Lang.Get("th3essentials:cd-rstp"))
+            .WithDescription(Lang.Get("woopessentials:cd-rstp"))
             .RequiresPlayer()
             .RequiresPrivilege(Privilege.controlserver)
             .WithArgs(sapi.ChatCommands.Parsers.OnlinePlayer("player"))
             .HandleWith(OnResetKit);
 
         sapi.ChatCommands.Create("setstarterkitusage")
-            .WithDescription(Lang.Get("th3essentials:cd-rstp"))
+            .WithDescription(Lang.Get("woopessentials:cd-rstp"))
             .RequiresPlayer()
             .RequiresPrivilege(Privilege.controlserver)
             .WithArgs(sapi.ChatCommands.Parsers.OnlinePlayer("player"))
@@ -72,12 +72,12 @@ internal class Starterkitsystem
             {
                 playerData.StarterkitRecived = true;
                 playerData.MarkDirty();
-                return TextCommandResult.Success(Lang.Get("th3essentials:cd-stp-done", foundPlayer.PlayerName));
+                return TextCommandResult.Success(Lang.Get("woopessentials:cd-stp-done", foundPlayer.PlayerName));
             }
 
-            return TextCommandResult.Error(Lang.Get("th3essentials:cd-rstp-npd"));
+            return TextCommandResult.Error(Lang.Get("woopessentials:cd-rstp-npd"));
         }
-        return TextCommandResult.Error(Lang.Get("th3essentials:cd-rstp-unknown"));
+        return TextCommandResult.Error(Lang.Get("woopessentials:cd-rstp-unknown"));
     }
     
     private TextCommandResult OnResetKit(TextCommandCallingArgs args)
@@ -89,18 +89,18 @@ internal class Starterkitsystem
             {
                 playerData.StarterkitRecived = false;
                 playerData.MarkDirty();
-                return TextCommandResult.Success(Lang.Get("th3essentials:cd-rstp-done", foundPlayer.PlayerName));
+                return TextCommandResult.Success(Lang.Get("woopessentials:cd-rstp-done", foundPlayer.PlayerName));
             }
 
-            return TextCommandResult.Error(Lang.Get("th3essentials:cd-rstp-npd"));
+            return TextCommandResult.Error(Lang.Get("woopessentials:cd-rstp-npd"));
         }
-        return TextCommandResult.Error(Lang.Get("th3essentials:cd-rstp-unknown"));
+        return TextCommandResult.Error(Lang.Get("woopessentials:cd-rstp-unknown"));
     }
 
     private TextCommandResult OnResetAllKits(TextCommandCallingArgs args)
     {
         if (args.Parsers[0].GetValue() is not string ok || ok != "confirm")
-            return TextCommandResult.Success(Lang.Get("th3essentials:cd-rst"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:cd-rst"));
 
         var server = (ServerMain)_sapi.World;
         var chunkThread = typeof(ServerMain).GetField("chunkThread", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(server) as ChunkServerThread;
@@ -121,14 +121,14 @@ internal class Starterkitsystem
                 if (playerData != null)
                 {
                     var swPdata = SerializerUtil.Deserialize<ServerWorldPlayerData>(playerData);
-                    var moddata = swPdata.GetModdata(Th3Essentials.Th3EssentialsModDataKey);
+                    var moddata = swPdata.GetModdata(WoopEssentials.Th3EssentialsModDataKey);
                     if (moddata != null)
                     {
-                        var th3Pdata = SerializerUtil.Deserialize<Th3PlayerData?>(moddata, null);
+                        var th3Pdata = SerializerUtil.Deserialize<WoopPlayerData?>(moddata, null);
                         if (th3Pdata != null)
                         {
                             th3Pdata.StarterkitRecived = false;
-                            swPdata.SetModdata(Th3Essentials.Th3EssentialsModDataKey, SerializerUtil.Serialize(th3Pdata));
+                            swPdata.SetModdata(WoopEssentials.Th3EssentialsModDataKey, SerializerUtil.Serialize(th3Pdata));
                             gameDatabase.SetPlayerData(th3d.PlayerUID, SerializerUtil.Serialize(swPdata));
                             continue;
                         }
@@ -137,7 +137,7 @@ internal class Starterkitsystem
                 _sapi.Logger.Debug("No Th3PlayerData for player {0} found, no need to reset", th3d.LastKnownPlayername);
             }
         }
-        return  TextCommandResult.Success(Lang.Get("th3essentials:cd-rst-alldone"));
+        return  TextCommandResult.Success(Lang.Get("woopessentials:cd-rst-alldone"));
     }
 
     private TextCommandResult OnSetStarterKit(TextCommandCallingArgs args)
@@ -167,19 +167,19 @@ internal class Starterkitsystem
             _config.Items.Add(new StarterkitItem(enumItemClass, code, stackSize, attributes));
         }
         _config.MarkDirty();
-        return TextCommandResult.Success(Lang.Get("th3essentials:st-setup"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:st-setup"));
     }
 
     private TextCommandResult TryGiveItemStack(ICoreServerAPI api, IServerPlayer player)
     {
         if (_config.Items == null || _config.Items.Count == 0)
         {
-            return TextCommandResult.Success(Lang.Get("th3essentials:st-notsetup"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:st-notsetup"));
         }
         var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
         if (playerData.StarterkitRecived)
         {
-            return TextCommandResult.Success(Lang.Get("th3essentials:st-hasalready"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:st-hasalready"));
         }
 
         try
@@ -188,7 +188,7 @@ internal class Starterkitsystem
             var emptySlots = inventory.Count(slot => slot.GetType() == typeof(ItemSlotSurvival) && slot.Empty);
             if (emptySlots < _config.Items.Count)
             {
-                return TextCommandResult.Success(Lang.Get("th3essentials:st-needspace", _config.Items.Count));
+                return TextCommandResult.Success(Lang.Get("woopessentials:st-needspace", _config.Items.Count));
             }
             for (var i = 0; i < _config.Items.Count; i++)
             {
@@ -239,12 +239,12 @@ internal class Starterkitsystem
                 {
                     playerData.StarterkitRecived = true;
                     playerData.MarkDirty();
-                    return TextCommandResult.Error(Lang.Get("th3essentials:st-wrong"));
+                    return TextCommandResult.Error(Lang.Get("woopessentials:st-wrong"));
                 }
             }
             playerData.StarterkitRecived = true;
             playerData.MarkDirty();
-            return TextCommandResult.Success(Lang.Get("th3essentials:st-recived"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:st-recived"));
         }
         catch (Exception e)
         {

@@ -10,7 +10,7 @@ internal class Announcementsystem
 {
     private ICoreServerAPI _sapi = null!;
 
-    private Th3Config _config = null!;
+    private WoopConfig _config = null!;
 
     private readonly Random _rng = new Random();
     private int _lastIndex = -1;
@@ -20,7 +20,7 @@ internal class Announcementsystem
     public void Init(ICoreServerAPI sapi)
     {
         _sapi = sapi;
-        _config = Th3Essentials.Config;
+        _config = WoopEssentials.Config;
 
         if (_config.AnnouncementMessages != null && _config.AnnouncementMessages.Count != 0 && _config.AnnouncementInterval > 0)
         {

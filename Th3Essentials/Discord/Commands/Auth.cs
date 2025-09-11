@@ -15,7 +15,7 @@ public abstract class Auth
             new()
             {
                 Name = "mode",
-                Description = Lang.Get("th3essentials:slc-auth-mode"),
+                Description = Lang.Get("woopessentials:slc-auth-mode"),
                 Type = ApplicationCommandOptionType.String,
                 IsRequired = true,
                 Choices = new List<ApplicationCommandOptionChoiceProperties>(){
@@ -27,7 +27,7 @@ public abstract class Auth
         var auth = new SlashCommandBuilder
         {
             Name = SlashCommands.Auth.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-auth"),
+            Description = Lang.Get("woopessentials:slc-auth"),
             Options = authOptions
         };
         return auth.Build();
@@ -38,7 +38,7 @@ public abstract class Auth
         if (commandInteraction.User is not SocketGuildUser guildUser)
             return "Auth did not work: Could not get user";
 
-        if (Th3Essentials.Config.DiscordConfig?.Rewards != true)
+        if (WoopEssentials.Config.DiscordConfig?.Rewards != true)
         {
             return "Auth not enabled";
         }
@@ -56,24 +56,24 @@ public abstract class Auth
         {
             case "connect":
             {
-                if (Th3Essentials.Config.DiscordConfig?.LinkedAccounts == null || !Th3Essentials.Config.DiscordConfig.LinkedAccounts.ContainsValue(guildUser.Id.ToString()))
+                if (WoopEssentials.Config.DiscordConfig?.LinkedAccounts == null || !WoopEssentials.Config.DiscordConfig.LinkedAccounts.ContainsValue(guildUser.Id.ToString()))
                 {
                     var token = Guid.NewGuid().ToString();
-                    Th3Discord.AccountsToLink.Add(token, guildUser.Id.ToString());
+                    WoopDiscord.AccountsToLink.Add(token, guildUser.Id.ToString());
                     return $"Type `/dcauth {token}` ingame then relog.";
                 }
                 return "User already linked to a ingame account";
             }
             case "disconnect":
             {
-                if (Th3Essentials.Config.DiscordConfig?.LinkedAccounts != null)
+                if (WoopEssentials.Config.DiscordConfig?.LinkedAccounts != null)
                 {
-                    foreach (KeyValuePair<string, string> account in Th3Essentials.Config.DiscordConfig.LinkedAccounts)
+                    foreach (KeyValuePair<string, string> account in WoopEssentials.Config.DiscordConfig.LinkedAccounts)
                     {
                         if (account.Value.Equals(guildUser.Id.ToString()))
                         {
-                            Th3Essentials.Config.DiscordConfig.LinkedAccounts.Remove(account.Key);
-                            Th3Essentials.Config.MarkDirty();
+                            WoopEssentials.Config.DiscordConfig.LinkedAccounts.Remove(account.Key);
+                            WoopEssentials.Config.MarkDirty();
                             return "Your accounts have been disconnected";
                         }
                     }

@@ -13,18 +13,18 @@ namespace Th3Essentials.Commands;
 
 internal class Warp : Command
 {
-    private Th3PlayerConfig _playerConfig = null!;
-    private Th3Config _config = null!;
+    private WoopPlayerConfig _playerConfig = null!;
+    private WoopConfig _config = null!;
 
     internal override void Init(ICoreServerAPI sapi)
     {
-        if (Th3Essentials.Config.WarpEnabled)
+        if (WoopEssentials.Config.WarpEnabled)
         {
-            _playerConfig = Th3Essentials.PlayerConfig;
-            _config = Th3Essentials.Config;
+            _playerConfig = WoopEssentials.PlayerConfig;
+            _config = WoopEssentials.Config;
 
             sapi.ChatCommands.Create("warp")
-                .WithDescription(Lang.Get("th3essentials:cd-warp"))
+                .WithDescription(Lang.Get("woopessentials:cd-warp"))
                 .RequiresPlayer()
                 .RequiresPrivilege(Privilege.chat)
                 .WithArgs(sapi.ChatCommands.Parsers.Word("action",
@@ -42,7 +42,7 @@ internal class Warp : Command
         if (slot.Itemstack == null)
         {
             _config.WarpItem = null;
-            return TextCommandResult.Success(Lang.Get("th3essentials:wp-item-unset"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:wp-item-unset"));
         }
         
         var enumItemClass = slot.Itemstack.Class;
@@ -56,7 +56,7 @@ internal class Warp : Command
 
         _config.WarpItem = new StarterkitItem(enumItemClass, code, stackSize, attributes);
         _config.MarkDirty();
-        return TextCommandResult.Success(Lang.Get("th3essentials:wp-item-set"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:wp-item-set"));
     }
 
     private TextCommandResult OnWarp(TextCommandCallingArgs args)
@@ -70,7 +70,7 @@ internal class Warp : Command
             {
                 if (!player.HasPrivilege(Privilege.controlserver))
                 {
-                    return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
+                    return TextCommandResult.Success(Lang.Get("woopessentials:cd-all-notallow"));
                 }
                 return SetItem(args);
             }
@@ -78,52 +78,52 @@ internal class Warp : Command
             {
                 if (!player.HasPrivilege(Privilege.controlserver))
                 {
-                    return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
+                    return TextCommandResult.Success(Lang.Get("woopessentials:cd-all-notallow"));
                 }
 
                 var warpName = (string)args.Parsers[1].GetValue();
 
                 if (string.IsNullOrWhiteSpace(warpName))
                 {
-                    return TextCommandResult.Error(Lang.Get("th3essentials:wp-no-name"));
+                    return TextCommandResult.Error(Lang.Get("woopessentials:wp-no-name"));
                 }
 
-                if (Th3Essentials.Config.FindWarpByName(warpName) != null)
+                if (WoopEssentials.Config.FindWarpByName(warpName) != null)
                 {
-                    return TextCommandResult.Error(Lang.Get("th3essentials:wp-exists", warpName));
+                    return TextCommandResult.Error(Lang.Get("woopessentials:wp-exists", warpName));
                 }
 
-                Th3Essentials.Config.WarpLocations ??= new List<HomePoint>();
+                WoopEssentials.Config.WarpLocations ??= new List<HomePoint>();
 
-                Th3Essentials.Config.WarpLocations.Add(new HomePoint(warpName, player.Entity.Pos.AsBlockPos));
-                Th3Essentials.Config.MarkDirty();
-                return TextCommandResult.Success(Lang.Get("th3essentials:wp-added", warpName));
+                WoopEssentials.Config.WarpLocations.Add(new HomePoint(warpName, player.Entity.Pos.AsBlockPos));
+                WoopEssentials.Config.MarkDirty();
+                return TextCommandResult.Success(Lang.Get("woopessentials:wp-added", warpName));
             }
             case "remove":
             {
                 if (!player.HasPrivilege(Privilege.controlserver))
                 {
-                    return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
+                    return TextCommandResult.Success(Lang.Get("woopessentials:cd-all-notallow"));
                 }
 
                 var warpName = (string)args.Parsers[1].GetValue();
 
-                if (Th3Essentials.Config.WarpLocations == null)
-                    return TextCommandResult.Success(Lang.Get("th3essentials:wp-removed", warpName));
+                if (WoopEssentials.Config.WarpLocations == null)
+                    return TextCommandResult.Success(Lang.Get("woopessentials:wp-removed", warpName));
                     
-                var warpPoint = Th3Essentials.Config.FindWarpByName(warpName);
-                if (warpPoint != null) Th3Essentials.Config.WarpLocations.Remove(warpPoint);
-                Th3Essentials.Config.MarkDirty();
+                var warpPoint = WoopEssentials.Config.FindWarpByName(warpName);
+                if (warpPoint != null) WoopEssentials.Config.WarpLocations.Remove(warpPoint);
+                WoopEssentials.Config.MarkDirty();
 
-                return TextCommandResult.Success(Lang.Get("th3essentials:wp-removed", warpName));
+                return TextCommandResult.Success(Lang.Get("woopessentials:wp-removed", warpName));
             }
             case "list":
             {
-                var response = Lang.Get("th3essentials:wp-list") + "\n";
+                var response = Lang.Get("woopessentials:wp-list") + "\n";
 
-                if (Th3Essentials.Config.WarpLocations != null)
+                if (WoopEssentials.Config.WarpLocations != null)
                 {
-                    response = Th3Essentials.Config.WarpLocations.Aggregate(response, (current, warpPoint) => current + (warpPoint.Name + "\n"));
+                    response = WoopEssentials.Config.WarpLocations.Aggregate(response, (current, warpPoint) => current + (warpPoint.Name + "\n"));
                 }
 
                 return TextCommandResult.Success(response);
@@ -133,20 +133,20 @@ internal class Warp : Command
                 var warpName = (string)args.Parsers[0].GetValue();
 
                 if (warpName == string.Empty)
-                    return TextCommandResult.Error(Lang.Get("th3essentials:wp-notfound", ""));
+                    return TextCommandResult.Error(Lang.Get("woopessentials:wp-notfound", ""));
                     
                 var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
                 var playerConfig = Homesystem.GetConfig(player, playerData, _config); 
                 if (!playerConfig.WarpEnabled)
                 {
-                    return TextCommandResult.Success(Lang.Get("th3essentials:cd-all-notallow"));
+                    return TextCommandResult.Success(Lang.Get("woopessentials:cd-all-notallow"));
                 }
                 if (player.WorldData.CurrentGameMode == EnumGameMode.Creative ||
                     CanTravel(playerData))
                 {
-                    var warpPoint = Th3Essentials.Config.FindWarpByName(warpName);
+                    var warpPoint = WoopEssentials.Config.FindWarpByName(warpName);
                     if (warpPoint == null)
-                        return TextCommandResult.Success(Lang.Get("th3essentials:wp-notfound", warpName));
+                        return TextCommandResult.Success(Lang.Get("woopessentials:wp-notfound", warpName));
                         
                     if (Homesystem.CheckPayment(_config.WarpItem, playerConfig.WarpCost, player, out var canTeleport, out var success)) return success!;
 
@@ -154,7 +154,7 @@ internal class Warp : Command
                     {
                         Homesystem.PayIfNeeded(player, _config.WarpItem, playerConfig.WarpCost);
                         TeleportTo(player, playerData, warpPoint.Position);
-                        return TextCommandResult.Success(Lang.Get("th3essentials:wp-to", warpName));
+                        return TextCommandResult.Success(Lang.Get("woopessentials:wp-to", warpName));
                     }
 
                     return TextCommandResult.Success("Could not teleport");
@@ -163,21 +163,21 @@ internal class Warp : Command
                 TimeSpan diff;
                 if (_config.WarpCooldown >= 0)
                 {
-                    diff = playerData.WarpLastUsage.AddSeconds(Th3Essentials.Config.WarpCooldown) -
+                    diff = playerData.WarpLastUsage.AddSeconds(WoopEssentials.Config.WarpCooldown) -
                            DateTime.Now;
                 }
                 else
                 {
-                    diff = playerData.WarpLastUsage.AddSeconds(Th3Essentials.Config.WarpCooldown) -
+                    diff = playerData.WarpLastUsage.AddSeconds(WoopEssentials.Config.WarpCooldown) -
                            DateTime.Now;
                 }
-                return TextCommandResult.Success(Lang.Get("th3essentials:wait-time", Th3Util.PrettyTime(diff)));
+                return TextCommandResult.Success(Lang.Get("woopessentials:wait-time", WoopUtil.PrettyTime(diff)));
 
             }
         }
     }
     
-    public bool CanTravel(Th3PlayerData playerData)
+    public bool CanTravel(WoopPlayerData playerData)
     {
         if (_config.WarpCooldown >= 0)
         {
@@ -191,7 +191,7 @@ internal class Warp : Command
         }
     }
     
-    public void TeleportTo(IPlayer player, Th3PlayerData playerData, BlockPos location)
+    public void TeleportTo(IPlayer player, WoopPlayerData playerData, BlockPos location)
     {
         if (_config.WarpCooldown >= 0)
         {

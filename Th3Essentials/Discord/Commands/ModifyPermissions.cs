@@ -14,7 +14,7 @@ public abstract class ModifyPermissions
             new()
             {
                 Name = "mode",
-                Description = Lang.Get("th3essentials:slc-modifypermissions-mode"),
+                Description = Lang.Get("woopessentials:slc-modifypermissions-mode"),
                 Type = ApplicationCommandOptionType.String,
                 Choices = new List<ApplicationCommandOptionChoiceProperties>(){
                     new(){Name = "add", Value = "add"},
@@ -26,20 +26,20 @@ public abstract class ModifyPermissions
             new()
             {
                 Name = "role",
-                Description = Lang.Get("th3essentials:slc-modifypermissions"),
+                Description = Lang.Get("woopessentials:slc-modifypermissions"),
                 Type = ApplicationCommandOptionType.Role
             }
         };
         var modifypermissions = new SlashCommandBuilder
         {
             Name = SlashCommands.ModifyPermissions.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-modifypermissions"),
+            Description = Lang.Get("woopessentials:slc-modifypermissions"),
             Options = modifypermissionsOptions
         };
         return modifypermissions.Build();
     }
 
-    public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+    public static string HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction)
     {
         string response;
         if (commandInteraction.User is not SocketGuildUser guildUser)
@@ -79,7 +79,7 @@ public abstract class ModifyPermissions
                 {
                     discord.Config.ModerationRoles ??= new List<ulong>();
                     discord.Config.ModerationRoles.Add(role.Id);
-                    Th3Essentials.Config.MarkDirty();
+                    WoopEssentials.Config.MarkDirty();
                     response = $"Added role: {role.Name}";
                 }
                 else
@@ -97,7 +97,7 @@ public abstract class ModifyPermissions
                     {
                         if (discord.Config.ModerationRoles.Remove(role.Id))
                         {
-                            Th3Essentials.Config.MarkDirty();
+                            WoopEssentials.Config.MarkDirty();
                             response = $"Removed role: {role.Name}";
                         }
                         else
@@ -122,7 +122,7 @@ public abstract class ModifyPermissions
                 if (discord.Config.ModerationRoles != null)
                 {
                     discord.Config.ModerationRoles.Clear();
-                    Th3Essentials.Config.MarkDirty();
+                    WoopEssentials.Config.MarkDirty();
                     response = "All moderation roles removed";
                 }
                 else

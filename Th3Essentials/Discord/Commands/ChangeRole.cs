@@ -15,7 +15,7 @@ public abstract class ChangeRole
         var roles = new SlashCommandOptionBuilder()
         {
             Name = "rolecode",
-            Description = Lang.Get("th3essentials:slc-changerole-rolecode"),
+            Description = Lang.Get("woopessentials:slc-changerole-rolecode"),
             Type = ApplicationCommandOptionType.String,
             IsRequired = true
         };
@@ -34,7 +34,7 @@ public abstract class ChangeRole
             new()
             {
                 Name = "playername",
-                Description = Lang.Get("th3essentials:slc-changerole-playername"),
+                Description = Lang.Get("woopessentials:slc-changerole-playername"),
                 Type = ApplicationCommandOptionType.String,
                 IsRequired = true
             },
@@ -43,20 +43,20 @@ public abstract class ChangeRole
         var role = new SlashCommandBuilder
         {
             Name = SlashCommands.ChangeRole.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-changerole-role"),
+            Description = Lang.Get("woopessentials:slc-changerole-role"),
             Options = roleOptions
         };
         return role.Build();
     }
 
-    public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+    public static string HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction)
     {
         if (commandInteraction.User is not SocketGuildUser guildUser)
         {
             return "Something went wrong: User was not a GuildUser";
         }
 
-        if (!Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
+        if (!WoopSlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
         {
             return "You do not have permissions to do that";
         }

@@ -16,20 +16,20 @@ public abstract class Players
             new()
             {
                 Name = "ping",
-                Description = Lang.Get("th3essentials:slc-players-ping"),
+                Description = Lang.Get("woopessentials:slc-players-ping"),
                 Type = ApplicationCommandOptionType.Boolean
             }
         };
         var players = new SlashCommandBuilder
         {
             Name = SlashCommands.Players.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-players"),
+            Description = Lang.Get("woopessentials:slc-players"),
             Options = playersOptions
         };
         return players.Build();
     }
 
-    public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+    public static string HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction)
     {
         bool? ping = null;
         foreach (var option in commandInteraction.Data.Options)
@@ -51,6 +51,6 @@ public abstract class Players
                 names.Add(player.PlayerName);
             }
         }
-        return names.Count == 0 ? Lang.Get("th3essentials:slc-players-none") : string.Join("\n", names);
+        return names.Count == 0 ? Lang.Get("woopessentials:slc-players-none") : string.Join("\n", names);
     }
 }

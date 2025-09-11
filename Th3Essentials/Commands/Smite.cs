@@ -12,11 +12,11 @@ internal class Smite : Command
     private ICoreServerAPI _sapi = null!;
     internal override void Init(ICoreServerAPI api)
     {
-        if (!Th3Essentials.Config.EnableSmite) return;
+        if (!WoopEssentials.Config.EnableSmite) return;
         
         _sapi = api;
         api.ChatCommands.Create("smite")
-            .WithDescription(Lang.Get("th3essentials:cd-smite-desc"))
+            .WithDescription(Lang.Get("woopessentials:cd-smite-desc"))
             .RequiresPrivilege(Privilege.commandplayer)
             .RequiresPlayer()
             .WithArgs(api.ChatCommands.Parsers.OptionalWord("player"))
@@ -35,9 +35,9 @@ internal class Smite : Command
             if (player != null)
             {
                 weatherSystemServer.SpawnLightningFlash(new Vec3d(player.Entity.Pos));
-                return TextCommandResult.Success(Lang.Get("th3essentials:cd-smite-spl", player.PlayerName));
+                return TextCommandResult.Success(Lang.Get("woopessentials:cd-smite-spl", player.PlayerName));
             } 
-            return TextCommandResult.Error(Lang.Get("th3essentials:cd-smite-clfp",playerName));
+            return TextCommandResult.Error(Lang.Get("woopessentials:cd-smite-clfp",playerName));
         }
 
         if (args.Caller.Player.CurrentBlockSelection != null)
@@ -49,9 +49,9 @@ internal class Smite : Command
         if (args.Caller.Player.CurrentEntitySelection != null)
         {
             weatherSystemServer.SpawnLightningFlash(args.Caller.Player.CurrentEntitySelection.Position);
-            return TextCommandResult.Success(Lang.Get("th3essentials:cd-smite-sponen", args.Caller.Player.CurrentEntitySelection.Entity.GetName()));
+            return TextCommandResult.Success(Lang.Get("woopessentials:cd-smite-sponen", args.Caller.Player.CurrentEntitySelection.Entity.GetName()));
         }
 
-        return TextCommandResult.Error(Lang.Get("th3essentials:cd-smite-unable"));
+        return TextCommandResult.Error(Lang.Get("woopessentials:cd-smite-unable"));
     }
 }

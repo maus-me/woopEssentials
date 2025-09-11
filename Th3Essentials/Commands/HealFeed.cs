@@ -15,7 +15,7 @@ internal class HealFeed : Command
         _sapi = api;
         // /heal - heal player to full health
         api.ChatCommands.Create("heal")
-            .WithDescription(Lang.Get("th3essentials:cd-heal"))
+            .WithDescription(Lang.Get("woopessentials:cd-heal"))
             .RequiresPrivilege(Privilege.commandplayer)
             .WithArgs(api.ChatCommands.Parsers.OptionalWord("player"))
             .HandleWith(OnHealCmd)
@@ -23,14 +23,14 @@ internal class HealFeed : Command
 
         // /feed - set hunger/saturation to full
         api.ChatCommands.Create("feed")
-            .WithDescription(Lang.Get("th3essentials:cd-feed"))
+            .WithDescription(Lang.Get("woopessentials:cd-feed"))
             .RequiresPrivilege(Privilege.commandplayer)
             .WithArgs(api.ChatCommands.Parsers.OptionalWord("player"))
             .HandleWith(OnFeedCmd)
             .Validate();
 
         api.ChatCommands.Create("revive")
-            .WithDescription(Lang.Get("th3essentials:cd-revive"))
+            .WithDescription(Lang.Get("woopessentials:cd-revive"))
             .RequiresPrivilege(Privilege.commandplayer)
             .WithArgs(api.ChatCommands.Parsers.OptionalWord("player"))
             .HandleWith(OnHealCmd)
@@ -57,7 +57,7 @@ internal class HealFeed : Command
         if (sp == null)
         {
             var raw = args.Parsers.Count > 0 ? args.Parsers[0].GetValue() as string : "";
-            return TextCommandResult.Error(Lang.Get("th3essentials:cd-msg-fail", raw ?? ""));
+            return TextCommandResult.Error(Lang.Get("woopessentials:cd-msg-fail", raw ?? ""));
         }
 
         var ep = sp.Entity;
@@ -69,7 +69,7 @@ internal class HealFeed : Command
         // Parameters: saturation, food category (irrelevant here), saturationLossDelay, nutritionGainMultiplier
         eagent.ReceiveSaturation(10000f, EnumFoodCategory.Unknown, 0f);
 
-        return TextCommandResult.Success(Lang.Get("th3essentials:cd-feed-done"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:cd-feed-done"));
 
     }
 
@@ -79,7 +79,7 @@ internal class HealFeed : Command
         if (sp == null)
         {
             var raw = args.Parsers.Count > 0 ? args.Parsers[0].GetValue() as string : "";
-            return TextCommandResult.Error(Lang.Get("th3essentials:cd-msg-fail", raw ?? ""));
+            return TextCommandResult.Error(Lang.Get("woopessentials:cd-msg-fail", raw ?? ""));
         }
 
         var e = sp.Entity;
@@ -97,7 +97,7 @@ internal class HealFeed : Command
             e.Revive();
         }
 
-        return TextCommandResult.Success(Lang.Get("th3essentials:cd-heal-done"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:cd-heal-done"));
 
     }
 }

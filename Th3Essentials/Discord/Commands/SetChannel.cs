@@ -15,7 +15,7 @@ public abstract class SetChannel
             new()
             {
                 Name = "channel",
-                Description = Lang.Get("th3essentials:slc-setchannel"),
+                Description = Lang.Get("woopessentials:slc-setchannel"),
                 Type = ApplicationCommandOptionType.Channel,
                 IsRequired = true
             }
@@ -23,13 +23,13 @@ public abstract class SetChannel
         var setchannel = new SlashCommandBuilder
         {
             Name = SlashCommands.SetChannel.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-setchannel"),
+            Description = Lang.Get("woopessentials:slc-setchannel"),
             Options = channelOptions
         };
         return setchannel.Build();
     }
 
-    public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+    public static string HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction)
     {
         if (commandInteraction.User is not SocketGuildUser guildUser)
             return "Something went wrong: User was not a GuildUser";
@@ -42,7 +42,7 @@ public abstract class SetChannel
             return "Error: Channel needs to be a Text Channel";
         
         discord.Config.ChannelId = channel.Id;
-        Th3Essentials.Config.MarkDirty();
+        WoopEssentials.Config.MarkDirty();
         if (discord.GetDiscordChannel())
             return $"Channel was set to {channel.Name}";
         

@@ -18,27 +18,27 @@ public abstract class Whitelist
             new()
             {
                 Name = "playername",
-                Description = Lang.Get("th3essentials:slc-whitelist-playername"),
+                Description = Lang.Get("woopessentials:slc-whitelist-playername"),
                 Type = ApplicationCommandOptionType.String,
                 IsRequired = true
             } ,
             new()
             {
                 Name = "mode",
-                Description = Lang.Get("th3essentials:slc-whitelist-mode"),
+                Description = Lang.Get("woopessentials:slc-whitelist-mode"),
                 Type = ApplicationCommandOptionType.Boolean,
                 IsRequired = true
             },
             new()
             {
                 Name = "time",
-                Description = Lang.Get("th3essentials:slc-whitelist-time"),
+                Description = Lang.Get("woopessentials:slc-whitelist-time"),
                 Type = ApplicationCommandOptionType.Integer,
             },
             new()
             {
                 Name = "timetype",
-                Description = Lang.Get("th3essentials:slc-whitelist-timetype"),
+                Description = Lang.Get("woopessentials:slc-whitelist-timetype"),
                 Type = ApplicationCommandOptionType.String,
                 Choices = new List<ApplicationCommandOptionChoiceProperties>(){
                     new(){Name = "hours", Value = "hours"},
@@ -50,7 +50,7 @@ public abstract class Whitelist
             new()
             {
                 Name = "reason",
-                Description = Lang.Get("th3essentials:slc-whitelist-reason"),
+                Description = Lang.Get("woopessentials:slc-whitelist-reason"),
                 Type = ApplicationCommandOptionType.String
             }
         };
@@ -58,18 +58,18 @@ public abstract class Whitelist
         var whitelist = new SlashCommandBuilder
         {
             Name = SlashCommands.Whitelist.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-whitelist"),
+            Description = Lang.Get("woopessentials:slc-whitelist"),
             Options = whitelistOptions
         };
         return whitelist.Build();
     }
 
-    public static async Task<string> HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction)
+    public static async Task<string> HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction)
     {
         if (commandInteraction.User is not SocketGuildUser guildUser)
             return "Something went wrong: User was not a GuildUser";
 
-        if (!Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
+        if (!WoopSlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
             return "You do not have permissions to do that";
         
         string? targetPlayer = null;
@@ -132,7 +132,7 @@ public abstract class Whitelist
                 _ => datetime.AddYears(timenew)
             };
             var name = guildUser.DisplayName;
-            var playerUid = await Th3SlashCommands.GetPlayerUid(discord.Sapi, targetPlayer);
+            var playerUid = await WoopSlashCommands.GetPlayerUid(discord.Sapi, targetPlayer);
             
             if (playerUid == null)
                 return $"Could not find player with name: {targetPlayer}";
@@ -144,7 +144,7 @@ public abstract class Whitelist
         }
         else
         {
-            var playerUid = await Th3SlashCommands.GetPlayerUid(discord.Sapi, targetPlayer);
+            var playerUid = await WoopSlashCommands.GetPlayerUid(discord.Sapi, targetPlayer);
             if (playerUid == null)
                 return $"Could not find player with name: {targetPlayer}";
             

@@ -10,22 +10,22 @@ internal class PvP : Command
 {
     internal override void Init(ICoreServerAPI api)
     {
-        if (!Th3Essentials.Config.EnablePvPToggle) return;
+        if (!WoopEssentials.Config.EnablePvPToggle) return;
 
         api.ChatCommands.Create("pvp")
-            .WithDescription(Lang.Get("th3essentials:cd-pvp"))
+            .WithDescription(Lang.Get("woopessentials:cd-pvp"))
             .RequiresPlayer()
             .RequiresPrivilege(Privilege.chat)
             .HandleWith(OnPvP)
             .BeginSubCommand("on")
-                .WithDescription(Lang.Get("th3essentials:cd-pvp-toggle-on"))
+                .WithDescription(Lang.Get("woopessentials:cd-pvp-toggle-on"))
                 .IgnoreAdditionalArgs()
                 .WithAlias("enable")
                 .RequiresPrivilege(Privilege.chat)
                 .HandleWith(OnPvPToggleOn)
             .EndSubCommand()
             .BeginSubCommand("off")
-                .WithDescription(Lang.Get("th3essentials:cd-pvp-toggle-off"))
+                .WithDescription(Lang.Get("woopessentials:cd-pvp-toggle-off"))
                 .IgnoreAdditionalArgs()
                 .WithAlias("disable")
                 .RequiresPrivilege(Privilege.chat)
@@ -48,14 +48,14 @@ internal class PvP : Command
             // Also show cooldown remaining if any
             if (pvp.IsCooldownActive(out var remaining))
             {
-                return TextCommandResult.Success(Lang.Get("th3essentials:pvp-status-enabled") +
+                return TextCommandResult.Success(Lang.Get("woopessentials:pvp-status-enabled") +
                     $" (cooldown: {Math.Ceiling(remaining.TotalSeconds)}s)");
             }
-            return TextCommandResult.Success(Lang.Get("th3essentials:pvp-status-enabled"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:pvp-status-enabled"));
         }
         else
         {
-            return TextCommandResult.Success(Lang.Get("th3essentials:pvp-status-disabled"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:pvp-status-disabled"));
         }
     }
 
@@ -68,13 +68,13 @@ internal class PvP : Command
         }
         if (pvp.Enabled)
         {
-            return TextCommandResult.Success(Lang.Get("th3essentials:pvp-already-enabled"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:pvp-already-enabled"));
         }
 
         pvp.Enabled = true;
         pvp.StartCooldown(EntityBehaviorPvp.DefaultCooldownSeconds);
 
-        return TextCommandResult.Success(Lang.Get("th3essentials:pvp-now-enabled"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:pvp-now-enabled"));
     }
 
     private TextCommandResult OnPvPToggleOff(TextCommandCallingArgs args)
@@ -86,7 +86,7 @@ internal class PvP : Command
         }
         if (!pvp.Enabled)
         {
-            return TextCommandResult.Success(Lang.Get("th3essentials:pvp-already-disabled"));
+            return TextCommandResult.Success(Lang.Get("woopessentials:pvp-already-disabled"));
         }
 
         // Enforce cooldown after enabling or recent combat
@@ -97,7 +97,7 @@ internal class PvP : Command
         }
 
         pvp.Enabled = false;
-        return TextCommandResult.Success(Lang.Get("th3essentials:pvp-now-disabled"));
+        return TextCommandResult.Success(Lang.Get("woopessentials:pvp-now-disabled"));
     }
 
     /* TODO: Need to handle the case where PVP is in progress when the server restarts.

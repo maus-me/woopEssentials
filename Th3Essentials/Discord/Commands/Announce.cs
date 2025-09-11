@@ -15,21 +15,21 @@ public abstract class Announce
             new()
             {
                 Name = "message",
-                Description = Lang.Get("th3essentials:slc-announce-msg"),
+                Description = Lang.Get("woopessentials:slc-announce-msg"),
                 Type = ApplicationCommandOptionType.String,
                 IsRequired = true
             },
             new()
             {
                 Name = "show",
-                Description = Lang.Get("th3essentials:slc-announce-showindiscord"),
+                Description = Lang.Get("woopessentials:slc-announce-showindiscord"),
                 Type = ApplicationCommandOptionType.Boolean,
                 IsRequired = true
             },
             new()
             {
                 Name = "color",
-                Description = Lang.Get("th3essentials:slc-announce-color"),
+                Description = Lang.Get("woopessentials:slc-announce-color"),
                 Type = ApplicationCommandOptionType.String,
                 Choices = new List<ApplicationCommandOptionChoiceProperties>(){
                     new(){Name = "Black", Value = "Black"},
@@ -62,17 +62,17 @@ public abstract class Announce
         var announce = new SlashCommandBuilder
         {
             Name = SlashCommands.Announce.ToString().ToLower(),
-            Description = Lang.Get("th3essentials:slc-announce"),
+            Description = Lang.Get("woopessentials:slc-announce"),
             Options = announceOptions
         };
         return announce.Build();
     }
 
-    public static string HandleSlashCommand(Th3Discord discord, SocketSlashCommand commandInteraction, ref bool ephemeral)
+    public static string HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction, ref bool ephemeral)
     {
         if (commandInteraction.User is SocketGuildUser guildUser)
         {
-            if (Th3SlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
+            if (WoopSlashCommands.HasPermission(guildUser, discord.Config.ModerationRoles))
             {
                 string? message = null;
                 bool? show = null;
