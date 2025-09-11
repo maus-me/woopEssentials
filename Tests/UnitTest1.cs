@@ -1,4 +1,4 @@
-using Th3Essentials.Config;
+using WoopEssentials.Config;
 using Xunit.Abstractions;
 
 namespace Tests;
@@ -15,7 +15,7 @@ public class UnitTest1
     [Fact]
     public void TestFirstTimeNextDay()
     {
-        Th3Essentials.WoopEssentials.Config = new WoopConfig
+        WoopEssentials.WoopEssentials.Config = new WoopConfig
         {
             ShutdownTime = TimeSpan.Parse("07:43:00"),
             ShutdownTimes = new[]
@@ -24,16 +24,16 @@ public class UnitTest1
         var now = DateTime.Parse("5/14/2023 11:37:02 AM"); 
         
         
-        Th3Essentials.WoopEssentials.LoadRestartTime(now);
-        Assert.Equal(DateTime.Parse("5/15/2023 10:52:00 AM"), Th3Essentials.WoopEssentials.ShutDownTime);
-        var timeTillRestart = Th3Essentials.WoopEssentials.ShutDownTime - now;
+        WoopEssentials.WoopEssentials.LoadRestartTime(now);
+        Assert.Equal(DateTime.Parse("5/15/2023 10:52:00 AM"), WoopEssentials.WoopEssentials.ShutDownTime);
+        var timeTillRestart = WoopEssentials.WoopEssentials.ShutDownTime - now;
         Assert.Equal(TimeSpan.Parse("23:14:58") , timeTillRestart);
     }
 
     [Fact]
     public void TestTimeBetweenTodayAndNextDay()
     {
-        Th3Essentials.WoopEssentials.Config = new WoopConfig
+        WoopEssentials.WoopEssentials.Config = new WoopConfig
         {
             ShutdownTime = TimeSpan.Parse("07:43:00"),
             ShutdownTimes = new[]
@@ -42,16 +42,16 @@ public class UnitTest1
         var now = DateTime.Parse("5/14/2023 10:20:02 AM"); 
         
         
-        Th3Essentials.WoopEssentials.LoadRestartTime(now);
-        Assert.Equal(DateTime.Parse("5/14/2023 10:30:00 AM"), Th3Essentials.WoopEssentials.ShutDownTime);
-        var timeTillRestart = Th3Essentials.WoopEssentials.ShutDownTime - now;
+        WoopEssentials.WoopEssentials.LoadRestartTime(now);
+        Assert.Equal(DateTime.Parse("5/14/2023 10:30:00 AM"), WoopEssentials.WoopEssentials.ShutDownTime);
+        var timeTillRestart = WoopEssentials.WoopEssentials.ShutDownTime - now;
         Assert.Equal(TimeSpan.Parse("00:09:58") , timeTillRestart);
     }
 
     [Fact]
     public void TestLastTimeOfToday()
     {
-        Th3Essentials.WoopEssentials.Config = new WoopConfig
+        WoopEssentials.WoopEssentials.Config = new WoopConfig
         {
             ShutdownTime = TimeSpan.Parse("07:43:00"),
             ShutdownTimes = new[]
@@ -60,16 +60,16 @@ public class UnitTest1
         var now = DateTime.Parse("5/14/2023 10:35:02 AM"); 
         
         
-        Th3Essentials.WoopEssentials.LoadRestartTime(now);
-        Assert.Equal(DateTime.Parse("5/14/2023 10:40:00 AM"), Th3Essentials.WoopEssentials.ShutDownTime);
-        var timeTillRestart = Th3Essentials.WoopEssentials.ShutDownTime - now;
+        WoopEssentials.WoopEssentials.LoadRestartTime(now);
+        Assert.Equal(DateTime.Parse("5/14/2023 10:40:00 AM"), WoopEssentials.WoopEssentials.ShutDownTime);
+        var timeTillRestart = WoopEssentials.WoopEssentials.ShutDownTime - now;
         Assert.Equal(TimeSpan.Parse("00:04:58") , timeTillRestart);
     }
 
     [Fact]
     public void TestFirstTimeOfToday()
     {
-        Th3Essentials.WoopEssentials.Config = new WoopConfig
+        WoopEssentials.WoopEssentials.Config = new WoopConfig
         {
             ShutdownTime = TimeSpan.Parse("07:43:00"),
             ShutdownTimes = new[]
@@ -78,41 +78,41 @@ public class UnitTest1
         var now = DateTime.Parse("5/14/2023 10:05:02 AM"); 
         
         
-        Th3Essentials.WoopEssentials.LoadRestartTime(now);
-        Assert.Equal(DateTime.Parse("5/14/2023 10:10:00 AM"), Th3Essentials.WoopEssentials.ShutDownTime);
-        var timeTillRestart = Th3Essentials.WoopEssentials.ShutDownTime - now;
+        WoopEssentials.WoopEssentials.LoadRestartTime(now);
+        Assert.Equal(DateTime.Parse("5/14/2023 10:10:00 AM"), WoopEssentials.WoopEssentials.ShutDownTime);
+        var timeTillRestart = WoopEssentials.WoopEssentials.ShutDownTime - now;
         Assert.Equal(TimeSpan.Parse("00:04:58") , timeTillRestart);
     }
 
     [Fact]
     public void TestOnlyOneTimeNext()
     {
-        Th3Essentials.WoopEssentials.Config = new WoopConfig
+        WoopEssentials.WoopEssentials.Config = new WoopConfig
         {
             ShutdownTime = TimeSpan.Parse("07:43:00")
         };
         var now = DateTime.Parse("5/14/2023 10:05:02 AM"); 
         
         
-        Th3Essentials.WoopEssentials.LoadRestartTime(now);
-        Assert.Equal(DateTime.Parse("5/15/2023 07:43:00 AM"), Th3Essentials.WoopEssentials.ShutDownTime);
-        var timeTillRestart = Th3Essentials.WoopEssentials.ShutDownTime - now;
+        WoopEssentials.WoopEssentials.LoadRestartTime(now);
+        Assert.Equal(DateTime.Parse("5/15/2023 07:43:00 AM"), WoopEssentials.WoopEssentials.ShutDownTime);
+        var timeTillRestart = WoopEssentials.WoopEssentials.ShutDownTime - now;
         Assert.Equal(TimeSpan.Parse("21:37:58") , timeTillRestart);
     }
 
     [Fact]
     public void TestOnlyOneTimeToday()
     {
-        Th3Essentials.WoopEssentials.Config = new WoopConfig
+        WoopEssentials.WoopEssentials.Config = new WoopConfig
         {
             ShutdownTime = TimeSpan.Parse("07:43:00")
         };
         var now = DateTime.Parse("5/14/2023 7:05:02 AM"); 
         
         
-        Th3Essentials.WoopEssentials.LoadRestartTime(now);
-        Assert.Equal(DateTime.Parse("5/14/2023 07:43:00 AM"), Th3Essentials.WoopEssentials.ShutDownTime);
-        var timeTillRestart = Th3Essentials.WoopEssentials.ShutDownTime - now;
+        WoopEssentials.WoopEssentials.LoadRestartTime(now);
+        Assert.Equal(DateTime.Parse("5/14/2023 07:43:00 AM"), WoopEssentials.WoopEssentials.ShutDownTime);
+        var timeTillRestart = WoopEssentials.WoopEssentials.ShutDownTime - now;
         Assert.Equal(TimeSpan.Parse("00:37:58") , timeTillRestart);
     }
 

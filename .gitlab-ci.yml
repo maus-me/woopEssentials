@@ -6,7 +6,7 @@ stages:
 # ### Define variables
 variables:
   PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}"
-  FILE_NAME: "Th3Essential_${CI_COMMIT_TAG}.zip"
+  FILE_NAME: "WoopEssential_${CI_COMMIT_TAG}.zip"
   URL_FILE: "${PACKAGE_REGISTRY_URL}/${CI_COMMIT_TAG}/${FILE_NAME}"
   # 1) Name of directory where restore and build objects are stored.
   OBJECTS_DIRECTORY: 'obj'
@@ -14,7 +14,7 @@ variables:
   NUGET_PACKAGES_DIRECTORY: '.nuget'
   # 3) A relative path to the source code from project repository root.
   # NOTE: Please edit this path so it matches the structure of your project!
-  SOURCE_CODE_PATH: 'Th3Essentials/'
+  SOURCE_CODE_PATH: 'WoopEssentials/'
   VINTAGE_STORY: '/VintageStory'
   SERVER_TYPE: 'stable'
   SERVER_VERSION: '1.19.3'
@@ -70,4 +70,4 @@ release:
 
     - |
       release-cli create --name "Release $CI_COMMIT_TAG" --tag-name $CI_COMMIT_TAG  \
-        --assets-link "{\"name\":\"th3essentials.zip\",\"url\":\"${URL_FILE}\"}" 
+        --assets-link "{\"name\":\"woopessentials.zip\",\"url\":\"${URL_FILE}\"}" 

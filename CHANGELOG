@@ -70,7 +70,7 @@ v1.1.2
 - added ingame command /requesthelp to send a notifiaction for a spesific role to discord see
     DiscordConfig -> HelpRoleID
 - added to the /players discord command the additional arguments ping to show player ping time
-- added ability to show player roles ingame and discord roles can be configured in serverconfig.json, system is enabled in Th3Config.json
+- added ability to show player roles ingame and discord roles can be configured in serverconfig.json, system is enabled in WoopConfig.json
 - included debug symbols
 
 v1.1.1

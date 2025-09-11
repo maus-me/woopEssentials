@@ -9,7 +9,7 @@ Explain the issue you're running into.
 ### Config
 
 ```json
-Include your Th3Config.json (optional) might very usefull to reproduce the issue.
+Include your WoopConfig.json (optional) might very usefull to reproduce the issue.
 
 MAKE SURE TO NOT INCLUDE ANY SENSITIVE INFORMATION LIKE TOKENS (Discord/Influxdb)
 

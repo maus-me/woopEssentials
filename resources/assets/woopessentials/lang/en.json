@@ -128,7 +128,7 @@
     "slc-changerole-role": "Change the role of a player",
     "restart-in-mins": "Server is restarting in {0} minutes",
     "restart-in-min": "Server is restarting in 1 minute",
-    "th3config-error": "woopConfig could not be loaded: {0}",
+    "woopconfig-error": "woopConfig could not be loaded: {0}",
     "disabled": "woopEssentials config could not be loaded, mod will be disabled",
     "temporalStormPrefix": ":thunder_cloud_rain: ",
     "cd-warp": "Warp to predefined location",

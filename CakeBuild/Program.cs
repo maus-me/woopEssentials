@@ -30,7 +30,7 @@ public static class Program
 // ReSharper disable once ClassNeverInstantiated.Global
 public class BuildContext : FrostingContext
 {
-    public const string ProjectName = "Th3Essentials";
+    public const string ProjectName = "WoopEssentials";
     public string BuildConfiguration { get; }
     public string Version { get; }
     public string Name { get; }
@@ -81,7 +81,7 @@ public sealed class ValidateTranslationsTask : FrostingTask<BuildContext>
         {
             return;
         }
-        var jsonFiles = context.GetFiles($"../resources/assets/th3essentials/lang/*.json");
+        var jsonFiles = context.GetFiles($"../resources/assets/woopessentials/lang/*.json");
         foreach (var file in jsonFiles)
         {
             try

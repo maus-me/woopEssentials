@@ -24,7 +24,7 @@
     
     
     <ItemGroup>
-      <ProjectReference Include="..\Th3Essentials\Th3Essentials.csproj" />
+      <ProjectReference Include="..\WoopEssentials\WoopEssentials.csproj" />
     </ItemGroup>
 
     <ItemGroup>

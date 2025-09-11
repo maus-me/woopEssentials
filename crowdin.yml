@@ -20,13 +20,13 @@ files: [
       # Source files filter
       # e.g. "/resources/en/*.json"
       #
-      "source": "/resources/assets/th3essentials/lang/en.json",
+      "source": "/resources/assets/woopessentials/lang/en.json",
 
       #
       # Where translations will be placed
       # e.g. "/resources/%two_letters_code%/%original_file_name%"
       #
-      "translation": "/resources/assets/th3essentials/lang/%two_letters_code%.json",
+      "translation": "/resources/assets/woopessentials/lang/%two_letters_code%.json",
       #
       # Files or directories for ignore
       # e.g. ["/**/?.txt", "/**/[0-9].txt", "/**/*\?*.txt"]

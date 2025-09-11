@@ -29,13 +29,13 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - announce a message from discord to ingame
 - /warp [ add \<warp name\> | remove \<warp name\> | list |\<warp name\> ] to predfined locations (setup by admin, also respecting home cooldown time) [on/off]
 - automatic backup - will create a backup when using the shutdown feature [on/off]
-- /reloadth3config - reload the th3config.json and the restart timer 
+- /reloadwoopconfig - reload the woopconfig.json and the restart timer 
 - In-game chat timestamps [on/off]
 - /changerole allows an admin or roles of ModerationRoles to change the role of a player through Discord (will automatically add all roles to the selection in discord if there is 25 or less)
 - /smite [optional <playername>] spawns a lightning at the player by <playername> or at the current block/entity selection if no name is specified [onf/off]
 - /rtp randomly teleports a player within a radius from themselves [on/off]
 - /t2p send requests for teleport to players [on/off]
-- /th3config addRole/removeRole to modify item usage per role for "/home", "/back", "/home set" "/rtp", "/rtp request"
+- /woopconfig addRole/removeRole to modify item usage per role for "/home", "/back", "/home set" "/rtp", "/rtp request"
 - log admin actions to a discord channel [on/off]
 
 
@@ -50,7 +50,7 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 
 ## Installation
 
-Download the mod and put it into your mods folder. Start your server once to generate a default Th3Config.json file inside the ModConfig folder. Stop the server and now you can configure the mod.
+Download the mod and put it into your mods folder. Start your server once to generate a default WoopConfig.json file inside the ModConfig folder. Stop the server and now you can configure the mod.
 
 ### Enabling Features / Configuration
 
@@ -58,11 +58,11 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
   If you want to use the Discord features you will need to create a Discord bot see [Creating a Discord Bot](#creating-a-discord-bot)
 
-  Once you copied the Discord Bot Token into the Th3Config.json you can use the build in commands to configure the guild (Discord server) and the channel to link to ingame.
+  Once you copied the Discord Bot Token into the WoopConfig.json you can use the build in commands to configure the guild (Discord server) and the channel to link to ingame.
 
-  I recommend finishing the rest of the Th3Config.json file and once finished start the server. Now you can configure the Guild and Channel through one command in Discord itself. You should see that the bot went online, if not then there might be an issue with the Token. To initiate the setup just type on the server where you invited the Discord Bot to in the chat channel that you wanna link to ingame chat: `!setupth3essentials` it should respond with `Th3Essentials: Commands, Guild and Channel are setup 👍`. This command can only be used by some one with Administrative permissions on that Discord Server.
+  I recommend finishing the rest of the WoopConfig.json file and once finished start the server. Now you can configure the Guild and Channel through one command in Discord itself. You should see that the bot went online, if not then there might be an issue with the Token. To initiate the setup just type on the server where you invited the Discord Bot to in the chat channel that you wanna link to ingame chat: `!setupwoopessentials` it should respond with `WoopEssentials: Commands, Guild and Channel are setup 👍`. This command can only be used by some one with Administrative permissions on that Discord Server.
 
-  `!setupth3essentials` will create all commands that can be used from Discord and setup the Guild (Discord Server) to be used with the VS-Server. That should set everything up. If you want to change the linked channel type: `/setchannel` this will ask for an option called channel, type the channel name to link with the ingame chat and hit enter.
+  `!setupwoopessentials` will create all commands that can be used from Discord and setup the Guild (Discord Server) to be used with the VS-Server. That should set everything up. If you want to change the linked channel type: `/setchannel` this will ask for an option called channel, type the channel name to link with the ingame chat and hit enter.
 
   With `"UseEphermalCmdResponse": true,` set to true only the user that uses a discord slashcommand will see the response from the bot, when set to false it will be send so everyone can see the command and response.
 
@@ -83,18 +83,18 @@ Download the mod and put it into your mods folder. Start your server once to gen
   - /ban - Change the ban status of a player (also the time duration is customizable, default 50 years as with the ingame command) [Admin or Configured Role]
   - /allowcharselonce - Allows the player to re-select their class after doing so already [Admin or Configured Role]
   - /shutdown - Will shutdown the server (if configured server will restart see scripts at Shutdownsystem) [Admin or Configured Role]
-  - /admins - lists all admins speciefied by "AdminRoles" in Th3Condfig.json
+  - /admins - lists all admins speciefied by "AdminRoles" in WoopCondfig.json
   - /serverinfo - prints game and mod versions
   - /stats - Print the output of the ingame /stats command [Admin or Configured Role]
   - /auth - start to link discord and ingame account for the reward system
   - /announce - announce a message from discord to ingame chat [Admin or Configured Role]
-  - /reloadconfig - reload the th3config.json and the restart timer [Admin or Configured Role]
+  - /reloadconfig - reload the woopconfig.json and the restart timer [Admin or Configured Role]
   - /changerole allows to change the role of a player [Admin or Configured Role]
 
 - Shutdownsystem
 
   Notice: The shutdown system can only shut the server down, you will need something to automatically start the server when it is shutdown!!!
-  Take a look at [scripts](https://gitlab.com/th3dilli_vintagestory/th3essentials/-/tree/main/scripts) folder for some very basic scripts for Linux and Windows to restart the vs server.
+  Take a look at [scripts](https://gitlab.com/woopdilli_vintagestory/woopessentials/-/tree/main/scripts) folder for some very basic scripts for Linux and Windows to restart the vs server.
 
   The `ShutdownTime` indicates the time when the server will shutdown (only if `"ShutdownEnabled" : true`) the second functionality bound to this value is to announce the restart with ingame and discord messages.
   By setting `"ShutdownAnnounce" : [1,2,3,4,5,10,20,30]` it will send messages 30,20 ,..., 2, 1 minutes before restart - "Server will shutdown in x minutes".
@@ -113,9 +113,9 @@ Download the mod and put it into your mods folder. Start your server once to gen
   The /spawn and /back commands can be enabled with `"SpawnEnabled" : true` and `"BackEnabled" : true`.
 
   The homesystem now has the option to consume a item when using /home <name> and when using /home set <name>.
-  The cost for it can be overwritten by the role in serverconfig.json using `/th3config addRole`.
+  The cost for it can be overwritten by the role in serverconfig.json using `/woopconfig addRole`.
   For the home system you can now also customize the number of homepoints per player if roles are not enough.
-  The order for how things are applied is First if a player overwrite is set using `/home limit <playername> 5`, then it looks for a overwrite using the `"RoleConfig"` set by `/th3config addRole` and last is the default from the `HomeLimit` in the config.
+  The order for how things are applied is First if a player overwrite is set using `/home limit <playername> 5`, then it looks for a overwrite using the `"RoleConfig"` set by `/woopconfig addRole` and last is the default from the `HomeLimit` in the config.
   You can set any of the values to -1 to fallbakc to the next one. So if The RoleConfig has HomeLimit -1 it uses the global one from `HomeLimit`. 
  
   Similar do the new itemcosts work for the homesystem and the rtp and t2p where it first check if there is a value in the `RolesConfig` and then it take the one from `/home item` command (the value in `HomeItem` -> `Stacksize`).
@@ -145,7 +145,7 @@ Download the mod and put it into your mods folder. Start your server once to gen
   The reward system will show a special text/icon that you can specify in the config `RewardIdToName`. This is only shown to players that have a certain role in discord that is linked to the rewards system. With this you can link for exmaple your Patropn discord roles to ingame. Every player that wants to recive their reward ingame needs to use the discord command `/auth` the bot will give you a comand you will have to enter ingame. After that the player needs to relog and they should see their reward when chatting. The rewards are loaded only on player login. To update the rward role mapping stop the server and add new ones see config example at the bottom.
 
 - Messages and Language
-  Further you can unpack the .zip archive and navigate to assets/th3essentials/lang/en.json for example and customize almost all messages send by this mod, except the death messages since those are reused from the game (you could override the games death messages and that would change them in the mod too).
+  Further you can unpack the .zip archive and navigate to assets/woopessentials/lang/en.json for example and customize almost all messages send by this mod, except the death messages since those are reused from the game (you could override the games death messages and that would change them in the mod too).
 
   The only thing you have to keep in mind is that you need to keep the same amount of `{0}`,`{1}`... and so on in the text you replace it with. If you don't it will break the message output and cause unexpected behavior. So for example if we look at `"slc-restart-resp": "Server is restarting in {0}h {1}min",`
   you could change it to:
@@ -169,13 +169,13 @@ Download the mod and put it into your mods folder. Start your server once to gen
    Public bots can be added by anyone. When unchecked, only you can join this bot to servers.\
    And make sure you **uncheck** it. \
   <span style="color:red">Otherwise if someone has your Bots Application ID they could add the bot and link it to their discord server and interact with your server.</span>
-- Next you will have to enable the `MESSAGE CONTENT INTENT` which you can find in under "Privileged Gateway Intents". This will allow the bot to read user messages and forward them and also enables the `!setupth3essentials` command
+- Next you will have to enable the `MESSAGE CONTENT INTENT` which you can find in under "Privileged Gateway Intents". This will allow the bot to read user messages and forward them and also enables the `!setupwoopessentials` command
 
   If you wanna use the reward/auth system you need to enable in the "Bot" menu the "SERVER MEMBERS INTENT" toggle.
 
-- Next look for Token press "Reset Token" button then confirm it and finally "Copy" here you will get your discord bot token that is needed in the Th3Config.json file, copy it and paste it into the Th3Config.json file.
+- Next look for Token press "Reset Token" button then confirm it and finally "Copy" here you will get your discord bot token that is needed in the WoopConfig.json file, copy it and paste it into the WoopConfig.json file.
 
-  In the Th3Config.json it should look like this:
+  In the WoopConfig.json it should look like this:
 
   `"Token": "your_bot_token",`
   make sure the `"` before and after the token are still there.
@@ -198,9 +198,9 @@ Download the mod and put it into your mods folder. Start your server once to gen
 
 ## Updating
 
-When updating make sure to run `!setupth3essentials` again to create all new Discord commands if any.
+When updating make sure to run `!setupwoopessentials` again to create all new Discord commands if any.
 
-This is also important for the `/changerole` discord command since if you change the roles in the serverconfig.json you need to rerun `!setupth3essentials` so it detects those and updates the command.
+This is also important for the `/changerole` discord command since if you change the roles in the serverconfig.json you need to rerun `!setupwoopessentials` so it detects those and updates the command.
 
 Further change the config value `IsDirty:false` to `IsDirty:true` and run `/autosavenow` on the server console after you started the server. This will save all new config options to the config file so you can change them.
 
@@ -262,7 +262,7 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
     // allows to disable the chat relay function Discord <-> ingame chat and only show the system messages in discord if setup
     "DiscordChatRelay": true,
     
-    // Enable automatic adding of new slashcommands, will only add new ones and not update old ones. To update old ones run !setupth3essentials in the channel to use for the bot
+    // Enable automatic adding of new slashcommands, will only add new ones and not update old ones. To update old ones run !setupwoopessentials in the channel to use for the bot
     "AutoAddSlashCommands": false
   },
 
@@ -353,7 +353,7 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // color to use for the system messages ingame (restart warnings) [hex color value] https://colorpicker.me/
   "SystemMsgColor": "ff9102",
 
-  // shows the players role ingame and in discord like: [Admin] Th3Dilli: hello
+  // shows the players role ingame and in discord like: [Admin] WoopDilli: hello
   // this uses the the roles provided by the game itself see serverconfig.json -> Roles
   // each role has a Name which is used to display and a Color that the role name will be colored in
   // it wont print roles with PrivilegeLevel less then 1
@@ -366,10 +366,10 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   // allows to format the ingame role information to your likeing
   // {0} will be the color specified in the serverconfig.json
   // {1} will be the role name specified in the serverconfig.json
-  // {2} will be the message including one space and : like | Th3Dilli: message|
+  // {2} will be the message including one space and : like | WoopDilli: message|
   // for format options check https://wiki.vintagestory.at/index.php?title=VTML
   // sample will show for role Admin and the role will be colerd according to the value in serverconfig.json
-  // [Admin] Th3Dilli: message
+  // [Admin] WoopDilli: message
   // info since fonts are different on windows and linux this may look different depending on the operating system
   "RoleFormat": "<font size=\"18\" color=\"{0}\"><strong>[{1}]</strong></font>{2}",
   
@@ -434,7 +434,7 @@ Further change the config value `IsDirty:false` to `IsDirty:true` and run `/auto
   
   // config to overwrite role specific cost and features enabled
   // "crmod" is the code of the role from serverconfig.json
-  // /th3config addRole to add a new role, /th3config removeRole <name>
+  // /woopconfig addRole to add a new role, /woopconfig removeRole <name>
   //  "RoleConfig": {
   //    "crmod": {
   //      "HomeLimit": 13,
