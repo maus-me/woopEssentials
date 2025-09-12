@@ -120,11 +120,10 @@ internal class Message : Command
         for (var i = 0; i < sortedMails.Count; i++)
         {
             var mail = sortedMails[i];
-            var timeString = mail.SentTime.ToString("g"); // Short date and time pattern
-            var readStatus = mail.IsRead ? "[Read]" : "[New]";
+            var timeSince = DateTime.Now - mail.SentTime;
+            var timeString = WoopUtil.PrettyTime(timeSince);
             
-            sb.AppendLine($"{i+1}. {readStatus} <strong>From:</strong> {mail.SenderName} <strong>Date:</strong> {timeString}");
-            sb.AppendLine($"   <strong>Message:</strong> {mail.Message}");
+            sb.AppendLine($"{i+1}. {mail.Message} - {mail.SenderName} ({timeString} ago)");
             sb.AppendLine();
             
             // Mark as read
@@ -134,6 +133,8 @@ internal class Message : Command
                 playerData.MarkDirty();
             }
         }
+        // To clear your inbox, use: /mail clear
+        sb.AppendLine($"<font color=\"#{WoopEssentials.Config.MessageCmdColor}\"><strong>{Lang.Get("woopessentials:mail-read-clear")}</strong></font>");
         
         return TextCommandResult.Success(sb.ToString());
     }
