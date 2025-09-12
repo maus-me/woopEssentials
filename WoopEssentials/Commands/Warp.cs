@@ -134,7 +134,13 @@ internal class Warp : Command
 
                 if (warpName == string.Empty)
                     return TextCommandResult.Error(Lang.Get("woopessentials:wp-notfound", ""));
-                    
+
+                // Check if player is in PvP mode or has PvP cooldown
+                if (!EntityBehaviorPvp.CheckPvP(player, out var errorMessage))
+                {
+                    return TextCommandResult.Success(errorMessage);
+                }
+
                 var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
                 var playerConfig = Homesystem.GetConfig(player, playerData, _config); 
                 if (!playerConfig.WarpEnabled)

@@ -83,6 +83,12 @@ internal class RandomTeleport : Command
             return TextCommandResult.Success(Lang.Get("woopessentials:cd-all-notallow"));
         }
 
+        // Check if player is in PvP mode or has PvP cooldown
+        if (!EntityBehaviorPvp.CheckPvP(player, out var errorMessage))
+        {
+            return TextCommandResult.Success(errorMessage);
+        }
+
         if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
         {
             var spawn = player.Entity.Pos.AsBlockPos;

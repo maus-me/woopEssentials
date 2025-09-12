@@ -153,6 +153,13 @@ internal class Homesystem
     {
         var player = args.Caller.Player;
         var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
+
+        // Check if player is in PvP mode or has PvP cooldown
+        if (!EntityBehaviorPvp.CheckPvP(player, out var errorMessage))
+        {
+            return TextCommandResult.Success(errorMessage);
+        }
+
         if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData, _config.BackCooldown))
         {
             if (playerData.LastPosition == null)
@@ -180,6 +187,13 @@ internal class Homesystem
     {
         var player = args.Caller.Player;
         var playerData = _playerConfig.GetPlayerDataByUid(player.PlayerUID);
+        
+        // Check if player is in PvP mode or has PvP cooldown
+        if (!EntityBehaviorPvp.CheckPvP(player, out var errorMessage))
+        {
+            return TextCommandResult.Error(errorMessage);
+        }
+        
         if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
         { 
             var playerConfig = GetConfig(player, playerData, _config);
@@ -218,6 +232,12 @@ internal class Homesystem
         if (point == null) return TextCommandResult.Success(Lang.Get("woopessentials:hs-404"));
 
         var playerConfig = GetConfig(player, playerData, _config);
+
+        // Check if player is in PvP mode or has PvP cooldown
+        if (!EntityBehaviorPvp.CheckPvP(player, out var errorMessage))
+        {
+            return TextCommandResult.Error(errorMessage);
+        }
             
         if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
         {
@@ -325,6 +345,13 @@ internal class Homesystem
     {
         var name = args.Parsers[0].GetValue() as string;
         var player = args.Caller.Player;
+
+        // Check if player is in PvP mode or has PvP cooldown
+        if (!EntityBehaviorPvp.CheckPvP(player, out var errorMessage))
+        {
+            return TextCommandResult.Success(errorMessage);
+        }
+
         if (string.IsNullOrWhiteSpace(name))
         {
             return TextCommandResult.Success(Lang.Get("woopessentials:hs-empty"));

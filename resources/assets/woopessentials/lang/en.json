@@ -162,5 +162,6 @@
     "cd-seen": "Show when a player was last seen online (or now if currently online). Usage: /seen [player]",
     "seen-online-now": "{0} is currently online.",
     "seen-lastlogout": "{0} was last seen at {1}",
-    "seen-notfound": "Player \"{0}\" could not be found"
+    "seen-notfound": "Player \"{0}\" could not be found",
+    "pvp-action-blocked-cooldown": "Cannot perform this action while in PvP. Please wait {0} seconds."
 }

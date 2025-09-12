@@ -249,7 +249,49 @@ namespace WoopEssentials.Systems
         }
 
         // Function to use to check for PVP status before allowing certain actions (e.g. teleport)
+        public bool IsPvP(out string? errorMessage)
+        {
+            // Check if the player is under PvP cooldown (recently engaged in combat)
+            if (IsCooldownActive(out var remaining))
+            {
+                var seconds = Math.Ceiling(remaining.TotalSeconds);
+                errorMessage = Lang.Get("woopessentials:pvp-action-blocked-cooldown", seconds);
+                return false;
+            }
 
+            // Player is safe to use commands
+            errorMessage = null;
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if a player is safe to perform protected actions (like teleporting) with respect to PvP status
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="errorMessage">Out parameter containing the error message if the player is not safe</param>
+        /// <returns>True if the player can perform protected actions, false otherwise</returns>
+        public static bool CheckPvP(IPlayer player, out string? errorMessage)
+        {
+            errorMessage = null;
+
+            // Skip check for creative mode players
+            if (player.WorldData.CurrentGameMode == EnumGameMode.Creative)
+            {
+                return true;
+            }
+
+            // Check if player is in PvP mode or has PvP cooldown
+            var pvpBehavior = player.Entity.GetBehavior<EntityBehaviorPvp>();
+            if (pvpBehavior != null)
+            {
+                if (!pvpBehavior.IsPvP(out errorMessage))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         public override void OnEntityDeath(DamageSource damageSourceForDeath)
         {

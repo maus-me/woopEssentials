@@ -31,6 +31,13 @@ internal class PvP : Command
                 .RequiresPrivilege(Privilege.chat)
                 .HandleWith(OnPvPToggleOff)
             .EndSubCommand()
+            .BeginSubCommand("status")
+                .WithDescription(Lang.Get("woopessentials:cd-pvp-status"))
+                .IgnoreAdditionalArgs()
+                .WithAlias("info")
+                .RequiresPrivilege(Privilege.chat)
+                .HandleWith(OnPvP)
+            .EndSubCommand()
             ;
     }
 
