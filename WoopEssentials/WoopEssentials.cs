@@ -42,7 +42,7 @@ public class WoopEssentials : ModSystem
 
     internal ICoreServerAPI Sapi = null!;
 
-    private WoopDiscord? _WoopDiscord;
+    private WoopDiscord? _woopDiscord;
 
     private long _restartListener;
 
@@ -100,8 +100,8 @@ public class WoopEssentials : ModSystem
 
         if (Config.IsDiscordConfigured())
         {
-            _WoopDiscord = new WoopDiscord();
-            _WoopDiscord.Init(this);
+            _woopDiscord = new WoopDiscord();
+            _woopDiscord.Init(this);
         }
         else
         {
@@ -197,7 +197,7 @@ public class WoopEssentials : ModSystem
                     ? Lang.Get("woopessentials:restart-in-min")
                     : Lang.Get("woopessentials:restart-in-mins", timeInMinutes);
                 SendInGameServerMsg(msg);
-                _WoopDiscord?.SendServerMessage(msg);
+                _woopDiscord?.SendServerMessage(msg);
                 Sapi.Logger.Event(msg);
             }
         }
@@ -236,7 +236,7 @@ public class WoopEssentials : ModSystem
             Sapi.Logger.Warning(
                 $"SaveFileSize: {fileInfo.Length / 1000000} MB, FreeDiskSpace: {freeDiskSpace / 1000000} MB");
             Sapi.Logger.Error("Not enought disk space left to create a backup");
-            _WoopDiscord?.SendServerMessage(Lang.Get("woopessentials:backup-dc"));
+            _woopDiscord?.SendServerMessage(Lang.Get("woopessentials:backup-dc"));
             return;
         }
 
@@ -249,7 +249,7 @@ public class WoopEssentials : ModSystem
         var backupFileName = $"{worldName}-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.vcdbs";
 
         Sapi.Logger.Event(Lang.Get("woopessentials:backup"));
-        _WoopDiscord?.SendServerMessage(Lang.Get("woopessentials:backup-dc"));
+        _woopDiscord?.SendServerMessage(Lang.Get("woopessentials:backup-dc"));
 
         gameDatabase.CreateBackup(backupFileName);
     }
@@ -281,7 +281,7 @@ public class WoopEssentials : ModSystem
     {
         var msg = WoopUtil.ExtractDeathMessage(byPlayer, damageSource);
 
-        _WoopDiscord?.SendServerMessage(msg);
+        _woopDiscord?.SendServerMessage(msg);
     }
 
     private void GameWorldSave()
@@ -318,7 +318,7 @@ public class WoopEssentials : ModSystem
 
     public override void Dispose()
     {
-        _WoopDiscord?.Dispose();
+        _woopDiscord?.Dispose();
         Sapi.Event.GameWorldSave -= GameWorldSave;
         Sapi.Event.PlayerNowPlaying -= PlayerNowPlaying;
         Sapi.Event.UnregisterGameTickListener(_restartListener);
