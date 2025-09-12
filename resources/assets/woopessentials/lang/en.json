@@ -163,5 +163,17 @@
     "seen-online-now": "{0} is currently online.",
     "seen-lastlogout": "{0} was last seen at {1}",
     "seen-notfound": "Player \"{0}\" could not be found",
-    "pvp-action-blocked-cooldown": "Cannot perform this action while in PvP. Please wait {0} seconds."
+    "pvp-action-blocked-cooldown": "Cannot perform this action while in PvP. Please wait {0} seconds.",
+    "cd-mail": "Mail system for sending messages to players (online or offline)",
+    "cd-mail-read": "Read your mail messages",
+    "cd-mail-send": "Send a mail message to a player",
+    "cd-mail-clear": "Clear all your mail messages",
+    "mail-no-messages": "You have no mail.",
+    "mail-inbox-header": "Your Mail ({0}):",
+    "mail-sent": "Mail sent to {0}.",
+    "mail-cleared": "Cleared {0} mail message{1}.",
+    "mail-no-clear": "You have no mail to clear.",
+    "mail-new-notification": "You have {0} unread mail message{1}! Use /mail read to view.",
+    "mail-usage-send": "Usage: /mail send [player] [message]",
+    "mail-invalid-player": "Invalid player name. The player does not exist."
 }
