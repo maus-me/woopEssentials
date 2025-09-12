@@ -21,6 +21,9 @@ internal class RandomTeleport : Command
     // List for specific locations
     private List<Vec3i>? _pos;
 
+    // Maximum number of attempts to find a safe location
+    private const int MaxTeleportAttempts = 5;
+
     internal override void Init(ICoreServerAPI api)
     {
         if (WoopEssentials.Config.RandomTeleportRadius <= 0) return;
@@ -69,8 +72,7 @@ internal class RandomTeleport : Command
         _config.MarkDirty();
         return TextCommandResult.Success(Lang.Get("woopessentials:hs-item-set"));
     }
-
-
+    
     private TextCommandResult OnRtp(TextCommandCallingArgs args)
     {
         var player = args.Caller.Player;
@@ -91,40 +93,20 @@ internal class RandomTeleport : Command
 
         if (player.WorldData.CurrentGameMode == EnumGameMode.Creative || CanTravel(playerData))
         {
-            var spawn = player.Entity.Pos.AsBlockPos;
-            var x = Random.Shared.Next(-WoopEssentials.Config.RandomTeleportRadius, WoopEssentials.Config.RandomTeleportRadius);
-            var z = Random.Shared.Next(-WoopEssentials.Config.RandomTeleportRadius / 2, WoopEssentials.Config.RandomTeleportRadius / 2);
-            BlockPos pos;
-            if (_pos?.Count > 0)
-            {
-                var next = Random.Shared.Next(_pos.Count);
-                pos = _pos[next].ToBlockPos();
-            }
-            else
-            {
-                pos = new BlockPos(spawn.X + x, 1, spawn.Z + z, 0);
-                pos.X = Math.Clamp(pos.X, 0, _sapi.WorldManager.MapSizeX - 1);
-                pos.Z = Math.Clamp(pos.Z, 0, _sapi.WorldManager.MapSizeZ - 1);
-            }
-
-            if (Homesystem.CheckPayment(_config.RandomTeleportItem, playerConfig.RandomTeleportCost, player, out var canTeleport, out var success)) return success!;
+            if (Homesystem.CheckPayment(_config.RandomTeleportItem, playerConfig.RandomTeleportCost, player, out var canTeleport, out var success)) 
+                return success!;
 
             if (canTeleport)
             {
                 Homesystem.PayIfNeeded(player, _config.RandomTeleportItem, playerConfig.RandomTeleportCost);
-
-                _sapi.WorldManager.LoadChunkColumnPriority(pos.X / _sapi.WorldManager.ChunkSize,
-                    pos.Z / GlobalConstants.ChunkSize, new ChunkLoadOptions{ OnLoaded = () =>
-                    {
-                        // only use terrain height for none list positions
-                        if (_pos == null)
-                        {
-                            var y = _sapi.World.BlockAccessor.GetRainMapHeightAt(pos);
-                            pos.Y = y + 1;
-                        }
-
-                        TeleportTo(player, playerData, pos);
-                    }});
+                
+                // Start the teleport process
+                if (player is IServerPlayer serverPlayer)
+                {
+                    BlockPos pos = GenerateRandomPosition(player.Entity.Pos.AsBlockPos);
+                    AttemptTeleport(serverPlayer, playerData, pos, 1);
+                }
+                
                 return TextCommandResult.Success(Lang.Get("woopessentials:rtp-success"));
             }
 
@@ -134,12 +116,99 @@ internal class RandomTeleport : Command
         var diff = playerData.RTPLastUsage.AddSeconds(_config.RandomTeleportCooldown) - DateTime.Now;
         return TextCommandResult.Success(Lang.Get("woopessentials:wait-time", WoopUtil.PrettyTime(diff)));
     }
+    
+    // Generate a random position within the configured radius
+    private BlockPos GenerateRandomPosition(BlockPos spawn)
+    {
+        if (_pos?.Count > 0)
+        {
+            var next = Random.Shared.Next(_pos.Count);
+            return _pos[next].ToBlockPos();
+        }
+        else
+        {
+            var x = Random.Shared.Next(-WoopEssentials.Config.RandomTeleportRadius, WoopEssentials.Config.RandomTeleportRadius);
+            var z = Random.Shared.Next(-WoopEssentials.Config.RandomTeleportRadius / 2, WoopEssentials.Config.RandomTeleportRadius / 2);
+            
+            var pos = new BlockPos(spawn.X + x, 1, spawn.Z + z, 0);
+            pos.X = Math.Clamp(pos.X, 0, _sapi.WorldManager.MapSizeX - 1);
+            pos.Z = Math.Clamp(pos.Z, 0, _sapi.WorldManager.MapSizeZ - 1);
+            
+            return pos;
+        }
+    }
+    
+    // Recursive method to attempt teleporting the player to a safe location
+    private void AttemptTeleport(IServerPlayer player, WoopPlayerData playerData, BlockPos pos, int attempt)
+    {
+        // Load the chunk and check if the location is safe
+        _sapi.WorldManager.LoadChunkColumnPriority(
+            pos.X / _sapi.WorldManager.ChunkSize,
+            pos.Z / GlobalConstants.ChunkSize, 
+            new ChunkLoadOptions{ OnLoaded = () =>
+            {
+                // Calculate Y position based on terrain
+                if (_pos == null)
+                {
+                    var y = _sapi.World.BlockAccessor.GetRainMapHeightAt(pos);
+                    pos.Y = y + 1;
+                }
+                // Even for predefined locations, make sure Y is at least 1
+                else if (pos.Y <= 0)
+                {
+                    pos.Y = 1;
+                }
+                
+                // Check if the location is safe
+                if (IsSafeLocation(pos))
+                {
+                    // Safe location found, teleport the player
+                    TeleportTo(player, playerData, pos);
+                }
+                else
+                {
+                    if (attempt < MaxTeleportAttempts)
+                    {
+                        // Try again with a new position
+                        BlockPos newPos = GenerateRandomPosition(player.Entity.Pos.AsBlockPos);
+                        AttemptTeleport(player, playerData, newPos, attempt + 1);
+                    }
+                    else
+                    {
+                        // Max attempts reached, fall back to spawn
+                        player.SendMessage(GlobalConstants.GeneralChatGroup, 
+                            Lang.Get("woopessentials:rtp-max-attempts-reached"), 
+                            EnumChatType.Notification);
+                    }
+                }
+            }});
+    }
 
     public static void TeleportTo(IPlayer player, WoopPlayerData playerData, BlockPos location)
     {
         player.Entity.TeleportTo(new Vec3d(location.X + 0.5,location.Y + 0.2,location.Z + 0.5));
         playerData.RTPLastUsage = DateTime.Now;
         playerData.MarkDirty();
+    }
+
+    /* Checks if the target location is safe for teleportation.
+     Liquid includes water, lava, and blood.
+     TODO: Explore if this check would be better or more efficient with a Material check with "GetBlockMaterial"
+    */
+    private bool IsSafeLocation(BlockPos pos)
+    {
+        // Check the target block and a few blocks around it
+        var blockAtPos = _sapi.World.BlockAccessor.GetBlock(pos);
+        var blockAbove = _sapi.World.BlockAccessor.GetBlock(pos.X, pos.Y + 1, pos.Z);
+        var blockBelow = _sapi.World.BlockAccessor.GetBlock(pos.X, pos.Y - 1, pos.Z);
+
+        // Check if any of these positions have liquid
+        if (blockAtPos.LiquidLevel > 0 || blockBelow.LiquidLevel > 0 || blockAbove.LiquidLevel > 0)
+        {
+            return false; // liquid present
+        }
+
+        return true; // Location is safe
     }
 
     public static bool CanTravel(WoopPlayerData playerData)
