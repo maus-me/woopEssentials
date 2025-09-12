@@ -17,5 +17,6 @@ public abstract class CommandsLoader
         new WoopConfigCommands().Init(sapi);
         new HealFeed().Init(sapi);
         new PlayerStats().Init(sapi);
+        new Ping().Init(sapi);
     }
 }
