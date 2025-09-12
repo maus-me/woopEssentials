@@ -35,6 +35,9 @@ public class WoopPlayerData
 
     [ProtoMember(8)]
     public DateTime WarpLastUsage;
+    
+    [ProtoMember(9)]
+    public List<Mail> Mails = new();
 
     public HomePoint? FindPointByName(string name)
     {
