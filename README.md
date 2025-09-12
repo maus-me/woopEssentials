@@ -37,6 +37,10 @@ For help, discussion, suggestions and polls on new fetures join the [Discord Ser
 - /t2p send requests for teleport to players [on/off]
 - /woopconfig addRole/removeRole to modify item usage per role for "/home", "/back", "/home set" "/rtp", "/rtp request"
 - log admin actions to a discord channel [on/off]
+- /pvp [on|off|status] - toggle player-vs-player combat with cooldown protection [on/off]
+  - /pvp status (or just /pvp) - shows current PvP status and remaining cooldown if active
+  - /pvp on - enables PvP mode with cooldown period
+  - /pvp off - disables PvP mode (blocked during cooldown period)
 
 
 ![](preview/discord-chat2.png)

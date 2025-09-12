@@ -18,7 +18,8 @@ namespace WoopEssentials.Systems
         private static readonly Dictionary<string, DateTime> LastNotify = new();
         private static readonly TimeSpan NotifyCooldown = TimeSpan.FromSeconds(3);
 
-        // Default cooldown duration in seconds after enabling PvP
+        // Default cooldown duration in seconds after enabling PvP or engaging in combat
+        /* Todo: Make this configurable via config file */
         public static int DefaultCooldownSeconds = 30;
 
         private static void NotifyOnce(IServerPlayer? sp, string key, string message)
