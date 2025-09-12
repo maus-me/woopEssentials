@@ -30,14 +30,17 @@ internal class TeleportRequest : Command
             _playerConfig = WoopEssentials.PlayerConfig;
             _sapi = api;
             _tpRequests = new Dictionary<string, string>();
-            api.ChatCommands.Create("t2p")
+            /* TODO:
+             * Finish the rewrite of this to use /tpa, /tpaccept, /tpdeny
+             */
+            api.ChatCommands.Create("tpa")
                 .WithDescription(Lang.Get("woopessentials:cd-t2pr"))
                 .RequiresPlayer()
                 .RequiresPrivilege(Privilege.chat)
                 
                 .BeginSubCommand("request")
                     .WithAlias("r")
-                    .WithRootAlias("t2pr")
+                    .WithRootAlias("tpa")
                     .RequiresPrivilege(Privilege.chat)
                     .RequiresPlayer()
                     .WithDescription(Lang.Get("woopessentials:cd-t2pr-e"))
@@ -45,9 +48,10 @@ internal class TeleportRequest : Command
                     .HandleWith(OnT2Pr)
                 .EndSubCommand()
                 
-                .BeginSubCommand("abort")
+                .BeginSubCommand("deny")
                     .RequiresPrivilege(Privilege.chat)
                     .RequiresPlayer()
+                    .WithRootAlias("tpdeny")
                     .WithDescription(Lang.Get("woopessentials:cd-t2pr-a"))
                     .WithArgs(_sapi.ChatCommands.Parsers.OnlinePlayer("player"))
                     .HandleWith(OnAbortT2p)
@@ -55,7 +59,7 @@ internal class TeleportRequest : Command
                 
                 .BeginSubCommand("accept")
                     .WithAlias("a")
-                    .WithRootAlias("t2pa")
+                    .WithRootAlias("tpaccept")
                     .RequiresPrivilege(Privilege.chat)
                     .RequiresPlayer()
                     .WithDescription(Lang.Get("woopessentials:cd-t2pr-ac"))
