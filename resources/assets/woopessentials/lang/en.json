@@ -178,5 +178,6 @@
     "mail-usage-send": "Usage: /mail send [player] [message]",
     "mail-invalid-player": "Invalid player name. The player does not exist.",
     "rtp-max-attempts-reached": "Failed to find a safe teleport location. Please try again.",
-    "cd-ping": "Responds with Pong."
+    "cd-ping": "Shows your ping in milliseconds",
+    "ping-ms": "Your ping: {0}ms"
 }
