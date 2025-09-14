@@ -6,11 +6,8 @@ namespace WoopEssentials.Commands;
 
 internal class Ping : Command
 {
-    private ICoreServerAPI _sapi = null!;
-
     internal override void Init(ICoreServerAPI api)
     {
-        _sapi = api;
         api.ChatCommands.Create("ping")
             .WithDescription(Lang.Get("woopessentials:cd-ping"))
             .RequiresPrivilege(Privilege.chat)
