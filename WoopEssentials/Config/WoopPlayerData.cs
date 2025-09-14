@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ProtoBuf;
 using Vintagestory.API.MathTools;
+
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 
 namespace WoopEssentials.Config;
@@ -38,6 +39,10 @@ public class WoopPlayerData
     
     [ProtoMember(9)]
     public List<Mail> Mails = new();
+
+    // Bed spawn position (block coordinates). When null, no bed spawn is set
+    [ProtoMember(10)]
+    public BlockPos? BedPos;
 
     public HomePoint? FindPointByName(string name)
     {
