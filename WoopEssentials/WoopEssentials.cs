@@ -97,6 +97,7 @@ public class WoopEssentials : ModSystem
         new Homesystem().Init(Sapi);
         new Starterkitsystem().Init(Sapi);
         new Announcementsystem().Init(Sapi);
+        new BedSpawnSystem().Init(Sapi);
 
         if (Config.IsDiscordConfigured())
         {
