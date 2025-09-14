@@ -179,5 +179,10 @@
     "mail-invalid-player": "Invalid player name. The player does not exist.",
     "rtp-max-attempts-reached": "Failed to find a safe teleport location. Please try again.",
     "cd-ping": "Shows your ping in milliseconds",
-    "ping-ms": "Your ping: {0}ms"
+    "ping-ms": "Your ping: {0}ms",
+    "bed-spawn-set": "Your spawn point has been set to this bed.",
+    "bed-spawn-reset": "Your bed was destroyed! Spawn point has been reset.",
+    "bed-spawn-respawn": "You respawned at your bed.",
+    "bed-spawn-destroyed": "Your bed was destroyed while you were dead. Respawning at default spawn.",
+    "bed-spawn-claimed": "This bed is already claimed as a spawn point by another player."
 }
