@@ -1,6 +1,7 @@
 using System;
 using System.Timers;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using WoopEssentials.Config;
 
@@ -29,6 +30,17 @@ internal class Announcementsystem
             _announcer.AutoReset = true;
             _announcer.Enabled = true;
         }
+
+        // Notify all players when the server is saving the world
+        _sapi.Event.GameWorldSave += OnGameWorldSave;
+    }
+
+    private void OnGameWorldSave()
+    {
+        // AnnouncementChatGroupUid defaults to 0 (general chat)
+        _sapi.SendMessageToGroup(_config.AnnouncementChatGroupUid,
+            _config.AnnouncementLabel + " " + Lang.Get("woopessentials:saving"),
+            EnumChatType.Notification);
     }
 
     private void AnnounceMsg(object? source, ElapsedEventArgs args)

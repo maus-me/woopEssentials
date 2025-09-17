@@ -85,7 +85,7 @@ internal class RandomTeleport : Command
             return TextCommandResult.Success(Lang.Get("woopessentials:cd-all-notallow"));
         }
 
-        // Check if player is in PvP mode or has PvP cooldown
+        // Prevent RTP when pvp tagged.
         if (!EntityBehaviorPvp.CheckPvP(player, out var errorMessage))
         {
             return TextCommandResult.Success(errorMessage);

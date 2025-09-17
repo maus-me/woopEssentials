@@ -13,6 +13,7 @@ using Cake.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Vintagestory.API.Common;
+
 // ReSharper disable UnusedType.Global
 
 namespace CakeBuild;
@@ -138,7 +139,9 @@ public sealed class PackageTask : FrostingTask<BuildContext>
         var filePathCollection = context.GetFiles($"../{BuildContext.ProjectName}/bin/{context.BuildConfiguration}/Mods/mod/publish/*").Where(f => !f.FullPath.Contains("Newtonsoft"));
         context.CopyFiles(filePathCollection, $"../Releases/{context.Name}/");
         context.CopyDirectory($"../resources", $"../Releases/{context.Name}/");
+        context.DeleteFiles($"../Releases/{context.Name}/*lite*.dll");
         context.Zip($"../Releases/{context.Name}", $"../Releases/{context.Name}_{context.Version}.zip");
+        context.CleanDirectory($"../Releases/{context.Name}/");
     }
 }
 

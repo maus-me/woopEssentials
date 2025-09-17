@@ -184,5 +184,13 @@
     "bed-spawn-reset": "Your bed was destroyed! Spawn point has been reset.",
     "bed-spawn-respawn": "You respawned at your bed.",
     "bed-spawn-destroyed": "Your bed was destroyed while you were dead. Respawning at default spawn.",
-    "bed-spawn-claimed": "This bed is already claimed as a spawn point by another player."
+    "bed-spawn-claimed": "This bed is already claimed as a spawn point by another player.",
+    "bed-not-in-room": "This bed is not located in a room.",
+    "bed-below-sealevel": "This bed is below sea level. You cannot set it as your spawn point.",
+    "bed-break-chance": "You wake up and the bed groans loudly.",
+    "bed-break": "You wake up and have realized the bed is in tatters.",
+    "saving": "Server is saving.  There may be some lag for a few seconds...",
+    "cd-afk": "Toggle AFK status.",
+    "afk-now-afk": "{0} is now AFK.",
+    "afk-no-longer-afk": "{0} is no longer AFK."
 }

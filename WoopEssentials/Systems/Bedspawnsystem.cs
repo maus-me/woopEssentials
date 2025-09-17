@@ -27,6 +27,8 @@ internal class BedSpawnSystem
         _sapi.Event.DidBreakBlock += OnDidBreakBlock;
         // On death, inform the player or fall back if bed missing
         _sapi.Event.PlayerDeath += OnPlayerDeath;
+        // After respawn, optionally break certain beds
+        _sapi.Event.PlayerRespawn += OnPlayerRespawn;
     }
 
     private void OnPlayerDeath(IServerPlayer byPlayer, DamageSource damageSource)
@@ -74,7 +76,7 @@ internal class BedSpawnSystem
         }
     }
 
-    private BlockPos GetNormalizedBedPosition(Block bed, BlockPos pos)
+    private static BlockPos GetNormalizedBedPosition(Block bed, BlockPos pos)
     {
         if (bed.Variant["part"] == "head")
         {
@@ -101,40 +103,38 @@ internal class BedSpawnSystem
 
         if (currentSpawnPos == normalizedPosition)
         {
-            // They used the same bed, so don't do anything
+            // They used the same bed, so don't do anything.
             return;
         }
 
-        // Prevent two players from sharing the same bed spawn
-        foreach (var entry in _playerConfig.Players)
+
+        foreach (var (uid, pdata) in _playerConfig.Players)
         {
-            var uid = entry.Key;
-            var pdata = entry.Value;
             if (uid == byPlayer.PlayerUID) continue; // allow re-claiming own bed
 
             // Ordered from what should be the cheapest check to the most expensive.
 
-            // Check if bed is already claimed
-            if (pdata.BedPos != null &&
-                pdata.BedPos.Equals(normalizedPosition))
-            {
-                byPlayer.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("woopessentials:bed-spawn-claimed"), EnumChatType.Notification);
-                return;
-            }
+            // Prevent two players from sharing the same bed spawn
+            if (pdata.BedPos == null ||
+                !pdata.BedPos.Equals(normalizedPosition)) continue;
 
-            // Check if bed is not inside a room
-            if (!BlockInRoom(byPlayer.Entity.World.Api, normalizedPosition.UpCopy()))
-            {
-                byPlayer.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("woopessentials:bed-not-in-room"), EnumChatType.Notification);
-                return;
-            }
+            byPlayer.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("woopessentials:bed-spawn-claimed"), EnumChatType.Notification);
+            return;
+        }
 
-            // Check if bed is below sea level
-            if (normalizedPosition.Y < byPlayer.Entity.World.SeaLevel)
-            {
-                byPlayer.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("woopessentials:bed-below-sealevel"), EnumChatType.Notification);
-                return;
-            }
+        // Prevent spawn points outside of rooms
+        if (!BlockInRoom(byPlayer.Entity.World.Api, normalizedPosition.UpCopy()))
+        {
+            byPlayer.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("woopessentials:bed-not-in-room"), EnumChatType.Notification);
+            return;
+        }
+
+        // byPlayer.SendMessage(GlobalConstants.GeneralChatGroup, $"Bed placed at: {normalizedPosition.Y} and Sea level is {byPlayer.Entity.World.SeaLevel}", EnumChatType.Notification);
+        // Prevent spawn points underground
+        if (normalizedPosition.Y < byPlayer.Entity.World.SeaLevel)
+        {
+            byPlayer.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("woopessentials:bed-below-sealevel"), EnumChatType.Notification);
+            return;
         }
 
         var data = _playerConfig.GetPlayerDataByUid(byPlayer.PlayerUID);
@@ -142,7 +142,7 @@ internal class BedSpawnSystem
         data.MarkDirty();
 
         byPlayer.SetSpawnPosition(
-            new(
+            new PlayerSpawnPos(
                 normalizedPosition.X,
                 normalizedPosition.Y,
                 normalizedPosition.Z
@@ -152,11 +152,12 @@ internal class BedSpawnSystem
         byPlayer.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("woopessentials:bed-spawn-set"), EnumChatType.Notification);
     }
 
-    private void ClearBedSpawn(IServerPlayer player, WoopPlayerData data, bool notify, bool destroyedWhileDead = false)
+    private static void ClearBedSpawn(IServerPlayer player, WoopPlayerData data, bool notify, bool destroyedWhileDead = false)
     {
         data.BedPos = null;
         data.MarkDirty();
         player.ClearSpawnPosition();
+
         if (notify)
         {
             var key = destroyedWhileDead ? "woopessentials:bed-spawn-destroyed" : "woopessentials:bed-spawn-reset";
@@ -170,7 +171,69 @@ internal class BedSpawnSystem
         return code.Contains("bed");
     }
 
-    private bool BlockInRoom(ICoreAPI api, BlockPos pos)
+    private static bool IsBreakableBed(Block block)
+    {
+        // Only certain beds (e.g., hay bed) are subject to breaking after respawn
+        var code = block.Code?.Path ?? string.Empty;
+        return code.Contains("hay");
+    }
+
+    private void OnPlayerRespawn(IServerPlayer byPlayer)
+    {
+        // After the player respawns, optionally break certain beds with a chance
+        var data = _playerConfig.GetPlayerDataByUid(byPlayer.PlayerUID, false);
+        if (data?.BedPos == null) return;
+
+        var ba = _sapi.World.BlockAccessor;
+        var bedBlock = ba.GetBlock(data.BedPos);
+        if (!IsBedBlock(bedBlock)) return;
+        if (!IsBreakableBed(bedBlock)) return;
+
+        // Chance for the bed to break after respawn
+        const double breakChance = 0.25; // 25% chance
+        if (_sapi.World.Rand.NextDouble() < breakChance)
+        {
+            BreakBedAt(byPlayer, data.BedPos);
+            ClearBedSpawn(byPlayer, data, notify: true);
+        } else {
+            byPlayer.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("woopessentials:bed-break-chance"), EnumChatType.Notification);
+        }
+    }
+
+    private void BreakBedAt(IServerPlayer byPlayer, BlockPos anyHalfPos)
+    {
+        var ba = _sapi.World.BlockAccessor;
+        var block = ba.GetBlock(anyHalfPos);
+        if (!IsBedBlock(block)) return;
+
+        // Determine head position for consistency
+        var headPos = GetNormalizedBedPosition(block, anyHalfPos);
+        var headBlock = ba.GetBlock(headPos);
+
+        // Break head half
+        if (IsBedBlock(headBlock))
+        {
+            ba.BreakBlock(headPos, byPlayer);
+        }
+
+        // Determine and break the other half if present
+        var sideCode = headBlock?.Variant?["side"]; // direction the bed faces
+        if (sideCode != null)
+        {
+            var facing = BlockFacing.FromCode(sideCode);
+            var otherHalfPos = headPos.AddCopy(facing);
+            var otherHalfBlock = ba.GetBlock(otherHalfPos);
+            if (IsBedBlock(otherHalfBlock))
+            {
+                ba.BreakBlock(otherHalfPos, byPlayer);
+            }
+        }
+
+        // Inform the player that their bed was broken
+        byPlayer.SendMessage(GlobalConstants.GeneralChatGroup, Lang.Get("woopessentials:bed-break"), EnumChatType.Notification);
+    }
+
+    private static bool BlockInRoom(ICoreAPI api, BlockPos pos)
     {
         var roomRegistry = api.ModLoader.GetModSystem<RoomRegistry>();
 
@@ -193,8 +256,5 @@ internal class BedSpawnSystem
 
     /* TODO:
      * Build out functionality to detect when Temporal Gear is used.
-     * BUGS:
-     * When respawning, the check for the bed existing is occurring after the respawn already happened.  So if the players bed is destroyed, they will still spawn there once.
-     * Need to handle this by either moving the check earlier in the respawn process.
      */
 }

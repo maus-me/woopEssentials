@@ -6,6 +6,7 @@ public abstract class CommandsLoader
 {
     internal static void Init(ICoreServerAPI sapi)
     {
+        // Initialize shared systems/helpers
         new Serverinfo().Init(sapi);
         new Message().Init(sapi);
         new Restart().Init(sapi);
@@ -18,5 +19,7 @@ public abstract class CommandsLoader
         new HealFeed().Init(sapi);
         new PlayerStats().Init(sapi);
         new Ping().Init(sapi);
+        new Afk().Init(sapi);
+        new AntiGrief().Init(sapi);
     }
 }

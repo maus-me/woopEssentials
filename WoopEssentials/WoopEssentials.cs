@@ -98,6 +98,8 @@ public class WoopEssentials : ModSystem
         new Starterkitsystem().Init(Sapi);
         new Announcementsystem().Init(Sapi);
         new BedSpawnSystem().Init(Sapi);
+        new AfkSystem().Init(Sapi);
+        new AntiGriefsystem().Init(Sapi);
 
         if (Config.IsDiscordConfigured())
         {
@@ -325,6 +327,8 @@ public class WoopEssentials : ModSystem
         Sapi.Event.UnregisterGameTickListener(_restartListener);
         Sapi.Event.PlayerChat -= PlayerChatAsync;
         Sapi.Event.PlayerDeath -= PlayerDeathAsync;
+        // Dispose AFK system if initialized
+        try { AfkSystem.Instance.Dispose(); } catch { /* ignore */ }
     }
 
     public static string ToHex(Color c)
