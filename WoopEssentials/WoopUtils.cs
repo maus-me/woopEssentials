@@ -17,12 +17,7 @@ public static class WoopUtil
         var fieldInfo = typeof(GameVersion).GetField(nameof(GameVersion.ShortGameVersion),
             BindingFlags.Public | BindingFlags.Static);
         var value = fieldInfo?.GetValue(null) as string;
-        if (value == null)
-        {
-            throw new Exception("Cannot read 'GameVersion.ShortGameVersion'");
-        }
-
-        return value;
+        return value ?? throw new Exception("Cannot read 'GameVersion.ShortGameVersion'");
     }
 
     public static DateTime GetRestartDate(TimeSpan time, DateTime now)
@@ -46,28 +41,25 @@ public static class WoopUtil
             return "There are no admin roles configured";
         }
 
-        Dictionary<string, List<string>> online = new Dictionary<string, List<string>>();
-        Dictionary<string, List<string>> offline = new Dictionary<string, List<string>>();
+        var online = new Dictionary<string, List<string>>();
+        var offline = new Dictionary<string, List<string>>();
 
         foreach (var adminRole in admins)
         {
-            online.Add(adminRole, new List<string>());
-            offline.Add(adminRole, new List<string>());
+            online.Add(adminRole, []);
+            offline.Add(adminRole, []);
         }
 
-        foreach (KeyValuePair<string, ServerPlayerData> player in ((PlayerDataManager)sapi.PlayerData)
-                 .PlayerDataByUid)
+        foreach (var player in ((PlayerDataManager)sapi.PlayerData)
+                 .PlayerDataByUid.Where(player => admins.Any((role) => role.ToLower().Equals(player.Value.RoleCode.ToLower()))))
         {
-            if (admins.Any((role) => role.ToLower().Equals(player.Value.RoleCode.ToLower())))
+            if (sapi.World.AllOnlinePlayers.Any((pl) => pl.PlayerUID.Equals(player.Value.PlayerUID)))
             {
-                if (sapi.World.AllOnlinePlayers.Any((pl) => pl.PlayerUID.Equals(player.Value.PlayerUID)))
-                {
-                    online[player.Value.RoleCode.ToLower()].Add(player.Value.LastKnownPlayername);
-                }
-                else
-                {
-                    offline[player.Value.RoleCode.ToLower()].Add(player.Value.LastKnownPlayername);
-                }
+                online[player.Value.RoleCode.ToLower()].Add(player.Value.LastKnownPlayername);
+            }
+            else
+            {
+                offline[player.Value.RoleCode.ToLower()].Add(player.Value.LastKnownPlayername);
             }
         }
 
@@ -79,30 +71,24 @@ public static class WoopUtil
 
         var sb = new StringBuilder();
         sb.Append("Online:");
-        foreach (var adminRole in admins)
+        foreach (var adminRole in admins.Where(adminRole => online[adminRole].Count > 0))
         {
-            if (online[adminRole].Count > 0)
-            {
-                sb.AppendLine();
-                sb.Append($"   Role: {adminRole}");
-                sb.AppendLine();
-                sb.Append("    ");
-                sb.Append(string.Join(", ", online[adminRole]));
-            }
+            sb.AppendLine();
+            sb.Append($"   Role: {adminRole}");
+            sb.AppendLine();
+            sb.Append("    ");
+            sb.Append(string.Join(", ", online[adminRole]));
         }
 
         sb.AppendLine();
         sb.Append("Offline:");
-        foreach (var adminRole in admins)
+        foreach (var adminRole in admins.Where(adminRole => offline[adminRole].Count > 0))
         {
-            if (offline[adminRole].Count > 0)
-            {
-                sb.AppendLine();
-                sb.Append($"   Role: {adminRole}");
-                sb.AppendLine();
-                sb.Append("    ");
-                sb.Append(string.Join(", ", offline[adminRole]));
-            }
+            sb.AppendLine();
+            sb.Append($"   Role: {adminRole}");
+            sb.AppendLine();
+            sb.Append("    ");
+            sb.Append(string.Join(", ", offline[adminRole]));
         }
 
         return sb.ToString();
@@ -151,20 +137,26 @@ public static class WoopUtil
                     key = "explosion";
                     numMax = 4;
                 }
-                else if (damageSource.Type == EnumDamageType.Hunger)
+                else switch (damageSource.Type)
                 {
-                    key = "hunger";
-                    numMax = 3;
-                }
-                else if (damageSource.Type == EnumDamageType.Fire)
-                {
-                    key = "fire-block";
-                    numMax = 3;
-                }
-                else if (damageSource.Source == EnumDamageSource.Fall)
-                {
-                    key = "fall";
-                    numMax = 4;
+                    case EnumDamageType.Hunger:
+                        key = "hunger";
+                        numMax = 3;
+                        break;
+                    case EnumDamageType.Fire:
+                        key = "fire-block";
+                        numMax = 3;
+                        break;
+                    default:
+                    {
+                        if (damageSource.Source == EnumDamageSource.Fall)
+                        {
+                            key = "fall";
+                            numMax = 4;
+                        }
+
+                        break;
+                    }
                 }
             }
 
@@ -173,11 +165,9 @@ public static class WoopUtil
                 var rnd = new Random();
 
                 msg = Lang.Get("deathmsg-" + key + "-" + rnd.Next(1, numMax), byPlayer.PlayerName);
-                if (msg.Contains("deathmsg"))
-                {
-                    var str = Lang.Get("prefixandcreature-" + key);
-                    msg = Lang.Get("woopessentials:playerdeathby", byPlayer.PlayerName, str);
-                }
+                if (!msg.Contains("deathmsg")) return msg;
+                var str = Lang.Get("prefixandcreature-" + key);
+                msg = Lang.Get("woopessentials:playerdeathby", byPlayer.PlayerName, str);
             }
             else
             {
@@ -196,13 +186,13 @@ public static class WoopUtil
     {
         var parts = new List<string>();
         if (span.Days > 0)
-            parts.Add($"{span.Days} day{(span.Days == 1 ? "" : "s")}");
+            parts.Add($"{span.Days}d");
         if (span.Hours > 0)
-            parts.Add($"{span.Hours} hour{(span.Hours == 1 ? "" : "s")}");
+            parts.Add($"{span.Hours}h");
         if (span.Minutes > 0)
-            parts.Add($"{span.Minutes} minute{(span.Minutes == 1 ? "" : "s")}");
+            parts.Add($"{span.Minutes}m");
         if (span.Seconds > 0 || parts.Count == 0) // Always show seconds if nothing else
-            parts.Add($"{span.Seconds} second{(span.Seconds == 1 ? "" : "s")}");
+            parts.Add($"{span.Seconds}s");
 
         return string.Join(", ", parts);
     }
