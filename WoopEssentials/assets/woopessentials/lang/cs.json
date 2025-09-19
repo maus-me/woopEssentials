@@ -57,7 +57,7 @@
     "cd-help-response": "Žádost o pomoc byla odeslána",
     "hs-item-set": "Item pro portnutí domů nastaven",
     "hs-item-unset": "Item pro portnutí domů zrušen",
-    "woopessentials:hs-item-desc": "Nastaví aktuální slot na hotbaru jako požadovaný předmět a množství, použijte prázdný slot pro zrušení",
+    "hs-item-desc": "Nastaví aktuální slot na hotbaru jako požadovaný předmět a množství, použijte prázdný slot pro zrušení",
     "hs-changelim": "Limit domovů pro hráče {0} byl změněn na {1}",
     "hs-item-missing": "Chybí vám {0} x {1}",
     "wait-time": "počkejte prosím ještě {0}",

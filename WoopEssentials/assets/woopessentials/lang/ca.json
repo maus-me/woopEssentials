@@ -57,7 +57,7 @@
     "cd-help-response": "Help request was send",
     "hs-item-set": "Home Item set",
     "hs-item-unset": "Home Item unset",
-    "woopessentials:hs-item-desc": "Sets the current hotbar slot as the required item and quantity, use empty slot to unset",
+    "hs-item-desc": "Sets the current hotbar slot as the required item and quantity, use empty slot to unset",
     "hs-changelim": "Updated home point limit for player : {0} to {1}",
     "hs-item-missing": "You are missing {0} x {1}",
     "wait-time": "you have to wait for {0}",
