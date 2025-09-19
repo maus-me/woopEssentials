@@ -1,8 +1,8 @@
-﻿using Vintagestory.API.Common;
+﻿using System;
+using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
-using System;
-using WoopEssentials.Systems;
+using WoopEssentials.Systems.EntityBehavior;
 
 namespace WoopEssentials.Commands;
 

@@ -7,6 +7,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using WoopEssentials.Config;
 using WoopEssentials.Systems;
+using WoopEssentials.Systems.EntityBehavior;
 
 namespace WoopEssentials.Commands;
 

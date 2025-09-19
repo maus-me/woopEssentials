@@ -6,6 +6,7 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using WoopEssentials.Config;
+using WoopEssentials.Systems.EntityBehavior;
 
 namespace WoopEssentials.Systems;
 

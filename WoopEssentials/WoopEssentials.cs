@@ -15,11 +15,7 @@ using WoopEssentials.Commands;
 using WoopEssentials.Config;
 using WoopEssentials.Discord;
 using WoopEssentials.Systems;
-
-[assembly: ModInfo("woopEssentials",
-    Description = "WoopEssentials server mod",
-    Website = "https://github.com/maus-me/woopEssentials/",
-    Authors = new[] { "Th3Dilli", "mausterio" })]
+using WoopEssentials.Systems.EntityBehavior;
 
 [assembly: InternalsVisibleTo("Tests")]
 
@@ -45,6 +41,7 @@ public class WoopEssentials : ModSystem
     private WoopDiscord? _woopDiscord;
 
     private long _restartListener;
+
 
     public event PlayerWithRewardJoin? OnPlayerWithRewardJoin;
 
@@ -92,6 +89,7 @@ public class WoopEssentials : ModSystem
 
         // Register entity behaviors early so JSON patches referencing them can load without errors
         Sapi.RegisterEntityBehaviorClass("EntityBehaviorPvp", typeof(EntityBehaviorPvp));
+        Sapi.RegisterEntityBehaviorClass("EntityBehaviorAfkGuard", typeof(EntityBehaviorAfkGuard));
 
         CommandsLoader.Init(Sapi);
         new Homesystem().Init(Sapi);
@@ -99,7 +97,7 @@ public class WoopEssentials : ModSystem
         new Announcementsystem().Init(Sapi);
         new BedSpawnSystem().Init(Sapi);
         new AfkSystem().Init(Sapi);
-        new AntiGriefsystem().Init(Sapi);
+        new AutoWhitelistSystem().Init(Sapi);
 
         if (Config.IsDiscordConfigured())
         {

@@ -20,6 +20,6 @@ public abstract class CommandsLoader
         new PlayerStats().Init(sapi);
         new Ping().Init(sapi);
         new Afk().Init(sapi);
-        new AntiGrief().Init(sapi);
+        new Playtime().Init(sapi);
     }
 }

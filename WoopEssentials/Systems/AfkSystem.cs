@@ -24,8 +24,8 @@ internal class AfkSystem : IDisposable
 
     private long _tickListenerId;
 
-    // Default AFK timeout (in milliseconds). Kept minimal and internal; can be made configurable later if needed.
-    private const int AfkTimeoutMs = 10000;
+    // Default AFK timeout (in minutes). Kept minimal and internal; can be made configurable later if needed.
+    private const int AfkTimeoutMs = 10 * 60000;
 
     // Poll interval for movement/activity checks. Small to be responsive, but not too frequent for performance.
     private const int PollIntervalMs = 3000; // 3 seconds
@@ -141,8 +141,22 @@ internal class AfkSystem : IDisposable
                 }
             }
 
+            // While AFK: lightly offset hunger loss by adding a tiny bit of saturation periodically
+            if (state.IsAfk)
+            {
+                try
+                {
+                    if (sp.Entity is EntityAgent agent)
+                    {
+                        // Small top-up to effectively reduce hunger drain while AFK
+                        agent.ReceiveSaturation(0.02f, EnumFoodCategory.Unknown, 0f);
+                    }
+                }
+                catch { /* ignore */ }
+                continue;
+            }
+
             // Auto-AFK after timeout
-            if (state.IsAfk) continue;
             var inactiveMs = (nowUtc - state.LastActiveUtc).TotalMilliseconds;
             if (!(inactiveMs >= AfkTimeoutMs)) continue;
             state.IsAfk = true;
@@ -181,6 +195,16 @@ internal class AfkSystem : IDisposable
     {
         _sapi.Logger.Audit($"Player {player.PlayerName} is no longer AFK.");
         _sapi.SendMessageToGroup(0, Lang.Get("woopessentials:afk-no-longer-afk", player.PlayerName), EnumChatType.Notification);
+    }
+
+    public bool IsAfk(string playerUid)
+    {
+        return _states.TryGetValue(playerUid, out var st) && st.IsAfk;
+    }
+
+    public bool IsAfk(IServerPlayer player)
+    {
+        return IsAfk(player.PlayerUID);
     }
 
     public void Dispose()
