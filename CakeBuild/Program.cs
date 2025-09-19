@@ -7,14 +7,11 @@ using Cake.Common.Tools.DotNet;
 using Cake.Common.Tools.DotNet.Clean;
 using Cake.Common.Tools.DotNet.Publish;
 using Cake.Core;
-using Cake.Core.Diagnostics;
 using Cake.Frosting;
 using Cake.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Vintagestory.API.Common;
-
-// ReSharper disable UnusedType.Global
 
 namespace CakeBuild;
 
@@ -28,8 +25,7 @@ public static class Program
     }
 }
 
-// ReSharper disable once ClassNeverInstantiated.Global
-public class BuildContext : FrostingContext
+public abstract class BuildContext : FrostingContext
 {
     public const string ProjectName = "WoopEssentials";
     public string BuildConfiguration { get; }
@@ -42,7 +38,7 @@ public class BuildContext : FrostingContext
     {
         BuildConfiguration = context.Argument("configuration", "Release");
         SkipJsonValidation = context.Argument("skipJsonValidation", false);
-        var modInfo = context.DeserializeJsonFromFile<ModInfo>($"../resources/modinfo.json");
+        var modInfo = context.DeserializeJsonFromFile<ModInfo>($"../{ProjectName}/modinfo.json");
         Version = modInfo.Version;
         Name = modInfo.ModID;
     }
@@ -57,7 +53,8 @@ public sealed class ValidateJsonTask : FrostingTask<BuildContext>
         {
             return;
         }
-        var jsonFiles = context.GetFiles($"../resources/**/*.json");
+
+        var jsonFiles = context.GetFiles($"../{BuildContext.ProjectName}/assets/**/*.json");
         foreach (var file in jsonFiles)
         {
             try
@@ -67,40 +64,8 @@ public sealed class ValidateJsonTask : FrostingTask<BuildContext>
             }
             catch (JsonException ex)
             {
-                throw new Exception($"Validation failed for JSON file: {file.FullPath}{Environment.NewLine}{ex.Message}", ex);
-            }
-        }
-    }
-}
-
-[TaskName("ValidateTranslationsTask")]
-public sealed class ValidateTranslationsTask : FrostingTask<BuildContext>
-{
-    public override void Run(BuildContext context)
-    {
-        if (context.SkipJsonValidation)
-        {
-            return;
-        }
-        var jsonFiles = context.GetFiles($"../resources/assets/woopessentials/lang/*.json");
-        foreach (var file in jsonFiles)
-        {
-            try
-            {
-                var json = File.ReadAllText(file.FullPath);
-                var jToken = JToken.Parse(json);
-                var enumerable = jToken.Where((s)=>s.Path.StartsWith("slc-"));
-                foreach (var entry in enumerable)
-                {
-                    if (entry.First?.Value<string>().Length > 100)
-                    {
-                        context.Log.Information($"Translation: {Path.GetFileName(file.FullPath)} : {entry.Path} is longer then 100 chars");
-                    }
-                }
-            }
-            catch (JsonException ex)
-            {
-                throw new Exception($"Validation failed for JSON file: {file.FullPath}{Environment.NewLine}{ex.Message}", ex);
+                throw new Exception(
+                    $"Validation failed for JSON file: {file.FullPath}{Environment.NewLine}{ex.Message}", ex);
             }
         }
     }
@@ -138,10 +103,18 @@ public sealed class PackageTask : FrostingTask<BuildContext>
         context.EnsureDirectoryExists($"../Releases/{context.Name}");
         var filePathCollection = context.GetFiles($"../{BuildContext.ProjectName}/bin/{context.BuildConfiguration}/Mods/mod/publish/*").Where(f => !f.FullPath.Contains("Newtonsoft"));
         context.CopyFiles(filePathCollection, $"../Releases/{context.Name}/");
-        context.CopyDirectory($"../resources", $"../Releases/{context.Name}/");
-        context.DeleteFiles($"../Releases/{context.Name}/*lite*.dll");
+        if (context.DirectoryExists($"../{BuildContext.ProjectName}/assets"))
+        {
+            context.CopyDirectory($"../{BuildContext.ProjectName}/assets", $"../Releases/{context.Name}/assets");
+        }
+
+        context.CopyFile($"../{BuildContext.ProjectName}/modinfo.json", $"../Releases/{context.Name}/modinfo.json");
+        if (context.FileExists($"../{BuildContext.ProjectName}/modicon.png"))
+        {
+            context.CopyFile($"../{BuildContext.ProjectName}/modicon.png", $"../Releases/{context.Name}/modicon.png");
+        }
+
         context.Zip($"../Releases/{context.Name}", $"../Releases/{context.Name}_{context.Version}.zip");
-        context.CleanDirectory($"../Releases/{context.Name}/");
     }
 }
 

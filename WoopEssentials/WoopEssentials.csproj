@@ -21,10 +21,6 @@
             <HintPath>$(VINTAGE_STORY)\Lib\protobuf-net.dll</HintPath>
             <Private>False</Private>
         </Reference>
-        <Reference Include="Newtonsoft.Json">
-            <HintPath>$(VINTAGE_STORY)\Lib\Newtonsoft.Json.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
         <Reference Include="0Harmony">
             <HintPath>$(VINTAGE_STORY)\Lib\0Harmony.dll</HintPath>
             <Private>False</Private>
@@ -44,15 +40,14 @@
 
     <ItemGroup>
         <PackageReference Include="Discord.Net.WebSocket" Version="3.17.4" />
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.8" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\resources\**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
         <Content Update="..\resources\assets\woopessentials\patches\game-entities-humanoid-player.json">
           <Link>assets\woopessentials\patches\game-entities-humanoid-player.json</Link>
+        </Content>
+        <Content Update="..\resources\modinfo.json">
+          <Link>modinfo.json</Link>
         </Content>
     </ItemGroup>
 
