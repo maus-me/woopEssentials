@@ -4,6 +4,17 @@ using System.Text;
 
 namespace WoopEssentials.Config;
 
+public class ChatFilterRule
+{
+    public bool enabled { get; set; }
+    public List<string>? Regex { get; set; }
+    public bool alertstaff { get; set; }
+    public bool announcediscord { get; set; }
+    public bool silent { get; set; }
+    public string? command { get; set; }
+    public string? Reason { get; set; }
+}
+
 public class WoopConfig
 {
     public bool IsDirty;
@@ -12,15 +23,21 @@ public class WoopConfig
 
     public string? InfoMessage;
 
-    public List<string>? AnnouncementMessages;
+    // Chat filter configuration
+    public bool EnableChatFilter;
+    // New rule-based chat filter structure
+    public Dictionary<string, List<ChatFilterRule>>? ChatFilterRules;
+    // Optional webhook for announcediscord action
+    public string? ChatFilterDiscordWebhook;
 
+    // Announcements
+    public List<string>? AnnouncementMessages;
     public int AnnouncementInterval;
     public int AnnouncementChatGroupUid;
-
     public string AnnouncementLabel = "<br /><strong>[Info]</strong>";
 
+    // Home
     public int HomeLimit = -1;
-
     public int HomeCooldown = 60;
     public int BackCooldown = 60;
     public bool ExcludeHomeFromBack;
@@ -136,6 +153,10 @@ public class WoopConfig
 
     internal void Reload(WoopConfig configTemp)
     {
+        EnableChatFilter = configTemp.EnableChatFilter;
+        ChatFilterRules = configTemp.ChatFilterRules;
+        ChatFilterDiscordWebhook = configTemp.ChatFilterDiscordWebhook;
+
         AnnouncementInterval = configTemp.AnnouncementInterval;
         AnnouncementMessages = configTemp.AnnouncementMessages;
         AnnouncementLabel = configTemp.AnnouncementLabel;

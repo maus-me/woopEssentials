@@ -20,7 +20,7 @@ public abstract class ReloadConfig
 
     public static string HandleSlashCommand(WoopDiscord discord, SocketSlashCommand commandInteraction)
     {
-        if (!(commandInteraction.User is SocketGuildUser guildUser))
+        if (commandInteraction.User is not SocketGuildUser guildUser)
         {
             return "You do not have permissions to do that";
         }

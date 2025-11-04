@@ -15,6 +15,7 @@ using WoopEssentials.Commands;
 using WoopEssentials.Config;
 using WoopEssentials.Discord;
 using WoopEssentials.Systems;
+using WoopEssentials.Systems.Chat;
 using WoopEssentials.Systems.EntityBehavior;
 
 [assembly: InternalsVisibleTo("Tests")]
@@ -98,6 +99,7 @@ public class WoopEssentials : ModSystem
         new BedSpawnSystem().Init(Sapi);
         new AfkSystem().Init(Sapi);
         new AutoWhitelistSystem().Init(Sapi);
+        new ChatFilterSystem().Init(Sapi);
 
         if (Config.IsDiscordConfigured())
         {

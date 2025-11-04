@@ -25,7 +25,7 @@ public static class Program
     }
 }
 
-public abstract class BuildContext : FrostingContext
+public class BuildContext : FrostingContext
 {
     public const string ProjectName = "WoopEssentials";
     public string BuildConfiguration { get; }

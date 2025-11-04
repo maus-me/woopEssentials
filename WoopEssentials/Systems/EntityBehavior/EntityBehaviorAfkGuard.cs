@@ -23,7 +23,7 @@ internal class EntityBehaviorAfkGuard(Entity entity) : Vintagestory.API.Common.E
             if (damage <= 0 ||
                 entity is not EntityPlayer ep ||
                 ep.PlayerUID == null ||
-                (entity.World is IServerWorldAccessor) == false ||
+                !(entity.World is IServerWorldAccessor) ||
                 !AfkSystem.Instance.IsAfk(ep.PlayerUID)
                 ) return;
 

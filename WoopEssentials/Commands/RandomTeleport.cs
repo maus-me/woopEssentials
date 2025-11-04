@@ -185,7 +185,7 @@ internal class RandomTeleport : Command
             }});
     }
 
-    public static void TeleportTo(IPlayer player, WoopPlayerData playerData, BlockPos location)
+    private static void TeleportTo(IPlayer player, WoopPlayerData playerData, BlockPos location)
     {
         player.Entity.TeleportTo(new Vec3d(location.X + 0.5,location.Y + 0.2,location.Z + 0.5));
         playerData.RTPLastUsage = DateTime.Now;
@@ -212,7 +212,7 @@ internal class RandomTeleport : Command
         return true; // Location is safe
     }
 
-    public static bool CanTravel(WoopPlayerData playerData)
+    private static bool CanTravel(WoopPlayerData playerData)
     {
         var canTravel = playerData.RTPLastUsage.AddSeconds(WoopEssentials.Config.RandomTeleportCooldown);
         return canTravel <= DateTime.Now;

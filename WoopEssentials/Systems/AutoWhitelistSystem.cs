@@ -10,6 +10,7 @@ namespace WoopEssentials.Systems;
 /// <summary>
 /// Tracks player playtime and automatically whitelists them after a threshold.
 /// Uses WoopPlayerData for persistence across restarts.
+/// Intended to ensure that regular players are whitelisted automatically so that during periods of "abuse" where a whitelist may need too temporarily enabled.
 /// </summary>
 internal class AutoWhitelistSystem
 {
